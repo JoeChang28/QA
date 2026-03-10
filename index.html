@@ -35,47 +35,31 @@
 
     <style>
         html, body { margin: 0; padding: 0; width: 100%; height: 100vh; overflow: hidden; background-color: #FFFaf8; color: #4A3B32; font-family: 'Noto Serif TC', serif; }
-        
-        /* 捲軸美化 */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: rgba(230, 179, 163, 0.15); border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #E6B3A3 0%, #B76E79 100%); border-radius: 10px; }
-        
         .glass-panel { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.95); box-shadow: 0 12px 40px rgba(183, 110, 121, 0.12); }
         .text-gradient { background: linear-gradient(135deg, #B76E79 0%, #D4AF37 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        
-        /* 基礎 UI 元素 */
         input[type="text"], input[type="password"], input[type="number"], select { background: rgba(255,255,255,0.9); border: 1px solid rgba(183, 110, 121, 0.3); border-radius: 0.75rem; padding: 0.85rem 1.2rem; outline: none; transition: all 0.3s; color: #4A3B32; font-family: inherit; width: 100%; }
         input:focus, select:focus { border-color: #B76E79; box-shadow: 0 0 0 3px rgba(183, 110, 121, 0.15); background: #fff; }
-        
         .btn-primary { background: linear-gradient(135deg, #B76E79 0%, #E6B3A3 100%); color: white; padding: 0.85rem 2rem; border-radius: 9999px; font-weight: bold; letter-spacing: 0.1em; transition: all 0.3s; box-shadow: 0 8px 20px rgba(183, 110, 121, 0.3); cursor: pointer; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
         .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(183, 110, 121, 0.4); }
         .btn-primary:active:not(:disabled) { transform: translateY(1px); }
         .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
-        
         .btn-secondary { background: white; color: #B76E79; border: 1px solid rgba(183, 110, 121, 0.3); padding: 0.75rem 1.5rem; border-radius: 9999px; font-weight: bold; transition: all 0.3s; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
         .btn-secondary:hover { background: #FFFaf8; border-color: #B76E79; }
-
-        /* 視圖切換 */
         .view-layer { position: absolute; inset: 0; width: 100%; height: 100%; display: flex; flex-direction: column; overflow: hidden; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.4s ease, visibility 0.4s; z-index: 10; }
         .view-layer.active { opacity: 1; visibility: visible; pointer-events: auto; z-index: 20; }
-        
-        /* 選項按鈕樣式 */
         .opt-card { position: relative; border-radius: 1rem; padding: 1.5rem; color: white; font-weight: bold; display: flex; align-items: center; gap: 1rem; font-size: 1.5rem; overflow: hidden; transition: all 0.3s; }
         .opt-0 { background-color: #E1707A; box-shadow: 0 8px 0 #C95660; }
         .opt-1 { background-color: #E6B941; box-shadow: 0 8px 0 #C99E2E; }
         .opt-2 { background-color: #4A8EB3; box-shadow: 0 8px 0 #367294; }
         .opt-3 { background-color: #5A9E72; box-shadow: 0 8px 0 #427E58; }
-        
         .player-opt-btn { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; border-radius: 1rem; color: white; font-size: 1.25rem; font-weight: bold; transition: transform 0.1s; border: none; cursor: pointer; }
         .player-opt-btn:active:not(:disabled) { transform: translateY(6px); box-shadow: 0 2px 0 rgba(0,0,0,0.2) !important; }
-        
         .timer-ring { width: 120px; height: 120px; border-radius: 50%; border: 8px solid rgba(183, 110, 121, 0.2); display: flex; align-items: center; justify-content: center; font-size: 3.5rem; font-weight: bold; color: #B76E79; font-family: sans-serif; }
-
-        /* Toast 提示 */
         #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 100000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; width: auto; align-items: flex-end; }
         .toast { width: max-content; background: rgba(255,255,255,0.98); border-left: 5px solid #B76E79; box-shadow: 0 10px 30px rgba(183, 110, 121, 0.2); padding: 1rem 1.5rem; border-radius: 8px; font-weight: bold; pointer-events: auto; white-space: nowrap; }
-
         .dashboard-card { background: white; border: 1px solid rgba(183, 110, 121, 0.15); border-radius: 1.25rem; padding: 1.5rem; transition: all 0.3s; cursor: pointer; }
         .dashboard-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(183, 110, 121, 0.15); border-color: rgba(183, 110, 121, 0.4); }
     </style>
@@ -154,8 +138,7 @@
                 </div>
             </header>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="room-list">
-                </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="room-list"></div>
 
             <div class="mt-10 flex justify-center">
                 <button onclick="window.dbLogic.createNewRoom()" class="btn-primary flex items-center gap-2 text-lg px-8 py-3">
@@ -184,8 +167,7 @@
                 <button onclick="window.hostLogic.exportConfig()" class="btn-secondary text-sm flex items-center gap-2 px-4 py-2"><iconify-icon icon="ph:upload-simple"></iconify-icon> 導出題庫</button>
             </div>
 
-            <div id="questions-container" class="flex flex-col gap-6 mb-8">
-                </div>
+            <div id="questions-container" class="flex flex-col gap-6 mb-8"></div>
 
             <div class="flex justify-center mb-12">
                 <button onclick="window.editorLogic.addQuestionBlock()" class="btn-secondary flex items-center gap-2 border-dashed border-2 bg-white/50 hover:bg-white px-8 py-4 w-full max-w-md justify-center text-lg">
@@ -312,8 +294,7 @@
             <p class="text-brand-text/60 mt-3 tracking-widest">前十名玩家</p>
         </div>
         
-        <div class="flex-1 overflow-y-auto max-w-4xl mx-auto w-full custom-scrollbar px-2" id="inter-leaderboard-list">
-            </div>
+        <div class="flex-1 overflow-y-auto max-w-4xl mx-auto w-full custom-scrollbar px-2" id="inter-leaderboard-list"></div>
         
         <div class="h-24 flex items-center justify-center mt-4">
             <button id="btn-leaderboard-next" class="btn-primary text-xl px-12 py-4 shadow-2xl border-2 border-white">下一題 <iconify-icon icon="ph:arrow-right-bold"></iconify-icon></button>
@@ -497,8 +478,7 @@
                             <th class="pb-3 text-right pr-2">操作</th>
                         </tr>
                     </thead>
-                    <tbody id="admin-users-list">
-                        </tbody>
+                    <tbody id="admin-users-list"></tbody>
                 </table>
             </div>
         </div>
@@ -507,11 +487,8 @@
 </div>
 
 <script>
-/* ==========================================
-   全局控制與 UI 系統
-========================================== */
 window.appState = {
-    myRole: 'host', 
+    myRole: 'host',
     showView: (viewId) => {
         const views = ['login', 'register', 'dashboard', 'editor', 'host-waiting', 'host-question', 'host-reveal', 'host-leaderboard', 'host-podium', 'player-join', 'player-waiting', 'player-question', 'player-answered', 'player-result', 'player-podium'];
         views.forEach(v => {
@@ -525,11 +502,13 @@ window.appState = {
     showLoading: (text = '處理中...') => {
         document.getElementById('loading-text').innerText = text;
         const el = document.getElementById('loading-overlay');
-        el.classList.remove('hidden'); el.classList.add('flex');
+        el.classList.remove('hidden');
+        el.classList.add('flex');
     },
     hideLoading: () => {
         const el = document.getElementById('loading-overlay');
-        el.classList.add('hidden'); el.classList.remove('flex');
+        el.classList.add('hidden');
+        el.classList.remove('flex');
     },
     showToast: (msg, type = 'success') => {
         const container = document.getElementById('toast-container');
@@ -539,8 +518,12 @@ window.appState = {
         container.appendChild(toast);
         if (typeof gsap !== 'undefined') {
             gsap.fromTo(toast, { x: 50, opacity: 0 }, { x: 0, opacity: 1, duration: 0.3 });
-            setTimeout(() => { gsap.to(toast, { x: 50, opacity: 0, duration: 0.3, onComplete: () => toast.remove() }); }, 3000);
-        } else { setTimeout(() => toast.remove(), 3000); }
+            setTimeout(() => {
+                gsap.to(toast, { x: 50, opacity: 0, duration: 0.3, onComplete: () => toast.remove() });
+            }, 3000);
+        } else {
+            setTimeout(() => toast.remove(), 3000);
+        }
     },
     goToPlayerJoin: () => {
         window.appState.myRole = 'player';
@@ -551,15 +534,11 @@ window.appState = {
     }
 };
 
-/* ==========================================
-   資料庫與帳號管理
-========================================== */
 window.dbLogic = {
     getUsers: () => { try { return JSON.parse(localStorage.getItem('storywed_quiz_users') || '{}'); } catch(e) { return {}; } },
     saveUsers: (users) => { try { localStorage.setItem('storywed_quiz_users', JSON.stringify(users)); } catch(e) {} },
     getRooms: () => { try { return JSON.parse(localStorage.getItem('storywed_quiz_rooms') || '[]'); } catch(e) { return []; } },
     saveRooms: (rooms) => { try { localStorage.setItem('storywed_quiz_rooms', JSON.stringify(rooms)); } catch(e) {} },
-    
     createNewRoom: () => {
         const rooms = window.dbLogic.getRooms();
         const newRoom = { id: 'room_' + Date.now(), owner: window.authLogic.currentUser, title: '未命名遊戲房間 ' + new Date().toLocaleDateString(), questions: [] };
@@ -610,7 +589,6 @@ window.authLogic = {
     },
     loadDashboard: () => {
         document.getElementById('dash-username').innerText = window.authLogic.currentUser;
-        
         const adminBtn = document.getElementById('btn-admin-panel');
         if(window.authLogic.currentUser === 'storywed') {
             adminBtn.classList.remove('hidden');
@@ -645,18 +623,17 @@ window.authLogic = {
         }
         window.appState.showView('dashboard');
     },
-    // 最高權限：查看所有帳號密碼與防刪除保護
     showAdminPanel: () => {
         if(window.authLogic.currentUser !== 'storywed') { window.appState.showToast('權限不足', 'error'); return; }
         const users = window.dbLogic.getUsers();
         const tbody = document.getElementById('admin-users-list');
         tbody.innerHTML = '';
         for(let u in users) {
-            let isSuperAdmin = (u === 'storywed');
-            let deleteBtnHTML = isSuperAdmin ? 
-                `<span class="text-gray-400 text-sm font-bold tracking-widest">無法刪除</span>` : 
-                `<button onclick="window.authLogic.deleteUser('${window.appState.escapeHTML(u)}')" class="text-red-400 hover:text-white px-3 py-1.5 rounded bg-red-50 hover:bg-red-400 transition-colors text-sm font-bold shadow-sm">刪除</button>`;
-            
+            const isSuperAdmin = (u === 'storywed');
+            const deleteBtnHTML = isSuperAdmin
+                ? `<span class="text-gray-400 text-sm font-bold tracking-widest">無法刪除</span>`
+                : `<button onclick="window.authLogic.deleteUser('${window.appState.escapeHTML(u)}')" class="text-red-400 hover:text-white px-3 py-1.5 rounded bg-red-50 hover:bg-red-400 transition-colors text-sm font-bold shadow-sm">刪除</button>`;
+
             tbody.innerHTML += `
                 <tr class="border-b border-gray-100 last:border-0 hover:bg-white transition-colors">
                     <td class="py-4 pl-2 font-bold text-brand-text">${window.appState.escapeHTML(u)}</td>
@@ -670,7 +647,8 @@ window.authLogic = {
     },
     deleteUser: (username) => {
         if(username === 'storywed') {
-            window.appState.showToast('無法刪除超級管理員帳號', 'error'); return;
+            window.appState.showToast('無法刪除超級管理員帳號', 'error');
+            return;
         }
         if(confirm(`確定要刪除帳號 ${username} 嗎？`)) {
             const users = window.dbLogic.getUsers();
@@ -682,9 +660,6 @@ window.authLogic = {
     }
 };
 
-/* ==========================================
-   編輯器與題目邏輯
-========================================== */
 window.editorLogic = {
     currentRoomId: null,
     loadRoom: (roomId) => {
@@ -693,15 +668,18 @@ window.editorLogic = {
         if(!room) return;
         document.getElementById('editor-room-title').value = room.title;
         document.getElementById('questions-container').innerHTML = '';
-        window.hostLogic.qCounter = 0; 
-        if (room.questions.length === 0) { window.hostLogic.addQuestionBlock(); } 
-        else { room.questions.forEach(q => window.hostLogic.addQuestionBlock(q)); }
+        window.hostLogic.qCounter = 0;
+        if (room.questions.length === 0) {
+            window.hostLogic.addQuestionBlock();
+        } else {
+            room.questions.forEach(q => window.hostLogic.addQuestionBlock(q));
+        }
         window.appState.showView('editor');
     },
     saveRoom: () => {
         const titleInput = document.getElementById('editor-room-title');
         const title = titleInput ? titleInput.value.trim() : '未命名遊戲房間';
-        window.hostLogic.buildConfigFromDOM(); 
+        window.hostLogic.buildConfigFromDOM();
         let rooms = window.dbLogic.getRooms();
         let idx = rooms.findIndex(r => r.id === window.editorLogic.currentRoomId);
         if(idx !== -1) {
@@ -713,17 +691,19 @@ window.editorLogic = {
     },
     startGame: () => {
         window.editorLogic.saveRoom();
-        if(window.hostLogic.quizConfig.questions.length === 0 || window.hostLogic.quizConfig.questions.some(q => q.options.some(o=>o===''))) {
-            window.appState.showToast('請確認至少有一道題目且四個選項都有填寫內容', 'error'); return;
+        if(window.hostLogic.quizConfig.questions.length === 0 || window.hostLogic.quizConfig.questions.some(q => q.options.some(o => o === ''))) {
+            window.appState.showToast('請確認至少有一道題目且四個選項都有填寫內容', 'error');
+            return;
         }
         window.hostLogic.createGameRoom();
     },
     startGameDirectly: (roomId) => {
         const room = window.dbLogic.getRooms().find(r => r.id === roomId);
         if(room) {
-            window.hostLogic.quizConfig.questions = room.questions;
+            window.hostLogic.quizConfig.questions = room.questions || [];
             if(window.hostLogic.quizConfig.questions.length === 0) {
-                window.appState.showToast('此房間還沒有題目，請先編輯！', 'error'); return;
+                window.appState.showToast('此房間還沒有題目，請先編輯！', 'error');
+                return;
             }
             window.editorLogic.currentRoomId = roomId;
             window.hostLogic.createGameRoom();
@@ -732,41 +712,63 @@ window.editorLogic = {
     addQuestionBlock: (data = null) => { window.hostLogic.addQuestionBlock(data); }
 };
 
-// 圖片壓縮
 function compressImage(file, callback) {
     const reader = new FileReader();
     reader.onload = (e) => {
         const img = new Image();
         img.onload = () => {
             const canvas = document.createElement('canvas');
-            let width = img.width; let height = img.height;
-            if (width > 800) { height *= 800 / width; width = 800; }
-            canvas.width = width; canvas.height = height;
+            let width = img.width;
+            let height = img.height;
+            if (width > 800) {
+                height *= 800 / width;
+                width = 800;
+            }
+            canvas.width = width;
+            canvas.height = height;
             canvas.getContext('2d').drawImage(img, 0, 0, width, height);
             callback(canvas.toDataURL('image/jpeg', 0.6));
-        }
+        };
         img.src = e.target.result;
-    }
+    };
     reader.readAsDataURL(file);
 }
 
-function utf8_to_b64(str) { return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1))); }
-function b64_to_utf8(str) { return decodeURIComponent(atob(str).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')); }
+function utf8_to_b64(str) {
+    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
+}
 
-/* ==========================================
-   主機端流程邏輯
-========================================== */
+function b64_to_utf8(str) {
+    return decodeURIComponent(atob(str).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+}
+
 window.hostLogic = {
-    peer: null, roomId: null, playerConns: {}, quizConfig: { questions: [] }, qCounter: 0,
-    gameState: { status: 'idle', players: {}, currentQIndex: 0, timerInterval: null, currentAnswers: {}, questionStartTime: 0 },
-    
+    peer: null,
+    roomId: null,
+    playerConns: {},
+    quizConfig: { questions: [] },
+    qCounter: 0,
+    serverBootToken: 0,
+    serverBootTimeout: null,
+    gameState: {
+        status: 'idle',
+        players: {},
+        currentQIndex: 0,
+        timerInterval: null,
+        currentAnswers: {},
+        questionStartTime: 0
+    },
+
     addQuestionBlock: (data = null) => {
         const container = document.getElementById('questions-container');
-        // 使用隨機字串保證正解 Radio Button 不會互相干擾
         const qid = 'q_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
         const div = document.createElement('div');
         div.className = 'question-setup-block glass-panel p-5 md:p-8 rounded-[1.5rem] relative border-t-4 border-t-brand-rosegold mb-6';
-        let dText = data ? data.text : ''; let dTime = data ? data.timeLimit : 10; let dImg = data && data.image ? data.image : ''; let dOpts = data ? data.options : ['', '', '', '']; let dCorr = data ? data.correctIndex : 0;
+        let dText = data ? data.text : '';
+        let dTime = data ? data.timeLimit : 10;
+        let dImg = data && data.image ? data.image : '';
+        let dOpts = data ? data.options : ['', '', '', ''];
+        let dCorr = data ? data.correctIndex : 0;
         div.innerHTML = `
             <div class="absolute top-4 right-4 flex gap-3">
                 <div class="text-brand-text/40 font-bold font-sans text-lg"><iconify-icon icon="ph:question-light"></iconify-icon></div>
@@ -824,42 +826,59 @@ window.hostLogic = {
             </div>`;
         container.appendChild(div);
     },
+
     handleImagePreview: (inputEl) => {
         if(inputEl.files && inputEl.files[0]) {
             compressImage(inputEl.files[0], (base64) => {
                 const imgEl = inputEl.parentElement.querySelector('.q-img-preview');
-                imgEl.src = base64; imgEl.classList.remove('hidden');
+                imgEl.src = base64;
+                imgEl.classList.remove('hidden');
             });
         }
     },
+
     buildConfigFromDOM: () => {
         window.hostLogic.quizConfig.questions = [];
         document.querySelectorAll('.question-setup-block').forEach(block => {
             const text = block.querySelector('.q-text').value.trim();
-            if(!text) return; 
-            const timeLimit = parseInt(block.querySelector('.q-time').value);
+            if(!text) return;
+            const timeLimit = parseInt(block.querySelector('.q-time').value, 10);
             const imgSrc = block.querySelector('.q-img-preview').src;
             const image = imgSrc.startsWith('data:') ? imgSrc : null;
-            const options = [block.querySelector('.q-opt-0').value.trim(), block.querySelector('.q-opt-1').value.trim(), block.querySelector('.q-opt-2').value.trim(), block.querySelector('.q-opt-3').value.trim()];
+            const options = [
+                block.querySelector('.q-opt-0').value.trim(),
+                block.querySelector('.q-opt-1').value.trim(),
+                block.querySelector('.q-opt-2').value.trim(),
+                block.querySelector('.q-opt-3').value.trim()
+            ];
             let correctIndex = 0;
             block.querySelectorAll('.q-correct-radio').forEach((r, idx) => { if(r.checked) correctIndex = idx; });
             window.hostLogic.quizConfig.questions.push({ text, timeLimit, image, options, correctIndex });
         });
     },
+
     exportConfig: () => {
         window.hostLogic.buildConfigFromDOM();
-        if(window.hostLogic.quizConfig.questions.length === 0) { window.appState.showToast('請至少完成一題設定再導出', 'error'); return; }
+        if(window.hostLogic.quizConfig.questions.length === 0) {
+            window.appState.showToast('請至少完成一題設定再導出', 'error');
+            return;
+        }
         const json = JSON.stringify(window.hostLogic.quizConfig);
         const code = 'STORYWEDKHT:' + utf8_to_b64(json);
         const blob = new Blob([code], { type: 'text/plain;charset=utf-8' });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url;
+        const a = document.createElement('a');
+        a.href = url;
         const roomTitle = document.getElementById('editor-room-title').value.trim() || '未命名房間';
         const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, '');
         a.download = `快問快答題庫_${roomTitle}_${dateStr}.txt`;
-        document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
         window.appState.showToast('設定已成功匯出為 TXT 檔案！');
     },
+
     importConfig: () => {
         const fileInput = document.getElementById('import-file-input');
         const textInput = document.getElementById('import-input').value.trim();
@@ -873,8 +892,12 @@ window.hostLogic = {
             window.appState.showToast('請選擇檔案或貼上代碼', 'error');
         }
     },
+
     processImportCode: (val) => {
-        if(!val.startsWith('STORYWEDKHT:')) { window.appState.showToast('檔案內容格式錯誤', 'error'); return; }
+        if(!val.startsWith('STORYWEDKHT:')) {
+            window.appState.showToast('檔案內容格式錯誤', 'error');
+            return;
+        }
         try {
             const data = JSON.parse(b64_to_utf8(val.replace('STORYWEDKHT:', '')));
             if(data && data.questions) {
@@ -887,207 +910,417 @@ window.hostLogic = {
                 document.getElementById('import-input').value = '';
                 window.appState.showToast('題庫導入成功！');
             }
-        } catch(e) { window.appState.showToast('代碼解析失敗，檔案可能已損毀', 'error'); }
+        } catch(e) {
+            window.appState.showToast('代碼解析失敗，檔案可能已損毀', 'error');
+        }
     },
+
+    clearBootTimeout: () => {
+        if (window.hostLogic.serverBootTimeout) {
+            clearTimeout(window.hostLogic.serverBootTimeout);
+            window.hostLogic.serverBootTimeout = null;
+        }
+    },
+
+    resetGameRuntimeState: () => {
+        if (window.hostLogic.gameState.timerInterval) {
+            clearInterval(window.hostLogic.gameState.timerInterval);
+            window.hostLogic.gameState.timerInterval = null;
+        }
+        window.hostLogic.gameState.status = 'idle';
+        window.hostLogic.gameState.players = {};
+        window.hostLogic.gameState.currentQIndex = 0;
+        window.hostLogic.gameState.currentAnswers = {};
+        window.hostLogic.gameState.questionStartTime = 0;
+        window.hostLogic.playerConns = {};
+        window.hostLogic.roomId = null;
+    },
+
+    cleanupHostSession: (silent = true) => {
+        window.hostLogic.clearBootTimeout();
+
+        if (window.hostLogic.gameState.timerInterval) {
+            clearInterval(window.hostLogic.gameState.timerInterval);
+            window.hostLogic.gameState.timerInterval = null;
+        }
+
+        Object.values(window.hostLogic.playerConns).forEach(conn => {
+            try {
+                if (conn && conn.open) conn.close();
+            } catch(e) {}
+        });
+
+        if (window.hostLogic.peer) {
+            try { window.hostLogic.peer.disconnect(); } catch(e) {}
+            try { window.hostLogic.peer.destroy(); } catch(e) {}
+        }
+
+        window.hostLogic.peer = null;
+        window.hostLogic.resetGameRuntimeState();
+
+        const qr = document.getElementById('qrcode-container');
+        if (qr) qr.innerHTML = '';
+
+        const countEl = document.getElementById('host-player-count');
+        if (countEl) countEl.innerText = '0';
+
+        const listDiv = document.getElementById('host-player-list');
+        if (listDiv) {
+            listDiv.innerHTML = `<div class="w-full h-full flex flex-col items-center justify-center text-brand-text/30 font-bold tracking-widest gap-4" id="empty-players-msg"><iconify-icon icon="ph:users-three-light" class="text-6xl"></iconify-icon>等待玩家連線中...</div>`;
+        }
+
+        const startBtn = document.getElementById('btn-start-quiz');
+        if (startBtn) startBtn.disabled = true;
+
+        if (!silent) window.appState.hideLoading();
+    },
+
     createGameRoom: () => {
+        if (!window.hostLogic.quizConfig.questions || window.hostLogic.quizConfig.questions.length === 0) {
+            window.appState.showToast('請先設定題目後再開始遊戲', 'error');
+            return;
+        }
+
         window.appState.showLoading('啟動遊戲伺服器中...');
-        
+        const bootToken = ++window.hostLogic.serverBootToken;
+
         const startServer = () => {
-            window.hostLogic.playerConns = {};
-            window.hostLogic.gameState.players = {};
-            window.hostLogic.gameState.currentAnswers = {};
-            window.hostLogic.gameState.status = 'idle';
+            if (bootToken !== window.hostLogic.serverBootToken) return;
+
+            window.hostLogic.resetGameRuntimeState();
             window.hostLogic.updateWaitingRoomUI();
 
-            window.hostLogic.peer = new Peer();
-            window.hostLogic.peer.on('open', (id) => {
+            let opened = false;
+            let peer;
+            try {
+                peer = new Peer();
+            } catch (e) {
+                window.appState.hideLoading();
+                window.appState.showToast('遊戲伺服器建立失敗', 'error');
+                return;
+            }
+
+            window.hostLogic.peer = peer;
+
+            window.hostLogic.serverBootTimeout = setTimeout(() => {
+                if (bootToken !== window.hostLogic.serverBootToken) return;
+                if (!opened) {
+                    window.hostLogic.cleanupHostSession();
+                    window.appState.hideLoading();
+                    window.appState.showToast('遊戲伺服器啟動逾時，請再試一次', 'error');
+                }
+            }, 10000);
+
+            peer.on('open', (id) => {
+                if (bootToken !== window.hostLogic.serverBootToken) {
+                    try { peer.destroy(); } catch(e) {}
+                    return;
+                }
+                opened = true;
+                window.hostLogic.clearBootTimeout();
+
                 window.hostLogic.roomId = id;
                 const joinUrl = window.location.href.split('?')[0] + '?role=player&room=' + id;
                 document.getElementById('qrcode-container').innerHTML = '';
-                new QRCode(document.getElementById("qrcode-container"), { text: joinUrl, width: 220, height: 220, colorDark : "#B76E79", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.H });
-                document.getElementById('hw-room-title').innerText = window.dbLogic.getRooms().find(r=>r.id===window.editorLogic.currentRoomId)?.title || '快問快答遊戲';
+                new QRCode(document.getElementById('qrcode-container'), {
+                    text: joinUrl,
+                    width: 220,
+                    height: 220,
+                    colorDark: '#B76E79',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+
+                document.getElementById('hw-room-title').innerText =
+                    window.dbLogic.getRooms().find(r => r.id === window.editorLogic.currentRoomId)?.title || '快問快答遊戲';
+
                 window.appState.hideLoading();
                 window.appState.showView('host-waiting');
             });
-            window.hostLogic.peer.on('connection', (conn) => {
+
+            peer.on('connection', (conn) => {
+                if (bootToken !== window.hostLogic.serverBootToken) {
+                    try { conn.close(); } catch(e) {}
+                    return;
+                }
+
                 conn.on('data', (data) => {
                     if (data.type === 'JOIN') window.hostLogic.handlePlayerJoin(conn, data.name);
                     if (data.type === 'ANSWER') window.hostLogic.handlePlayerAnswer(data.name, data);
                 });
+
+                conn.on('close', () => {
+                    const playerName = Object.keys(window.hostLogic.playerConns).find(name => window.hostLogic.playerConns[name] === conn);
+                    if (playerName) {
+                        delete window.hostLogic.playerConns[playerName];
+                        delete window.hostLogic.gameState.players[playerName];
+                        window.hostLogic.updateWaitingRoomUI();
+                        if (window.hostLogic.gameState.status === 'question') {
+                            window.hostLogic.updateAnswersCountUI();
+                        }
+                    }
+                });
+
+                conn.on('error', () => {});
             });
-            window.hostLogic.peer.on('error', () => { window.appState.hideLoading(); window.appState.showToast('伺服器連線失敗', 'error'); });
+
+            peer.on('error', () => {
+                if (bootToken !== window.hostLogic.serverBootToken) return;
+                window.hostLogic.clearBootTimeout();
+                window.hostLogic.cleanupHostSession();
+                window.appState.hideLoading();
+                window.appState.showToast('伺服器連線失敗', 'error');
+            });
+
+            peer.on('close', () => {
+                if (bootToken !== window.hostLogic.serverBootToken) return;
+                if (!opened) {
+                    window.hostLogic.clearBootTimeout();
+                    window.appState.hideLoading();
+                    window.appState.showToast('伺服器已關閉，請重新啟動', 'error');
+                }
+            });
+
+            peer.on('disconnected', () => {});
         };
 
-        if (window.hostLogic.peer) {
-            window.hostLogic.peer.destroy();
-            window.hostLogic.peer = null;
-            setTimeout(startServer, 600); // 防卡死延遲清理
-        } else {
+        window.hostLogic.cleanupHostSession();
+
+        setTimeout(() => {
+            if (bootToken !== window.hostLogic.serverBootToken) return;
             startServer();
-        }
+        }, 800);
     },
+
     updateWaitingRoomUI: () => {
         const listDiv = document.getElementById('host-player-list');
         const pNames = Object.keys(window.hostLogic.gameState.players);
         document.getElementById('host-player-count').innerText = pNames.length;
+
         if (pNames.length > 0) {
-            document.getElementById('empty-players-msg').classList.add('hidden');
             listDiv.innerHTML = '';
             pNames.forEach(name => {
                 const badge = document.createElement('div');
                 badge.className = 'bg-white border border-brand-rosegold/30 text-brand-dustyrose px-4 py-2 rounded-full font-bold shadow-sm';
                 badge.innerText = name;
-                if (typeof gsap !== 'undefined') gsap.fromTo(badge, { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2)" });
+                if (typeof gsap !== 'undefined') {
+                    gsap.fromTo(badge, { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2)" });
+                }
                 listDiv.appendChild(badge);
             });
             document.getElementById('btn-start-quiz').disabled = false;
         } else {
-            document.getElementById('empty-players-msg').classList.remove('hidden');
             document.getElementById('btn-start-quiz').disabled = true;
             listDiv.innerHTML = `<div class="w-full h-full flex flex-col items-center justify-center text-brand-text/30 font-bold tracking-widest gap-4" id="empty-players-msg"><iconify-icon icon="ph:users-three-light" class="text-6xl"></iconify-icon>等待玩家連線中...</div>`;
         }
     },
+
     handlePlayerJoin: (conn, name) => {
-        if (!window.hostLogic.gameState.players[name]) window.hostLogic.gameState.players[name] = { score: 0, answers: {} };
+        if (!name) return;
+
+        if (!window.hostLogic.gameState.players[name]) {
+            window.hostLogic.gameState.players[name] = { score: 0, answers: {} };
+        }
+
+        const oldConn = window.hostLogic.playerConns[name];
+        if (oldConn && oldConn !== conn) {
+            try { oldConn.close(); } catch(e) {}
+        }
+
         window.hostLogic.playerConns[name] = conn;
-        conn.send({ type: 'JOIN_ACK', name: name });
+        try {
+            conn.send({ type: 'JOIN_ACK', name: name });
+        } catch(e) {}
+
         window.hostLogic.updateWaitingRoomUI();
     },
-    broadcast: (data) => { Object.values(window.hostLogic.playerConns).forEach(c => { if(c.open) c.send(data); }); },
+
+    broadcast: (data) => {
+        Object.values(window.hostLogic.playerConns).forEach(c => {
+            try {
+                if (c && c.open) c.send(data);
+            } catch(e) {}
+        });
+    },
+
     closeRoom: (force = false) => {
         if(!force && !confirm('確定要關閉房間並結束連線嗎？玩家將會斷線。')) return;
-        window.hostLogic.broadcast({ type: 'HOST_CLOSED' }); // 通知所有玩家強制離開
-        if(window.hostLogic.peer) {
-            window.hostLogic.peer.destroy();
-            window.hostLogic.peer = null;
-        }
-        window.hostLogic.playerConns = {}; 
-        window.hostLogic.gameState.players = {};
+        window.hostLogic.broadcast({ type: 'HOST_CLOSED' });
+        window.hostLogic.cleanupHostSession();
         window.authLogic.loadDashboard();
     },
+
     startQuiz: () => {
         window.hostLogic.gameState.currentQIndex = 0;
         window.hostLogic.gameState.status = 'question';
-        // 絕對防呆：進入遊戲時徹底歸零所有玩家分數
         for (let name in window.hostLogic.gameState.players) {
             window.hostLogic.gameState.players[name].score = 0;
         }
         window.hostLogic.runQuestion();
     },
+
     runQuestion: () => {
+        if (window.hostLogic.gameState.timerInterval) {
+            clearInterval(window.hostLogic.gameState.timerInterval);
+            window.hostLogic.gameState.timerInterval = null;
+        }
+
         window.hostLogic.gameState.status = 'question';
         window.hostLogic.gameState.currentAnswers = {};
-        let qIdx = window.hostLogic.gameState.currentQIndex;
-        let q = window.hostLogic.quizConfig.questions[qIdx];
+
+        const qIdx = window.hostLogic.gameState.currentQIndex;
+        const q = window.hostLogic.quizConfig.questions[qIdx];
+        if (!q) return;
+
         document.getElementById('hq-qnum').innerText = qIdx + 1;
         document.getElementById('hq-title').innerText = `共 ${window.hostLogic.quizConfig.questions.length} 題`;
         document.getElementById('hq-text').innerText = q.text;
+
         const imgEl = document.getElementById('hq-img');
-        if (q.image) { imgEl.src = q.image; imgEl.classList.remove('hidden'); } else { imgEl.classList.add('hidden'); }
-        for(let i=0; i<4; i++) { document.getElementById(`hq-opt-${i}`).innerText = q.options[i]; }
+        if (q.image) {
+            imgEl.src = q.image;
+            imgEl.classList.remove('hidden');
+        } else {
+            imgEl.classList.add('hidden');
+            imgEl.src = '';
+        }
+
+        for(let i = 0; i < 4; i++) {
+            document.getElementById(`hq-opt-${i}`).innerText = q.options[i];
+        }
+
         window.hostLogic.updateAnswersCountUI();
         window.appState.showView('host-question');
         window.hostLogic.broadcast({ type: 'QUESTION_START', qIndex: qIdx, timeLimit: q.timeLimit, options: q.options, text: q.text });
-        
+
         let timeLeft = q.timeLimit;
         const timerEl = document.getElementById('hq-timer');
         timerEl.innerText = timeLeft;
         timerEl.style.color = '#B76E79';
         timerEl.style.fontSize = '3.5rem';
-        
+
         document.getElementById('hq-reveal-overlay').classList.add('hidden');
         document.getElementById('hq-reveal-overlay').classList.remove('flex', 'opacity-100');
-        
+
         window.hostLogic.gameState.questionStartTime = Date.now();
         window.hostLogic.gameState.timerInterval = setInterval(() => {
-            timeLeft--; timerEl.innerText = timeLeft;
-            if(timeLeft <= 5) timerEl.style.color = '#ef4444'; 
+            timeLeft--;
+            timerEl.innerText = timeLeft;
+            if(timeLeft <= 5) timerEl.style.color = '#ef4444';
             if(timeLeft <= 0) window.hostLogic.endQuestion();
         }, 1000);
     },
+
     updateAnswersCountUI: () => {
         document.getElementById('hq-answers-count').innerText = Object.keys(window.hostLogic.gameState.currentAnswers).length;
         document.getElementById('hq-total-count').innerText = Object.keys(window.hostLogic.gameState.players).length;
     },
+
     handlePlayerAnswer: (name, data) => {
-        if (window.hostLogic.gameState.status !== 'question' || window.hostLogic.gameState.currentAnswers[name]) return; 
+        if (window.hostLogic.gameState.status !== 'question' || window.hostLogic.gameState.currentAnswers[name]) return;
         window.hostLogic.gameState.currentAnswers[name] = { optionIndex: data.optionIndex, elapsedTime: data.elapsedTime };
         window.hostLogic.updateAnswersCountUI();
-        if (Object.keys(window.hostLogic.gameState.currentAnswers).length >= Object.keys(window.hostLogic.gameState.players).length) window.hostLogic.endQuestion();
+        if (Object.keys(window.hostLogic.gameState.currentAnswers).length >= Object.keys(window.hostLogic.gameState.players).length) {
+            window.hostLogic.endQuestion();
+        }
     },
+
     endQuestion: () => {
-        clearInterval(window.hostLogic.gameState.timerInterval);
-        window.hostLogic.gameState.status = 'wait_reveal'; // 防作弊第一段：等待公佈
-        
+        if (window.hostLogic.gameState.timerInterval) {
+            clearInterval(window.hostLogic.gameState.timerInterval);
+            window.hostLogic.gameState.timerInterval = null;
+        }
+        window.hostLogic.gameState.status = 'wait_reveal';
+
         document.getElementById('hq-timer').innerText = '時間到';
         document.getElementById('hq-timer').style.fontSize = '1.5rem';
-        
+
         const overlay = document.getElementById('hq-reveal-overlay');
         overlay.classList.remove('hidden');
         overlay.classList.add('flex');
-        setTimeout(() => { overlay.classList.remove('opacity-0'); overlay.classList.add('opacity-100'); }, 50);
+        setTimeout(() => {
+            overlay.classList.remove('opacity-0');
+            overlay.classList.add('opacity-100');
+        }, 50);
     },
+
     revealAnswer: () => {
         const overlay = document.getElementById('hq-reveal-overlay');
         overlay.classList.add('hidden', 'opacity-0');
         overlay.classList.remove('flex', 'opacity-100');
-        
-        window.hostLogic.gameState.status = 'reveal'; // 防作弊第二段：正式公佈
-        
-        let q = window.hostLogic.quizConfig.questions[window.hostLogic.gameState.currentQIndex];
+
+        window.hostLogic.gameState.status = 'reveal';
+
+        const q = window.hostLogic.quizConfig.questions[window.hostLogic.gameState.currentQIndex];
         let voteCounts = [0, 0, 0, 0];
-        
+
         for (let name in window.hostLogic.gameState.currentAnswers) {
-            let ans = window.hostLogic.gameState.currentAnswers[name];
+            const ans = window.hostLogic.gameState.currentAnswers[name];
             voteCounts[ans.optionIndex]++;
             if (ans.optionIndex === q.correctIndex) {
-                let remaining = q.timeLimit - ans.elapsedTime; if(remaining < 0) remaining = 0;
-                let pts = Math.round(500 + 500 * (remaining / q.timeLimit));
+                let remaining = q.timeLimit - ans.elapsedTime;
+                if(remaining < 0) remaining = 0;
+                const pts = Math.round(500 + 500 * (remaining / q.timeLimit));
                 window.hostLogic.gameState.players[name].score += pts;
-                ans.scoreEarned = pts; ans.correct = true;
-            } else { ans.scoreEarned = 0; ans.correct = false; }
-        }
-        
-        let sortedNames = Object.keys(window.hostLogic.gameState.players).sort((a, b) => window.hostLogic.gameState.players[b].score - window.hostLogic.gameState.players[a].score);
-        
-        // 正式推播成績到玩家手機
-        for (let name in window.hostLogic.playerConns) {
-            let ans = window.hostLogic.gameState.currentAnswers[name];
-            if (window.hostLogic.playerConns[name].open) {
-                window.hostLogic.playerConns[name].send({
-                    type: 'QUESTION_RESULT',
-                    isCorrect: ans ? ans.correct : false, pointsEarned: ans ? ans.scoreEarned : 0, 
-                    totalScore: window.hostLogic.gameState.players[name].score, rank: sortedNames.indexOf(name) + 1
-                });
+                ans.scoreEarned = pts;
+                ans.correct = true;
+            } else {
+                ans.scoreEarned = 0;
+                ans.correct = false;
             }
         }
-        
+
+        const sortedNames = Object.keys(window.hostLogic.gameState.players).sort((a, b) => window.hostLogic.gameState.players[b].score - window.hostLogic.gameState.players[a].score);
+
+        for (let name in window.hostLogic.playerConns) {
+            const ans = window.hostLogic.gameState.currentAnswers[name];
+            const conn = window.hostLogic.playerConns[name];
+            try {
+                if (conn && conn.open) {
+                    conn.send({
+                        type: 'QUESTION_RESULT',
+                        isCorrect: ans ? ans.correct : false,
+                        pointsEarned: ans ? ans.scoreEarned : 0,
+                        totalScore: window.hostLogic.gameState.players[name].score,
+                        rank: sortedNames.indexOf(name) + 1
+                    });
+                }
+            } catch(e) {}
+        }
+
         document.getElementById('hr-text').innerText = q.text;
-        let maxVotes = Math.max(...voteCounts, 1); 
-        for(let i=0; i<4; i++) {
+        const maxVotes = Math.max(...voteCounts, 1);
+
+        for(let i = 0; i < 4; i++) {
             document.getElementById(`hr-opt-${i}`).innerText = q.options[i];
             document.getElementById(`hr-label-${i}`).innerText = q.options[i];
-            let card = document.getElementById(`hr-optcard-${i}`);
+            const card = document.getElementById(`hr-optcard-${i}`);
             document.getElementById(`hr-count-${i}`).innerText = voteCounts[i];
             card.classList.remove('border-4', 'border-green-400', 'shadow-[0_0_20px_rgba(74,222,128,0.6)]', 'opacity-30', 'scale-105', 'z-10');
-            setTimeout(() => { document.getElementById(`hr-bar-${i}`).style.height = `${(voteCounts[i] / maxVotes) * 100}%`; }, 100);
-            if (i === q.correctIndex) { card.classList.add('border-4', 'border-green-400', 'shadow-[0_0_20px_rgba(74,222,128,0.6)]', 'scale-105', 'z-10'); } 
-            else { card.classList.add('opacity-30'); }
+            setTimeout(() => {
+                document.getElementById(`hr-bar-${i}`).style.height = `${(voteCounts[i] / maxVotes) * 100}%`;
+            }, 100);
+            if (i === q.correctIndex) {
+                card.classList.add('border-4', 'border-green-400', 'shadow-[0_0_20px_rgba(74,222,128,0.6)]', 'scale-105', 'z-10');
+            } else {
+                card.classList.add('opacity-30');
+            }
         }
-        
+
         const nextBtn = document.getElementById('btn-host-next');
         nextBtn.innerHTML = '查看目前排名 <iconify-icon icon="ph:list-numbers-bold"></iconify-icon>';
         nextBtn.onclick = () => { window.hostLogic.showIntermediateLeaderboard(sortedNames); };
-        
+
         window.appState.showView('host-reveal');
     },
+
     showIntermediateLeaderboard: (sortedNames) => {
         const listContainer = document.getElementById('inter-leaderboard-list');
         listContainer.innerHTML = '';
-        
+
         const top10 = sortedNames.slice(0, 10);
         top10.forEach((name, idx) => {
-            let score = window.hostLogic.gameState.players[name].score;
+            const score = window.hostLogic.gameState.players[name].score;
             listContainer.innerHTML += `
                 <div class="flex justify-between items-center bg-white p-4 md:p-5 rounded-2xl border border-brand-rosegold/20 shadow-sm mb-3">
                     <div class="flex items-center gap-4">
@@ -1098,12 +1331,12 @@ window.hostLogic = {
                 </div>
             `;
         });
-        
+
         const nextBtn = document.getElementById('btn-leaderboard-next');
         if (window.hostLogic.gameState.currentQIndex < window.hostLogic.quizConfig.questions.length - 1) {
             nextBtn.innerHTML = '下一題 <iconify-icon icon="ph:arrow-right-bold"></iconify-icon>';
             nextBtn.onclick = () => {
-                for(let i=0; i<4; i++) document.getElementById(`hr-bar-${i}`).style.height = '0%';
+                for(let i = 0; i < 4; i++) document.getElementById(`hr-bar-${i}`).style.height = '0%';
                 window.hostLogic.gameState.currentQIndex++;
                 window.hostLogic.runQuestion();
             };
@@ -1111,76 +1344,93 @@ window.hostLogic = {
             nextBtn.innerHTML = '🏆 進入最終頒獎台 🏆';
             nextBtn.onclick = () => { window.hostLogic.showPodium(sortedNames); };
         }
-        
+
         window.appState.showView('host-leaderboard');
     },
+
     exportResults: () => {
         if (!window.hostLogic.gameState.players || Object.keys(window.hostLogic.gameState.players).length === 0) {
-            window.appState.showToast('目前沒有成績記錄', 'error'); return;
+            window.appState.showToast('目前沒有成績記錄', 'error');
+            return;
         }
         let txt = "【幸福故事館】快問快答成績記錄\n";
         txt += "記錄時間：" + new Date().toLocaleString() + "\n";
         txt += "--------------------------------------------------\n";
         txt += "名次\t總分\t\t姓名\n";
         txt += "--------------------------------------------------\n";
-        
-        let sortedNames = Object.keys(window.hostLogic.gameState.players).sort((a, b) => window.hostLogic.gameState.players[b].score - window.hostLogic.gameState.players[a].score);
-        
+
+        const sortedNames = Object.keys(window.hostLogic.gameState.players).sort((a, b) => window.hostLogic.gameState.players[b].score - window.hostLogic.gameState.players[a].score);
+
         sortedNames.forEach((name, idx) => {
-            let score = window.hostLogic.gameState.players[name].score;
+            const score = window.hostLogic.gameState.players[name].score;
             txt += `${idx + 1}\t${score}\t\t${name}\n`;
         });
-        
+
         const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url;
+        const a = document.createElement('a');
+        a.href = url;
         a.download = `快問快答成績記錄_${new Date().toISOString().split('T')[0].replace(/-/g, '')}.txt`;
-        document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
         window.appState.showToast('成績記錄已成功匯出為 TXT 檔案！');
     },
+
     showPodium: (sortedNames) => {
         window.appState.showView('host-podium');
-        
+
         for (let name in window.hostLogic.playerConns) {
-            if (window.hostLogic.playerConns[name].open) {
-                window.hostLogic.playerConns[name].send({ 
-                    type: 'GAME_OVER',
-                    finalRank: sortedNames.indexOf(name) + 1,
-                    finalScore: window.hostLogic.gameState.players[name] ? window.hostLogic.gameState.players[name].score : 0
-                });
-            }
+            const conn = window.hostLogic.playerConns[name];
+            try {
+                if (conn && conn.open) {
+                    conn.send({
+                        type: 'GAME_OVER',
+                        finalRank: sortedNames.indexOf(name) + 1,
+                        finalScore: window.hostLogic.gameState.players[name] ? window.hostLogic.gameState.players[name].score : 0
+                    });
+                }
+            } catch(e) {}
         }
-        
-        const top3 = sortedNames.slice(0, 3); const runnersUp = sortedNames.slice(3, 10);
-        for(let i=1; i<=3; i++) {
-            document.getElementById(`p-name-${i}`).innerText = '---'; document.getElementById(`p-score-${i}`).innerText = '0 分';
+
+        const top3 = sortedNames.slice(0, 3);
+        const runnersUp = sortedNames.slice(3, 10);
+
+        for(let i = 1; i <= 3; i++) {
+            document.getElementById(`p-name-${i}`).innerText = '---';
+            document.getElementById(`p-score-${i}`).innerText = '0 分';
             const el = document.getElementById(`podium-${i}`);
             el.classList.remove('opacity-0', 'transform', 'translate-y-10');
-            el.style.opacity = 0; el.style.transform = 'translateY(50px)';
+            el.style.opacity = 0;
+            el.style.transform = 'translateY(50px)';
         }
+
         document.getElementById('podium-list').classList.remove('opacity-0');
         document.getElementById('podium-list').style.opacity = 0;
-        
+
         top3.forEach((name, idx) => {
-            let place = idx + 1; 
+            const place = idx + 1;
             document.getElementById(`p-name-${place}`).innerText = name;
             document.getElementById(`p-score-${place}`).innerText = window.hostLogic.gameState.players[name].score + ' 分';
         });
-        
+
         if (typeof gsap !== 'undefined') {
             const tl = gsap.timeline();
             if(top3[2]) tl.to("#podium-3", { y: 0, opacity: 1, duration: 0.6, ease: "back.out(1.5)", delay: 0.5 });
             if(top3[1]) tl.to("#podium-2", { y: 0, opacity: 1, duration: 0.6, ease: "back.out(1.5)", delay: 0.2 });
             if(top3[0]) tl.to("#podium-1", { y: 0, opacity: 1, duration: 0.8, ease: "back.out(1.7)", delay: 0.3 }).call(() => {
                 if(typeof confetti !== 'undefined') {
-                    var duration = 4 * 1000; var end = Date.now() + duration;
+                    const duration = 4 * 1000;
+                    const end = Date.now() + duration;
                     (function frame() {
                         confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#B76E79', '#D4AF37', '#ffffff'] });
                         confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#B76E79', '#D4AF37', '#ffffff'] });
                         if (Date.now() < end) requestAnimationFrame(frame);
-                    }());
+                    })();
                 }
             });
+
             const listContainer = document.getElementById('leaderboard-runners-up');
             listContainer.innerHTML = '';
             if (runnersUp.length > 0) {
@@ -1190,29 +1440,39 @@ window.hostLogic = {
                 tl.to("#podium-list", { opacity: 1, duration: 0.5 });
             }
         } else {
-            for(let i=1; i<=3; i++) { if(top3[i-1]) { document.getElementById(`podium-${i}`).style.opacity = 1; document.getElementById(`podium-${i}`).style.transform = 'translateY(0)'; } }
+            for(let i = 1; i <= 3; i++) {
+                if(top3[i - 1]) {
+                    document.getElementById(`podium-${i}`).style.opacity = 1;
+                    document.getElementById(`podium-${i}`).style.transform = 'translateY(0)';
+                }
+            }
             document.getElementById('podium-list').style.opacity = 1;
         }
     }
 };
 
-/* ==========================================
-   玩家 (Player) 邏輯
-========================================== */
 window.playerLogic = {
-    peer: null, hostConn: null, myName: '', questionStartTime: 0, timeLimit: 20, localTimerInterval: null,
+    peer: null,
+    hostConn: null,
+    myName: '',
+    questionStartTime: 0,
+    timeLimit: 20,
+    localTimerInterval: null,
+
     joinGame: () => {
         const roomInput = document.getElementById('pj-room-input').value.trim();
         const nameInput = document.getElementById('pj-name-input').value.trim();
+
         if(!roomInput) { window.appState.showToast('請輸入房間代碼', 'error'); return; }
         if(!nameInput) { window.appState.showToast('請輸入您的姓名', 'error'); return; }
+
         window.appState.showLoading('連線至遊戲室中...');
         window.playerLogic.myName = nameInput;
-        
+
         const connectServer = () => {
             try {
                 window.playerLogic.peer = new Peer();
-                
+
                 const peerTimeout = setTimeout(() => {
                     window.appState.hideLoading();
                     window.appState.showToast('連線超時，請檢查代碼或網路', 'error');
@@ -1224,34 +1484,40 @@ window.playerLogic = {
 
                 window.playerLogic.peer.on('open', () => {
                     window.playerLogic.hostConn = window.playerLogic.peer.connect(roomInput, { reliable: true });
-                    
+
                     window.playerLogic.hostConn.on('open', () => {
                         clearTimeout(peerTimeout);
                         window.appState.hideLoading();
                         window.playerLogic.hostConn.send({ type: 'JOIN', name: window.playerLogic.myName });
                     });
-                    
+
                     window.playerLogic.hostConn.on('data', (data) => {
-                        if (data.type === 'JOIN_ACK') { window.appState.showView('player-waiting'); document.getElementById('pw-name').innerText = window.playerLogic.myName; }
+                        if (data.type === 'JOIN_ACK') {
+                            window.appState.showView('player-waiting');
+                            document.getElementById('pw-name').innerText = window.playerLogic.myName;
+                        }
                         if (data.type === 'QUESTION_START') window.playerLogic.handleQuestionStart(data);
                         if (data.type === 'QUESTION_RESULT') window.playerLogic.handleQuestionResult(data);
                         if (data.type === 'GAME_OVER') window.playerLogic.handleGameOver(data);
-                        if (data.type === 'HOST_CLOSED') { 
-                            window.appState.showToast('主辦人已關閉房間', 'error'); 
-                            window.playerLogic.leaveGame(); 
+                        if (data.type === 'HOST_CLOSED') {
+                            window.appState.showToast('主辦人已關閉房間', 'error');
+                            window.playerLogic.leaveGame();
                         }
                     });
-                    
+
                     window.playerLogic.hostConn.on('error', () => {
                         clearTimeout(peerTimeout);
-                        window.appState.hideLoading(); 
-                        window.appState.showToast('無法與主辦人連線', 'error'); 
+                        window.appState.hideLoading();
+                        window.appState.showToast('無法與主辦人連線', 'error');
                     });
+
+                    window.playerLogic.hostConn.on('close', () => {});
                 });
+
                 window.playerLogic.peer.on('error', () => {
                     clearTimeout(peerTimeout);
-                    window.appState.hideLoading(); 
-                    window.appState.showToast('網路連線不穩，請重試', 'error'); 
+                    window.appState.hideLoading();
+                    window.appState.showToast('網路連線不穩，請重試', 'error');
                 });
             } catch(e) {
                 window.appState.hideLoading();
@@ -1259,83 +1525,138 @@ window.playerLogic = {
             }
         };
 
+        if (window.playerLogic.localTimerInterval) {
+            clearInterval(window.playerLogic.localTimerInterval);
+            window.playerLogic.localTimerInterval = null;
+        }
+
         if (window.playerLogic.peer) {
             try { window.playerLogic.peer.destroy(); } catch(e) {}
             window.playerLogic.peer = null;
         }
+
+        if (window.playerLogic.hostConn) {
+            try { window.playerLogic.hostConn.close(); } catch(e) {}
+            window.playerLogic.hostConn = null;
+        }
+
         setTimeout(connectServer, 500);
     },
+
     leaveGame: () => {
+        if (window.playerLogic.localTimerInterval) {
+            clearInterval(window.playerLogic.localTimerInterval);
+            window.playerLogic.localTimerInterval = null;
+        }
+
         if(window.playerLogic.hostConn) {
             try { window.playerLogic.hostConn.close(); } catch(e) {}
         }
+
         if(window.playerLogic.peer) {
             try { window.playerLogic.peer.destroy(); } catch(e) {}
         }
+
         window.playerLogic.peer = null;
         window.playerLogic.hostConn = null;
         window.playerLogic.myName = '';
-        
-        // 絕對清空玩家殘留名字，並重置狀態
+        window.playerLogic.questionStartTime = 0;
+        window.playerLogic.timeLimit = 20;
+
         const nameInput = document.getElementById('pj-name-input');
-        if(nameInput) { 
-            nameInput.value = ''; 
-            nameInput.setAttribute('autocomplete', 'new-password'); 
+        if(nameInput) {
+            nameInput.value = '';
+            nameInput.setAttribute('autocomplete', 'new-password');
         }
+
+        window.appState.hideLoading();
         window.appState.showView('player-join');
     },
+
     handleQuestionStart: (data) => {
         document.getElementById('pq-text').innerText = data.text;
-        for(let i=0; i<4; i++) document.getElementById(`pq-opt-${i}`).innerText = data.options[i];
-        document.querySelectorAll('.pq-btn').forEach(btn => { btn.disabled = false; btn.classList.remove('opacity-50', 'scale-95'); });
+        for(let i = 0; i < 4; i++) document.getElementById(`pq-opt-${i}`).innerText = data.options[i];
+        document.querySelectorAll('.pq-btn').forEach(btn => {
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'scale-95');
+        });
+
         window.playerLogic.timeLimit = data.timeLimit;
         window.playerLogic.questionStartTime = Date.now();
         window.appState.showView('player-question');
+
         let timeLeft = window.playerLogic.timeLimit;
         const timerEl = document.getElementById('pq-timer');
         timerEl.innerText = timeLeft;
         timerEl.style.color = '#B76E79';
+
         clearInterval(window.playerLogic.localTimerInterval);
         window.playerLogic.localTimerInterval = setInterval(() => {
-            timeLeft--; timerEl.innerText = timeLeft;
+            timeLeft--;
+            timerEl.innerText = timeLeft;
             if(timeLeft <= 5) timerEl.style.color = '#ef4444';
-            if(timeLeft <= 0) clearInterval(window.playerLogic.localTimerInterval);
+            if(timeLeft <= 0) {
+                clearInterval(window.playerLogic.localTimerInterval);
+                window.playerLogic.localTimerInterval = null;
+            }
         }, 1000);
     },
+
     submitAnswer: (optIndex) => {
-        let elapsedTime = (Date.now() - window.playerLogic.questionStartTime) / 1000;
+        if (!window.playerLogic.hostConn || !window.playerLogic.hostConn.open) return;
+
+        const elapsedTime = (Date.now() - window.playerLogic.questionStartTime) / 1000;
         clearInterval(window.playerLogic.localTimerInterval);
-        window.playerLogic.hostConn.send({ type: 'ANSWER', name: window.playerLogic.myName, optionIndex: optIndex, elapsedTime: elapsedTime });
-        document.querySelectorAll('.pq-btn').forEach((btn, idx) => { btn.disabled = true; if (idx !== optIndex) btn.classList.add('opacity-50', 'scale-95'); });
-        setTimeout(() => { window.appState.showView('player-answered'); }, 400); 
+        window.playerLogic.localTimerInterval = null;
+
+        try {
+            window.playerLogic.hostConn.send({
+                type: 'ANSWER',
+                name: window.playerLogic.myName,
+                optionIndex: optIndex,
+                elapsedTime: elapsedTime
+            });
+        } catch(e) {}
+
+        document.querySelectorAll('.pq-btn').forEach((btn, idx) => {
+            btn.disabled = true;
+            if (idx !== optIndex) btn.classList.add('opacity-50', 'scale-95');
+        });
+
+        setTimeout(() => {
+            window.appState.showView('player-answered');
+        }, 400);
     },
+
     handleQuestionResult: (data) => {
         const viewBg = document.getElementById('view-player-result');
         const icon = document.getElementById('pr-icon');
         const title = document.getElementById('pr-title');
-        
-        if (data.isCorrect) { 
-            viewBg.className = 'view-layer items-center justify-center p-6 text-white bg-green-500 active'; 
-            icon.setAttribute('icon', 'ph:check-bold'); 
-            title.innerText = '答對了！'; 
-        } else { 
-            viewBg.className = 'view-layer items-center justify-center p-6 text-white bg-[#B76E79] active'; 
-            icon.setAttribute('icon', 'ph:x-bold'); 
-            title.innerText = '答錯了...'; 
+
+        viewBg.className = 'view-layer items-center justify-center p-6 text-white transition-colors duration-500 pointer-events-auto active';
+
+        if (data.isCorrect) {
+            viewBg.classList.add('bg-green-500');
+            icon.setAttribute('icon', 'ph:check-bold');
+            title.innerText = '答對了！';
+        } else {
+            viewBg.classList.add('bg-[#B76E79]');
+            icon.setAttribute('icon', 'ph:x-bold');
+            title.innerText = '答錯了...';
         }
-        
+
         document.getElementById('pr-earned').innerText = data.pointsEarned;
         document.getElementById('pr-total').innerText = `${data.totalScore}`;
         document.getElementById('pr-rank').innerText = `目前排名：第 ${data.rank || '-'} 名`;
-        
+
         window.appState.showView('player-result');
     },
+
     handleGameOver: (data) => {
         if (data) {
             document.getElementById('pp-rank').innerText = data.finalRank || '-';
             document.getElementById('pp-total').innerText = data.finalScore || '0';
         } else {
-            // 如果斷線或無資料，取最後一次記錄
             document.getElementById('pp-rank').innerText = document.getElementById('pr-rank').innerText.replace(/\D/g, '');
             document.getElementById('pp-total').innerText = document.getElementById('pr-total').innerText;
         }
@@ -1343,11 +1664,7 @@ window.playerLogic = {
     }
 };
 
-/* ==========================================
-   初始化路由與系統保護機制
-========================================== */
 window.initApp = function() {
-    // 寫入超級管理員帳號
     const users = window.dbLogic.getUsers();
     if (!users['storywed'] || users['storywed'].password !== '8888') {
         users['storywed'] = { password: '8888' };
@@ -1358,20 +1675,18 @@ window.initApp = function() {
     if (urlParams.get('role') === 'player' || urlParams.get('room')) {
         const inputEl = document.getElementById('pj-room-input');
         if (inputEl && urlParams.get('room')) inputEl.value = urlParams.get('room');
-        
-        // 確保剛進來時，名字框被強制清空
+
         const nameInput = document.getElementById('pj-name-input');
-        if(nameInput) { 
-            nameInput.value = ''; 
-            nameInput.setAttribute('autocomplete', 'new-password'); 
-        } 
+        if(nameInput) {
+            nameInput.value = '';
+            nameInput.setAttribute('autocomplete', 'new-password');
+        }
         window.appState.goToPlayerJoin();
     } else {
         window.appState.showView('login');
     }
 };
 
-// 保證畫面讀取後絕對會執行初始化，杜絕白畫面
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', window.initApp);
 } else {

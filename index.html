@@ -89,6 +89,10 @@
     <div id="loading-text" class="text-xl font-bold tracking-widest text-brand-dustyrose">處理中...</div>
 </div>
 
+<button onclick="window.appState.toggleFullScreen()" class="fixed bottom-6 right-6 z-[100000] w-14 h-14 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-brand-rosegold shadow-lg border border-brand-rosegold/20 hover:scale-110 transition-transform">
+    <iconify-icon icon="ph:corners-out-bold" id="fs-icon" class="text-3xl"></iconify-icon>
+</button>
+
 <div id="app" class="w-full h-full relative bg-gradient-to-br from-brand-bg to-[#F8E8E8]">
     <div id="celebration-container" class="absolute top-0 left-0 w-full h-full pointer-events-none z-[9999] overflow-hidden" style="display: none;"></div>
     
@@ -109,7 +113,7 @@
                 </div>
                 <button onclick="window.authLogic.login()" class="btn-primary w-full mt-4 text-lg">登入系統</button>
                 <div class="text-center text-sm text-brand-text/40 mt-4 font-bold tracking-widest">
-                    ※ 如忘記密碼請聯繫系統管理員 ※
+                    （如忘記密碼請聯繫系統管理員）
                 </div>
             </div>
         </div>
@@ -124,6 +128,11 @@
                 </div>
                 <div class="flex flex-wrap items-center gap-3">
                     <span class="font-bold text-brand-text/70 hidden sm:inline">Hi, <span id="dash-username" class="text-brand-rosegold">User</span></span>
+                    
+                    <button id="btn-admin-panel" onclick="window.authLogic.showAdminPanel()" class="btn-secondary text-sm px-3 py-1.5 hidden items-center gap-1">
+                        <iconify-icon icon="ph:users-three-bold"></iconify-icon> <span class="hidden sm:inline">帳號管理</span>
+                    </button>
+                    
                     <button onclick="window.authLogic.logout()" class="btn-secondary text-sm px-3 py-1.5 flex items-center gap-1"><iconify-icon icon="ph:sign-out-bold"></iconify-icon> <span class="hidden sm:inline">登出</span></button>
                 </div>
             </header>
@@ -189,12 +198,16 @@
                     </div>
                     <div class="text-brand-rosegold font-bold text-5xl font-sans"><span id="host-player-count">0</span></div>
                 </div>
-                <div id="host-player-list" class="flex-1 overflow-y-auto flex flex-wrap gap-3 content-start custom-scrollbar p-2">
-                    <div class="w-full h-full flex flex-col items-center justify-center text-brand-text/30 font-bold tracking-widest gap-4" id="empty-players-msg">
+                
+                <div class="flex-1 overflow-y-auto relative p-2 custom-scrollbar border border-transparent">
+                    <div class="w-full h-full flex flex-col items-center justify-center text-brand-text/30 font-bold tracking-widest gap-4 absolute inset-0 transition-opacity" id="empty-players-msg">
                         <iconify-icon icon="ph:users-three-light" class="text-6xl"></iconify-icon>
                         等待玩家連線中...
                     </div>
+                    <div id="host-player-list" class="flex flex-wrap gap-3 content-start relative z-10 w-full h-full">
+                        </div>
                 </div>
+
                 <div class="mt-6 pt-4 flex justify-end">
                     <button onclick="window.hostLogic.startQuiz()" id="btn-start-quiz" class="btn-primary text-xl px-12 py-4 w-full md:w-auto shadow-lg shadow-brand-rosegold/30" disabled>正式開始！</button>
                 </div>
@@ -325,9 +338,12 @@
             </div>
         </div>
 
-        <div class="w-full max-w-2xl bg-white/80 backdrop-blur-md rounded-3xl p-6 md:p-8 shadow-xl mb-10 opacity-0 border border-white transition-opacity duration-700" id="podium-list">
-            <h3 class="text-xl md:text-2xl font-bold text-center text-brand-dustyrose mb-6 border-b border-brand-rosegold/20 pb-4 tracking-widest">第 4 名 至 第 10 名</h3>
-            <div id="leaderboard-runners-up" class="flex flex-col gap-3"></div>
+        <div class="w-full max-w-2xl bg-white/80 backdrop-blur-md rounded-3xl p-6 md:p-8 shadow-xl mb-10 border border-white hidden flex-col items-center" id="podium-list-container">
+            <button id="btn-reveal-runners-up" onclick="window.hostLogic.revealRunnersUp()" class="btn-secondary w-full py-4 text-xl shadow-sm mb-2 font-bold tracking-widest">點擊顯示第 4 名至第 10 名 <iconify-icon icon="ph:caret-down-bold"></iconify-icon></button>
+            <div id="podium-list" class="w-full hidden opacity-0 flex-col gap-3">
+                <h3 class="text-xl md:text-2xl font-bold text-center text-brand-dustyrose mb-4 border-b border-brand-rosegold/20 pb-4 tracking-widest">第 4 名 至 第 10 名</h3>
+                <div id="leaderboard-runners-up" class="flex flex-col gap-3 w-full"></div>
+            </div>
         </div>
         
         <div class="flex flex-col sm:flex-row justify-center gap-4 mb-10 w-full max-w-2xl px-6">
@@ -455,19 +471,38 @@
             </div>
         </div>
     </div>
+    
+    <div id="admin-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[99999] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl p-6 md:p-8 w-full max-w-2xl pointer-events-auto flex flex-col max-h-[85vh]">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-brand-dustyrose tracking-widest">系統帳號管理</h3>
+                <button onclick="document.getElementById('admin-modal').classList.add('hidden'); document.getElementById('admin-modal').classList.remove('flex');" class="text-gray-400 hover:text-brand-rosegold transition-colors"><iconify-icon icon="ph:x-circle-bold" class="text-3xl"></iconify-icon></button>
+            </div>
+            <div class="overflow-y-auto custom-scrollbar flex-1 border border-brand-rosegold/20 rounded-xl p-4 bg-brand-rosegold/5">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-brand-rosegold/20 text-brand-dustyrose">
+                            <th class="pb-3 pl-2">使用者帳號</th>
+                            <th class="pb-3">登入密碼</th>
+                            <th class="pb-3 text-right pr-2">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-users-list">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
 </div>
 
 <script>
 /* ==========================================
    🛑 【系統登入帳號與密碼設定區】 🛑
-   ==========================================
-   請直接在下方的引號內輸入您想設定的密碼。
-   修改後儲存檔案並上傳至 GitHub Pages，新密碼即可生效。
-========================================== */
+   ========================================== */
 const SYSTEM_CONFIG = {
-    ADMIN_USERNAME: "StoryWed",   // 唯一的管理者帳號
-    ADMIN_PASSWORD: "8888"        // <--- 在這裡修改密碼
+    ADMIN_USERNAME: "StoryWed",   // 唯一的超級管理者帳號
+    ADMIN_PASSWORD: "8888"        // <--- 在這裡修改預設密碼
 };
 /* ========================================== */
 
@@ -477,7 +512,7 @@ const SYSTEM_CONFIG = {
 window.appState = {
     myRole: 'host', 
     showView: (viewId) => {
-        const views = ['login', 'dashboard', 'editor', 'host-waiting', 'host-question', 'host-reveal', 'host-leaderboard', 'host-podium', 'player-join', 'player-waiting', 'player-question', 'player-answered', 'player-result', 'player-podium'];
+        const views = ['login', 'register', 'dashboard', 'editor', 'host-waiting', 'host-question', 'host-reveal', 'host-leaderboard', 'host-podium', 'player-join', 'player-waiting', 'player-question', 'player-answered', 'player-result', 'player-podium'];
         views.forEach(v => {
             const el = document.getElementById('view-' + v);
             if (el) el.classList.remove('active');
@@ -510,21 +545,36 @@ window.appState = {
         window.appState.myRole = 'player';
         window.appState.showView('player-join');
     },
+    toggleFullScreen: () => {
+        const docElm = document.documentElement;
+        const fsIcon = document.getElementById('fs-icon');
+        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+            if (docElm.requestFullscreen) docElm.requestFullscreen();
+            else if (docElm.webkitRequestFullscreen) docElm.webkitRequestFullscreen();
+            if (fsIcon) fsIcon.setAttribute('icon', 'ph:corners-in-bold');
+        } else {
+            if (document.exitFullscreen) document.exitFullscreen();
+            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            if (fsIcon) fsIcon.setAttribute('icon', 'ph:corners-out-bold');
+        }
+    },
     escapeHTML: (str) => {
         return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 };
 
 /* ==========================================
-   房間資料管理 (不再儲存使用者，僅儲存房間)
+   資料庫與帳號管理
 ========================================== */
 window.dbLogic = {
+    getUsers: () => { try { return JSON.parse(localStorage.getItem('storywed_quiz_users') || '{}'); } catch(e) { return {}; } },
+    saveUsers: (users) => { try { localStorage.setItem('storywed_quiz_users', JSON.stringify(users)); } catch(e) {} },
     getRooms: () => { try { return JSON.parse(localStorage.getItem('storywed_quiz_rooms') || '[]'); } catch(e) { return []; } },
     saveRooms: (rooms) => { try { localStorage.setItem('storywed_quiz_rooms', JSON.stringify(rooms)); } catch(e) {} },
     
     createNewRoom: () => {
         const rooms = window.dbLogic.getRooms();
-        const newRoom = { id: 'room_' + Date.now(), title: '未命名遊戲房間 ' + new Date().toLocaleDateString(), questions: [] };
+        const newRoom = { id: 'room_' + Date.now(), owner: window.authLogic.currentUser, title: '未命名遊戲房間 ' + new Date().toLocaleDateString(), questions: [] };
         rooms.push(newRoom);
         window.dbLogic.saveRooms(rooms);
         window.editorLogic.loadRoom(newRoom.id);
@@ -540,13 +590,26 @@ window.dbLogic = {
 
 window.authLogic = {
     currentUser: null,
+    register: () => {
+        const u = document.getElementById('reg-username').value.trim();
+        const p = document.getElementById('reg-password').value.trim();
+        if(!u || !p) { window.appState.showToast('請輸入完整帳號密碼', 'error'); return; }
+        const users = window.dbLogic.getUsers();
+        if(users[u]) { window.appState.showToast('此帳號已存在，請更換名稱或直接登入', 'error'); return; }
+        users[u] = { password: p };
+        window.dbLogic.saveUsers(users);
+        window.appState.showToast('註冊成功！自動登入...');
+        window.authLogic.currentUser = u;
+        window.authLogic.loadDashboard();
+    },
     login: () => {
         const u = document.getElementById('login-username').value.trim();
         const p = document.getElementById('login-password').value.trim();
         if(!u || !p) { window.appState.showToast('請輸入完整帳號密碼', 'error'); return; }
-        
-        if(u.toLowerCase() === SYSTEM_CONFIG.ADMIN_USERNAME.toLowerCase() && p === SYSTEM_CONFIG.ADMIN_PASSWORD) {
-            window.authLogic.currentUser = SYSTEM_CONFIG.ADMIN_USERNAME;
+        const users = window.dbLogic.getUsers();
+        if(Object.keys(users).length === 0) { window.appState.showToast('系統目前無帳號，請先點擊下方【立即註冊】', 'error'); return; }
+        if(users[u] && users[u].password === p) {
+            window.authLogic.currentUser = u;
             window.appState.showToast('登入成功');
             window.authLogic.loadDashboard();
         } else {
@@ -555,15 +618,24 @@ window.authLogic = {
     },
     logout: () => {
         window.authLogic.currentUser = null;
-        document.getElementById('login-password').value = '';
         window.appState.showView('login');
     },
     loadDashboard: () => {
         document.getElementById('dash-username').innerText = window.authLogic.currentUser;
+        
+        const adminBtn = document.getElementById('btn-admin-panel');
+        // 判斷是否為超級管理員
+        if(window.authLogic.currentUser.toLowerCase() === SYSTEM_CONFIG.ADMIN_USERNAME.toLowerCase()) {
+            adminBtn.classList.remove('hidden');
+            adminBtn.classList.add('inline-flex');
+        } else {
+            adminBtn.classList.add('hidden');
+            adminBtn.classList.remove('inline-flex');
+        }
 
         const listEl = document.getElementById('room-list');
         listEl.innerHTML = '';
-        const myRooms = window.dbLogic.getRooms();
+        const myRooms = window.dbLogic.getRooms().filter(r => r.owner === window.authLogic.currentUser);
         if (myRooms.length === 0) {
             listEl.innerHTML = `<div class="col-span-full text-center py-10 text-brand-text/40 font-bold tracking-widest">目前還沒有任何遊戲房間，點擊下方按鈕建立吧！</div>`;
         } else {
@@ -585,6 +657,40 @@ window.authLogic = {
             });
         }
         window.appState.showView('dashboard');
+    },
+    showAdminPanel: () => {
+        if(window.authLogic.currentUser.toLowerCase() !== SYSTEM_CONFIG.ADMIN_USERNAME.toLowerCase()) { window.appState.showToast('權限不足', 'error'); return; }
+        const users = window.dbLogic.getUsers();
+        const tbody = document.getElementById('admin-users-list');
+        tbody.innerHTML = '';
+        for(let u in users) {
+            const isSuperAdmin = (u.toLowerCase() === SYSTEM_CONFIG.ADMIN_USERNAME.toLowerCase());
+            const deleteBtnHTML = isSuperAdmin 
+                ? `<span class="text-gray-400 text-sm font-bold tracking-widest">無法刪除</span>` 
+                : `<button onclick="window.authLogic.deleteUser('${window.appState.escapeHTML(u)}')" class="text-red-400 hover:text-white px-3 py-1.5 rounded bg-red-50 hover:bg-red-400 transition-colors text-sm font-bold shadow-sm">刪除</button>`;
+            
+            tbody.innerHTML += `
+                <tr class="border-b border-gray-100 last:border-0 hover:bg-white transition-colors">
+                    <td class="py-4 pl-2 font-bold text-brand-text">${window.appState.escapeHTML(u)}</td>
+                    <td class="py-4 font-mono text-gray-500">${window.appState.escapeHTML(users[u].password)}</td>
+                    <td class="py-4 text-right pr-2">${deleteBtnHTML}</td>
+                </tr>
+            `;
+        }
+        document.getElementById('admin-modal').classList.remove('hidden');
+        document.getElementById('admin-modal').classList.add('flex');
+    },
+    deleteUser: (username) => {
+        if(username.toLowerCase() === SYSTEM_CONFIG.ADMIN_USERNAME.toLowerCase()) {
+            window.appState.showToast('無法刪除超級管理員帳號', 'error'); return;
+        }
+        if(confirm(`確定要刪除帳號 ${username} 嗎？`)) {
+            const users = window.dbLogic.getUsers();
+            delete users[username];
+            window.dbLogic.saveUsers(users);
+            window.authLogic.showAdminPanel();
+            window.appState.showToast('帳號已成功刪除');
+        }
     }
 };
 
@@ -599,6 +705,7 @@ window.editorLogic = {
         if(!room) return;
         document.getElementById('editor-room-title').value = room.title;
         document.getElementById('questions-container').innerHTML = '';
+        window.hostLogic.qCounter = 0; 
         if (room.questions.length === 0) { window.hostLogic.addQuestionBlock(); } 
         else { room.questions.forEach(q => window.hostLogic.addQuestionBlock(q)); }
         window.appState.showView('editor');
@@ -626,14 +733,15 @@ window.editorLogic = {
     startGameDirectly: (roomId) => {
         const room = window.dbLogic.getRooms().find(r => r.id === roomId);
         if(room) {
-            window.hostLogic.quizConfig.questions = room.questions;
+            window.hostLogic.quizConfig.questions = room.questions || [];
             if(window.hostLogic.quizConfig.questions.length === 0) {
                 window.appState.showToast('此房間還沒有題目，請先編輯！', 'error'); return;
             }
             window.editorLogic.currentRoomId = roomId;
             window.hostLogic.createGameRoom();
         }
-    }
+    },
+    addQuestionBlock: (data = null) => { window.hostLogic.addQuestionBlock(data); }
 };
 
 function compressImage(file, callback) {
@@ -660,13 +768,12 @@ function b64_to_utf8(str) { return decodeURIComponent(atob(str).split('').map(c 
    主機端流程邏輯
 ========================================== */
 window.hostLogic = {
-    peer: null, roomId: null, playerConns: {}, quizConfig: { questions: [] },
+    peer: null, roomId: null, playerConns: {}, quizConfig: { questions: [] }, qCounter: 0,
     serverBootToken: 0, serverBootTimeout: null,
     gameState: { status: 'idle', players: {}, currentQIndex: 0, timerInterval: null, currentAnswers: {}, questionStartTime: 0 },
     
     addQuestionBlock: (data = null) => {
         const container = document.getElementById('questions-container');
-        // 使用隨機 ID 保證正確答案的 radio 綁定絕對不衝突
         const qid = 'q_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
         const div = document.createElement('div');
         div.className = 'question-setup-block glass-panel p-5 md:p-8 rounded-[1.5rem] relative border-t-4 border-t-brand-rosegold mb-6';
@@ -689,9 +796,7 @@ window.hostLogic = {
                 <div class="w-full md:w-48 bg-brand-rosegold/5 p-4 rounded-2xl border border-brand-rosegold/10 flex flex-col justify-center">
                     <label class="block font-bold mb-2 text-sm text-brand-dustyrose tracking-widest text-center"><iconify-icon icon="ph:timer"></iconify-icon> 答題秒數</label>
                     <select class="q-time w-full font-bold text-brand-text text-xl text-center py-3 border-white shadow-sm">
-                        <option value="10" ${dTime===10?'selected':''}>10 秒</option>
-                        <option value="15" ${dTime===15?'selected':''}>15 秒</option>
-                        <option value="20" ${dTime===20?'selected':''}>20 秒</option>
+                        <option value="10" ${dTime===10?'selected':''}>10 秒</option><option value="15" ${dTime===15?'selected':''}>15 秒</option><option value="20" ${dTime===20?'selected':''}>20 秒</option>
                     </select>
                 </div>
             </div>
@@ -741,7 +846,7 @@ window.hostLogic = {
         document.querySelectorAll('.question-setup-block').forEach(block => {
             const text = block.querySelector('.q-text').value.trim();
             if(!text) return; 
-            const timeLimit = parseInt(block.querySelector('.q-time').value);
+            const timeLimit = parseInt(block.querySelector('.q-time').value, 10);
             const imgSrc = block.querySelector('.q-img-preview').src;
             const image = imgSrc.startsWith('data:') ? imgSrc : null;
             const options = [block.querySelector('.q-opt-0').value.trim(), block.querySelector('.q-opt-1').value.trim(), block.querySelector('.q-opt-2').value.trim(), block.querySelector('.q-opt-3').value.trim()];
@@ -825,10 +930,18 @@ window.hostLogic = {
         }
         window.hostLogic.peer = null;
         window.hostLogic.resetGameRuntimeState();
+        
         if(document.getElementById('qrcode-container')) document.getElementById('qrcode-container').innerHTML = '';
         if(document.getElementById('host-player-count')) document.getElementById('host-player-count').innerText = '0';
+        
         const listDiv = document.getElementById('host-player-list');
-        if (listDiv) listDiv.innerHTML = `<div class="w-full h-full flex flex-col items-center justify-center text-brand-text/30 font-bold tracking-widest gap-4" id="empty-players-msg"><iconify-icon icon="ph:users-three-light" class="text-6xl"></iconify-icon>等待玩家連線中...</div>`;
+        const emptyMsg = document.getElementById('empty-players-msg');
+        if (listDiv) listDiv.innerHTML = '';
+        if (emptyMsg) {
+            emptyMsg.classList.remove('hidden');
+            emptyMsg.classList.add('flex');
+        }
+        
         const startBtn = document.getElementById('btn-start-quiz');
         if (startBtn) startBtn.disabled = true;
         if (!silent) window.appState.hideLoading();
@@ -902,11 +1015,13 @@ window.hostLogic = {
     },
     updateWaitingRoomUI: () => {
         const listDiv = document.getElementById('host-player-list');
+        const emptyMsg = document.getElementById('empty-players-msg');
+        const startBtn = document.getElementById('btn-start-quiz');
         const pNames = Object.keys(window.hostLogic.gameState.players);
         document.getElementById('host-player-count').innerText = pNames.length;
 
         if (pNames.length > 0) {
-            document.getElementById('empty-players-msg').classList.add('hidden');
+            if(emptyMsg) { emptyMsg.classList.add('hidden'); emptyMsg.classList.remove('flex'); }
             listDiv.innerHTML = '';
             pNames.forEach(name => {
                 const badge = document.createElement('div');
@@ -915,11 +1030,11 @@ window.hostLogic = {
                 if (typeof gsap !== 'undefined') gsap.fromTo(badge, { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2)" });
                 listDiv.appendChild(badge);
             });
-            document.getElementById('btn-start-quiz').disabled = false;
+            if(startBtn) startBtn.disabled = false;
         } else {
-            document.getElementById('empty-players-msg').classList.remove('hidden');
-            document.getElementById('btn-start-quiz').disabled = true;
-            listDiv.innerHTML = `<div class="w-full h-full flex flex-col items-center justify-center text-brand-text/30 font-bold tracking-widest gap-4" id="empty-players-msg"><iconify-icon icon="ph:users-three-light" class="text-6xl"></iconify-icon>等待玩家連線中...</div>`;
+            if(emptyMsg) { emptyMsg.classList.remove('hidden'); emptyMsg.classList.add('flex'); }
+            listDiv.innerHTML = '';
+            if(startBtn) startBtn.disabled = true;
         }
     },
     handlePlayerJoin: (conn, name) => {
@@ -943,7 +1058,9 @@ window.hostLogic = {
     startQuiz: () => {
         window.hostLogic.gameState.currentQIndex = 0;
         window.hostLogic.gameState.status = 'question';
-        for (let name in window.hostLogic.gameState.players) { window.hostLogic.gameState.players[name].score = 0; }
+        for (let name in window.hostLogic.gameState.players) {
+            window.hostLogic.gameState.players[name].score = 0;
+        }
         window.hostLogic.runQuestion();
     },
     runQuestion: () => {
@@ -963,9 +1080,17 @@ window.hostLogic = {
         document.getElementById('hq-text').innerText = q.text;
 
         const imgEl = document.getElementById('hq-img');
-        if (q.image) { imgEl.src = q.image; imgEl.classList.remove('hidden'); } else { imgEl.classList.add('hidden'); imgEl.src = ''; }
+        if (q.image) {
+            imgEl.src = q.image;
+            imgEl.classList.remove('hidden');
+        } else {
+            imgEl.classList.add('hidden');
+            imgEl.src = '';
+        }
 
-        for(let i = 0; i < 4; i++) { document.getElementById(`hq-opt-${i}`).innerText = q.options[i]; }
+        for(let i = 0; i < 4; i++) {
+            document.getElementById(`hq-opt-${i}`).innerText = q.options[i];
+        }
 
         window.hostLogic.updateAnswersCountUI();
         window.appState.showView('host-question');
@@ -973,7 +1098,8 @@ window.hostLogic = {
 
         let timeLeft = q.timeLimit;
         const timerEl = document.getElementById('hq-timer');
-        timerEl.innerText = timeLeft; timerEl.style.color = '#B76E79';
+        timerEl.innerText = timeLeft;
+        timerEl.style.color = '#B76E79';
         timerEl.style.fontSize = '3.5rem';
 
         document.getElementById('hq-reveal-overlay').classList.add('hidden');
@@ -981,7 +1107,8 @@ window.hostLogic = {
 
         window.hostLogic.gameState.questionStartTime = Date.now();
         window.hostLogic.gameState.timerInterval = setInterval(() => {
-            timeLeft--; timerEl.innerText = timeLeft;
+            timeLeft--;
+            timerEl.innerText = timeLeft;
             if(timeLeft <= 5) timerEl.style.color = '#ef4444';
             if(timeLeft <= 0) window.hostLogic.endQuestion();
         }, 1000);
@@ -994,22 +1121,33 @@ window.hostLogic = {
         if (window.hostLogic.gameState.status !== 'question' || window.hostLogic.gameState.currentAnswers[name]) return;
         window.hostLogic.gameState.currentAnswers[name] = { optionIndex: data.optionIndex, elapsedTime: data.elapsedTime };
         window.hostLogic.updateAnswersCountUI();
-        if (Object.keys(window.hostLogic.gameState.currentAnswers).length >= Object.keys(window.hostLogic.gameState.players).length) window.hostLogic.endQuestion();
+        if (Object.keys(window.hostLogic.gameState.currentAnswers).length >= Object.keys(window.hostLogic.gameState.players).length) {
+            window.hostLogic.endQuestion();
+        }
     },
     endQuestion: () => {
-        if (window.hostLogic.gameState.timerInterval) { clearInterval(window.hostLogic.gameState.timerInterval); window.hostLogic.gameState.timerInterval = null; }
+        if (window.hostLogic.gameState.timerInterval) {
+            clearInterval(window.hostLogic.gameState.timerInterval);
+            window.hostLogic.gameState.timerInterval = null;
+        }
         window.hostLogic.gameState.status = 'wait_reveal';
 
         document.getElementById('hq-timer').innerText = '時間到';
         document.getElementById('hq-timer').style.fontSize = '1.5rem';
 
         const overlay = document.getElementById('hq-reveal-overlay');
-        overlay.classList.remove('hidden'); overlay.classList.add('flex');
-        setTimeout(() => { overlay.classList.remove('opacity-0'); overlay.classList.add('opacity-100'); }, 50);
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+        setTimeout(() => {
+            overlay.classList.remove('opacity-0');
+            overlay.classList.add('opacity-100');
+        }, 50);
     },
     revealAnswer: () => {
         const overlay = document.getElementById('hq-reveal-overlay');
-        overlay.classList.add('hidden', 'opacity-0'); overlay.classList.remove('flex', 'opacity-100');
+        overlay.classList.add('hidden', 'opacity-0');
+        overlay.classList.remove('flex', 'opacity-100');
+
         window.hostLogic.gameState.status = 'reveal';
 
         const q = window.hostLogic.quizConfig.questions[window.hostLogic.gameState.currentQIndex];
@@ -1019,12 +1157,15 @@ window.hostLogic = {
             const ans = window.hostLogic.gameState.currentAnswers[name];
             voteCounts[ans.optionIndex]++;
             if (ans.optionIndex === q.correctIndex) {
-                let remaining = q.timeLimit - ans.elapsedTime; if(remaining < 0) remaining = 0;
+                let remaining = q.timeLimit - ans.elapsedTime;
+                if(remaining < 0) remaining = 0;
                 const pts = Math.round(500 + 500 * (remaining / q.timeLimit));
                 window.hostLogic.gameState.players[name].score += pts;
-                ans.scoreEarned = pts; ans.correct = true;
+                ans.scoreEarned = pts;
+                ans.correct = true;
             } else {
-                ans.scoreEarned = 0; ans.correct = false;
+                ans.scoreEarned = 0;
+                ans.correct = false;
             }
         }
 
@@ -1035,7 +1176,13 @@ window.hostLogic = {
             const conn = window.hostLogic.playerConns[name];
             try {
                 if (conn && conn.open) {
-                    conn.send({ type: 'QUESTION_RESULT', isCorrect: ans ? ans.correct : false, pointsEarned: ans ? ans.scoreEarned : 0, totalScore: window.hostLogic.gameState.players[name].score, rank: sortedNames.indexOf(name) + 1 });
+                    conn.send({
+                        type: 'QUESTION_RESULT',
+                        isCorrect: ans ? ans.correct : false,
+                        pointsEarned: ans ? ans.scoreEarned : 0,
+                        totalScore: window.hostLogic.gameState.players[name].score,
+                        rank: sortedNames.indexOf(name) + 1
+                    });
                 }
             } catch(e) {}
         }
@@ -1049,9 +1196,14 @@ window.hostLogic = {
             const card = document.getElementById(`hr-optcard-${i}`);
             document.getElementById(`hr-count-${i}`).innerText = voteCounts[i];
             card.classList.remove('border-4', 'border-green-400', 'shadow-[0_0_20px_rgba(74,222,128,0.6)]', 'opacity-30', 'scale-105', 'z-10');
-            setTimeout(() => { document.getElementById(`hr-bar-${i}`).style.height = `${(voteCounts[i] / maxVotes) * 100}%`; }, 100);
-            if (i === q.correctIndex) { card.classList.add('border-4', 'border-green-400', 'shadow-[0_0_20px_rgba(74,222,128,0.6)]', 'scale-105', 'z-10'); } 
-            else { card.classList.add('opacity-30'); }
+            setTimeout(() => {
+                document.getElementById(`hr-bar-${i}`).style.height = `${(voteCounts[i] / maxVotes) * 100}%`;
+            }, 100);
+            if (i === q.correctIndex) {
+                card.classList.add('border-4', 'border-green-400', 'shadow-[0_0_20px_rgba(74,222,128,0.6)]', 'scale-105', 'z-10');
+            } else {
+                card.classList.add('opacity-30');
+            }
         }
 
         const nextBtn = document.getElementById('btn-host-next');
@@ -1063,6 +1215,7 @@ window.hostLogic = {
     showIntermediateLeaderboard: (sortedNames) => {
         const listContainer = document.getElementById('inter-leaderboard-list');
         listContainer.innerHTML = '';
+
         const top10 = sortedNames.slice(0, 10);
         top10.forEach((name, idx) => {
             const score = window.hostLogic.gameState.players[name].score;
@@ -1073,7 +1226,8 @@ window.hostLogic = {
                         <span class="font-bold text-xl text-brand-text tracking-wide">${window.appState.escapeHTML(name)}</span>
                     </div>
                     <span class="font-bold text-brand-dustyrose font-sans text-2xl">${score} 分</span>
-                </div>`;
+                </div>
+            `;
         });
 
         const nextBtn = document.getElementById('btn-leaderboard-next');
@@ -1088,38 +1242,84 @@ window.hostLogic = {
             nextBtn.innerHTML = '🏆 進入最終頒獎台 🏆';
             nextBtn.onclick = () => { window.hostLogic.showPodium(sortedNames); };
         }
+
         window.appState.showView('host-leaderboard');
     },
+    revealRunnersUp: () => {
+        const revealBtn = document.getElementById('btn-reveal-runners-up');
+        const podiumList = document.getElementById('podium-list');
+        if(revealBtn) revealBtn.classList.add('hidden');
+        if(podiumList) {
+            podiumList.classList.remove('hidden');
+            podiumList.classList.add('flex');
+            if (typeof gsap !== 'undefined') {
+                gsap.to(podiumList, { opacity: 1, duration: 0.5 });
+            } else {
+                podiumList.style.opacity = 1;
+            }
+        }
+    },
     exportResults: () => {
-        if (!window.hostLogic.gameState.players || Object.keys(window.hostLogic.gameState.players).length === 0) { window.appState.showToast('目前沒有成績記錄', 'error'); return; }
-        let txt = "【幸福故事館】快問快答成績記錄\n記錄時間：" + new Date().toLocaleString() + "\n--------------------------------------------------\n名次\t總分\t\t姓名\n--------------------------------------------------\n";
+        if (!window.hostLogic.gameState.players || Object.keys(window.hostLogic.gameState.players).length === 0) {
+            window.appState.showToast('目前沒有成績記錄', 'error');
+            return;
+        }
+        let txt = "【幸福故事館】快問快答成績記錄\n";
+        txt += "記錄時間：" + new Date().toLocaleString() + "\n";
+        txt += "--------------------------------------------------\n";
+        txt += "名次\t總分\t\t姓名\n";
+        txt += "--------------------------------------------------\n";
+
         const sortedNames = Object.keys(window.hostLogic.gameState.players).sort((a, b) => window.hostLogic.gameState.players[b].score - window.hostLogic.gameState.players[a].score);
-        sortedNames.forEach((name, idx) => { txt += `${idx + 1}\t${window.hostLogic.gameState.players[name].score}\t\t${name}\n`; });
+
+        sortedNames.forEach((name, idx) => {
+            const score = window.hostLogic.gameState.players[name].score;
+            txt += `${idx + 1}\t${score}\t\t${name}\n`;
+        });
+
         const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url;
-        a.download = `快問快答成績_${new Date().toISOString().split('T')[0].replace(/-/g, '')}.txt`;
-        document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-        window.appState.showToast('成績記錄已成功匯出！');
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `快問快答成績記錄_${new Date().toISOString().split('T')[0].replace(/-/g, '')}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        window.appState.showToast('成績記錄已成功匯出為 TXT 檔案！');
     },
     showPodium: (sortedNames) => {
         window.appState.showView('host-podium');
+
         for (let name in window.hostLogic.playerConns) {
+            const conn = window.hostLogic.playerConns[name];
             try {
-                if (window.hostLogic.playerConns[name] && window.hostLogic.playerConns[name].open) {
-                    window.hostLogic.playerConns[name].send({ type: 'GAME_OVER', finalRank: sortedNames.indexOf(name) + 1, finalScore: window.hostLogic.gameState.players[name] ? window.hostLogic.gameState.players[name].score : 0 });
+                if (conn && conn.open) {
+                    conn.send({
+                        type: 'GAME_OVER',
+                        finalRank: sortedNames.indexOf(name) + 1,
+                        finalScore: window.hostLogic.gameState.players[name] ? window.hostLogic.gameState.players[name].score : 0
+                    });
                 }
             } catch(e) {}
         }
 
-        const top3 = sortedNames.slice(0, 3); const runnersUp = sortedNames.slice(3, 10);
+        const top3 = sortedNames.slice(0, 3);
+        const runnersUp = sortedNames.slice(3, 10);
+
         for(let i = 1; i <= 3; i++) {
-            document.getElementById(`p-name-${i}`).innerText = '---'; document.getElementById(`p-score-${i}`).innerText = '0 分';
+            document.getElementById(`p-name-${i}`).innerText = '---';
+            document.getElementById(`p-score-${i}`).innerText = '0 分';
             const el = document.getElementById(`podium-${i}`);
             el.classList.remove('opacity-0', 'transform', 'translate-y-10');
-            el.style.opacity = 0; el.style.transform = 'translateY(50px)';
+            el.style.opacity = 0;
+            el.style.transform = 'translateY(50px)';
         }
-        document.getElementById('podium-list').classList.remove('opacity-0'); document.getElementById('podium-list').style.opacity = 0;
+
+        const podiumContainer = document.getElementById('podium-list-container');
+        const revealBtn = document.getElementById('btn-reveal-runners-up');
+        const podiumList = document.getElementById('podium-list');
+
         top3.forEach((name, idx) => {
             const place = idx + 1;
             document.getElementById(`p-name-${place}`).innerText = name;
@@ -1132,7 +1332,8 @@ window.hostLogic = {
             if(top3[1]) tl.to("#podium-2", { y: 0, opacity: 1, duration: 0.6, ease: "back.out(1.5)", delay: 0.2 });
             if(top3[0]) tl.to("#podium-1", { y: 0, opacity: 1, duration: 0.8, ease: "back.out(1.7)", delay: 0.3 }).call(() => {
                 if(typeof confetti !== 'undefined') {
-                    var end = Date.now() + 4000;
+                    const duration = 4 * 1000;
+                    const end = Date.now() + duration;
                     (function frame() {
                         confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#B76E79', '#D4AF37', '#ffffff'] });
                         confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#B76E79', '#D4AF37', '#ffffff'] });
@@ -1140,19 +1341,41 @@ window.hostLogic = {
                     })();
                 }
             });
+
             const listContainer = document.getElementById('leaderboard-runners-up');
             listContainer.innerHTML = '';
+            
             if (runnersUp.length > 0) {
                 runnersUp.forEach((name, idx) => {
                     listContainer.innerHTML += `<div class="flex justify-between items-center bg-brand-rosegold/5 p-4 rounded-xl border border-brand-rosegold/10 shadow-sm"><div class="flex items-center gap-4"><span class="text-brand-dustyrose font-bold w-6 text-right text-xl font-sans">${idx + 4}.</span><span class="font-bold text-lg text-brand-text tracking-wide">${name}</span></div><span class="font-bold text-brand-rosegold font-sans text-xl">${window.hostLogic.gameState.players[name].score} 分</span></div>`;
                 });
-                tl.to("#podium-list", { opacity: 1, duration: 0.5 });
+                if(podiumContainer) {
+                    podiumContainer.classList.remove('hidden');
+                    podiumContainer.classList.add('flex');
+                    if(revealBtn) revealBtn.classList.remove('hidden');
+                    if(podiumList) {
+                        podiumList.classList.add('hidden');
+                        podiumList.classList.remove('flex');
+                        podiumList.style.opacity = 0;
+                    }
+                }
+            } else {
+                if(podiumContainer) {
+                    podiumContainer.classList.add('hidden');
+                    podiumContainer.classList.remove('flex');
+                }
             }
         } else {
             for(let i = 1; i <= 3; i++) {
-                if(top3[i - 1]) { document.getElementById(`podium-${i}`).style.opacity = 1; document.getElementById(`podium-${i}`).style.transform = 'translateY(0)'; }
+                if(top3[i - 1]) {
+                    document.getElementById(`podium-${i}`).style.opacity = 1;
+                    document.getElementById(`podium-${i}`).style.transform = 'translateY(0)';
+                }
             }
-            document.getElementById('podium-list').style.opacity = 1;
+            if(podiumContainer) {
+                podiumContainer.classList.remove('hidden');
+                podiumContainer.classList.add('flex');
+            }
         }
     }
 };
@@ -1165,6 +1388,7 @@ window.playerLogic = {
     joinGame: () => {
         const roomInput = document.getElementById('pj-room-input').value.trim();
         const nameInput = document.getElementById('pj-name-input').value.trim();
+
         if(!roomInput) { window.appState.showToast('請輸入房間代碼', 'error'); return; }
         if(!nameInput) { window.appState.showToast('請輸入您的姓名', 'error'); return; }
 
@@ -1174,53 +1398,114 @@ window.playerLogic = {
         const connectServer = () => {
             try {
                 window.playerLogic.peer = new Peer();
+
                 const peerTimeout = setTimeout(() => {
-                    window.appState.hideLoading(); window.appState.showToast('連線超時，請檢查代碼或網路', 'error');
-                    if(window.playerLogic.peer) { try { window.playerLogic.peer.destroy(); } catch(e) {} window.playerLogic.peer = null; }
+                    window.appState.hideLoading();
+                    window.appState.showToast('連線超時，請檢查代碼或網路', 'error');
+                    if(window.playerLogic.peer) {
+                        try { window.playerLogic.peer.destroy(); } catch(e) {}
+                        window.playerLogic.peer = null;
+                    }
                 }, 10000);
 
                 window.playerLogic.peer.on('open', () => {
                     window.playerLogic.hostConn = window.playerLogic.peer.connect(roomInput, { reliable: true });
+
                     window.playerLogic.hostConn.on('open', () => {
-                        clearTimeout(peerTimeout); window.appState.hideLoading(); window.playerLogic.hostConn.send({ type: 'JOIN', name: window.playerLogic.myName });
+                        clearTimeout(peerTimeout);
+                        window.appState.hideLoading();
+                        window.playerLogic.hostConn.send({ type: 'JOIN', name: window.playerLogic.myName });
                     });
 
                     window.playerLogic.hostConn.on('data', (data) => {
-                        if (data.type === 'JOIN_ACK') { window.appState.showView('player-waiting'); document.getElementById('pw-name').innerText = window.playerLogic.myName; }
+                        if (data.type === 'JOIN_ACK') {
+                            window.appState.showView('player-waiting');
+                            document.getElementById('pw-name').innerText = window.playerLogic.myName;
+                        }
                         if (data.type === 'QUESTION_START') window.playerLogic.handleQuestionStart(data);
                         if (data.type === 'QUESTION_RESULT') window.playerLogic.handleQuestionResult(data);
                         if (data.type === 'GAME_OVER') window.playerLogic.handleGameOver(data);
-                        if (data.type === 'HOST_CLOSED') { window.appState.showToast('主辦人已關閉房間', 'error'); window.playerLogic.leaveGame(); }
+                        if (data.type === 'HOST_CLOSED') {
+                            window.appState.showToast('主辦人已關閉房間', 'error');
+                            window.playerLogic.leaveGame();
+                        }
                     });
 
-                    window.playerLogic.hostConn.on('error', () => { clearTimeout(peerTimeout); window.appState.hideLoading(); window.appState.showToast('無法與主辦人連線', 'error'); });
+                    window.playerLogic.hostConn.on('error', () => {
+                        clearTimeout(peerTimeout);
+                        window.appState.hideLoading();
+                        window.appState.showToast('無法與主辦人連線', 'error');
+                    });
+
                     window.playerLogic.hostConn.on('close', () => {});
                 });
 
-                window.playerLogic.peer.on('error', () => { clearTimeout(peerTimeout); window.appState.hideLoading(); window.appState.showToast('網路連線不穩，請重試', 'error'); });
-            } catch(e) { window.appState.hideLoading(); window.appState.showToast('系統發生錯誤，無法建立連線', 'error'); }
+                window.playerLogic.peer.on('error', () => {
+                    clearTimeout(peerTimeout);
+                    window.appState.hideLoading();
+                    window.appState.showToast('網路連線不穩，請重試', 'error');
+                });
+            } catch(e) {
+                window.appState.hideLoading();
+                window.appState.showToast('系統發生錯誤，無法建立連線', 'error');
+            }
         };
 
-        if (window.playerLogic.localTimerInterval) { clearInterval(window.playerLogic.localTimerInterval); window.playerLogic.localTimerInterval = null; }
-        if (window.playerLogic.peer) { try { window.playerLogic.peer.destroy(); } catch(e) {} window.playerLogic.peer = null; }
-        if (window.playerLogic.hostConn) { try { window.playerLogic.hostConn.close(); } catch(e) {} window.playerLogic.hostConn = null; }
+        if (window.playerLogic.localTimerInterval) {
+            clearInterval(window.playerLogic.localTimerInterval);
+            window.playerLogic.localTimerInterval = null;
+        }
+
+        if (window.playerLogic.peer) {
+            try { window.playerLogic.peer.destroy(); } catch(e) {}
+            window.playerLogic.peer = null;
+        }
+
+        if (window.playerLogic.hostConn) {
+            try { window.playerLogic.hostConn.close(); } catch(e) {}
+            window.playerLogic.hostConn = null;
+        }
+
         setTimeout(connectServer, 500);
     },
+
     leaveGame: () => {
-        if(window.playerLogic.hostConn) { try { window.playerLogic.hostConn.close(); } catch(e) {} }
-        if(window.playerLogic.peer) { try { window.playerLogic.peer.destroy(); } catch(e) {} }
-        
-        // 利用 location.replace 強制清理並回到首頁，解決快取殘留
-        const urlParams = new URLSearchParams(window.location.search);
-        let roomCode = urlParams.get('room') || '';
-        let newUrl = window.location.href.split('?')[0] + '?role=player';
-        if (roomCode) newUrl += '&room=' + roomCode;
-        window.location.replace(newUrl);
+        if (window.playerLogic.localTimerInterval) {
+            clearInterval(window.playerLogic.localTimerInterval);
+            window.playerLogic.localTimerInterval = null;
+        }
+
+        if(window.playerLogic.hostConn) {
+            try { window.playerLogic.hostConn.close(); } catch(e) {}
+        }
+
+        if(window.playerLogic.peer) {
+            try { window.playerLogic.peer.destroy(); } catch(e) {}
+        }
+
+        window.playerLogic.peer = null;
+        window.playerLogic.hostConn = null;
+        window.playerLogic.myName = '';
+        window.playerLogic.questionStartTime = 0;
+        window.playerLogic.timeLimit = 20;
+
+        const nameInput = document.getElementById('pj-name-input');
+        if(nameInput) {
+            nameInput.value = '';
+            nameInput.setAttribute('autocomplete', 'new-password');
+        }
+
+        window.appState.hideLoading();
+        window.appState.showView('player-join');
     },
+
     handleQuestionStart: (data) => {
         document.getElementById('pq-text').innerText = data.text;
         for(let i = 0; i < 4; i++) document.getElementById(`pq-opt-${i}`).innerText = data.options[i];
-        document.querySelectorAll('.pq-btn').forEach(btn => { btn.disabled = false; btn.classList.remove('opacity-50', 'scale-95'); });
+        document.querySelectorAll('.pq-btn').forEach(btn => {
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'scale-95');
+        });
 
         window.playerLogic.timeLimit = data.timeLimit;
         window.playerLogic.questionStartTime = Date.now();
@@ -1228,43 +1513,71 @@ window.playerLogic = {
 
         let timeLeft = window.playerLogic.timeLimit;
         const timerEl = document.getElementById('pq-timer');
-        timerEl.innerText = timeLeft; timerEl.style.color = '#B76E79';
+        timerEl.innerText = timeLeft;
+        timerEl.style.color = '#B76E79';
 
         clearInterval(window.playerLogic.localTimerInterval);
         window.playerLogic.localTimerInterval = setInterval(() => {
-            timeLeft--; timerEl.innerText = timeLeft;
+            timeLeft--;
+            timerEl.innerText = timeLeft;
             if(timeLeft <= 5) timerEl.style.color = '#ef4444';
-            if(timeLeft <= 0) { clearInterval(window.playerLogic.localTimerInterval); window.playerLogic.localTimerInterval = null; }
+            if(timeLeft <= 0) {
+                clearInterval(window.playerLogic.localTimerInterval);
+                window.playerLogic.localTimerInterval = null;
+            }
         }, 1000);
     },
+
     submitAnswer: (optIndex) => {
         if (!window.playerLogic.hostConn || !window.playerLogic.hostConn.open) return;
+
         const elapsedTime = (Date.now() - window.playerLogic.questionStartTime) / 1000;
         clearInterval(window.playerLogic.localTimerInterval);
         window.playerLogic.localTimerInterval = null;
 
-        try { window.playerLogic.hostConn.send({ type: 'ANSWER', name: window.playerLogic.myName, optionIndex: optIndex, elapsedTime: elapsedTime }); } catch(e) {}
+        try {
+            window.playerLogic.hostConn.send({
+                type: 'ANSWER',
+                name: window.playerLogic.myName,
+                optionIndex: optIndex,
+                elapsedTime: elapsedTime
+            });
+        } catch(e) {}
 
-        document.querySelectorAll('.pq-btn').forEach((btn, idx) => { btn.disabled = true; if (idx !== optIndex) btn.classList.add('opacity-50', 'scale-95'); });
-        setTimeout(() => { window.appState.showView('player-answered'); }, 400);
+        document.querySelectorAll('.pq-btn').forEach((btn, idx) => {
+            btn.disabled = true;
+            if (idx !== optIndex) btn.classList.add('opacity-50', 'scale-95');
+        });
+
+        setTimeout(() => {
+            window.appState.showView('player-answered');
+        }, 400);
     },
+
     handleQuestionResult: (data) => {
         const viewBg = document.getElementById('view-player-result');
         const icon = document.getElementById('pr-icon');
         const title = document.getElementById('pr-title');
 
         viewBg.className = 'view-layer items-center justify-center p-6 text-white transition-colors duration-500 pointer-events-auto active';
+
         if (data.isCorrect) {
-            viewBg.classList.add('bg-green-500'); icon.setAttribute('icon', 'ph:check-bold'); title.innerText = '答對了！';
+            viewBg.classList.add('bg-green-500');
+            icon.setAttribute('icon', 'ph:check-bold');
+            title.innerText = '答對了！';
         } else {
-            viewBg.classList.add('bg-[#B76E79]'); icon.setAttribute('icon', 'ph:x-bold'); title.innerText = '答錯了...';
+            viewBg.classList.add('bg-[#B76E79]');
+            icon.setAttribute('icon', 'ph:x-bold');
+            title.innerText = '答錯了...';
         }
 
         document.getElementById('pr-earned').innerText = data.pointsEarned;
         document.getElementById('pr-total').innerText = `${data.totalScore}`;
         document.getElementById('pr-rank').innerText = `目前排名：第 ${data.rank || '-'} 名`;
+
         window.appState.showView('player-result');
     },
+
     handleGameOver: (data) => {
         if (data) {
             document.getElementById('pp-rank').innerText = data.finalRank || '-';
@@ -1278,17 +1591,28 @@ window.playerLogic = {
 };
 
 /* ==========================================
-   初始化路由與系統保護機制
+   初始化路由
 ========================================== */
 window.initApp = function() {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('role') === 'player' || urlParams.get('room')) {
         const inputEl = document.getElementById('pj-room-input');
         if (inputEl && urlParams.get('room')) inputEl.value = urlParams.get('room');
+
         const nameInput = document.getElementById('pj-name-input');
-        if(nameInput) { nameInput.value = ''; }
+        if(nameInput) {
+            nameInput.value = '';
+            nameInput.setAttribute('autocomplete', 'new-password');
+        }
         window.appState.goToPlayerJoin();
     } else {
+        // 如果是主機端，檢查是否需要觸發系統登入檢驗
+        if (SYSTEM_CONFIG.ADMIN_USERNAME && SYSTEM_CONFIG.ADMIN_PASSWORD) {
+            // 直接將正確的使用者資料寫入 (不給註冊，只能用帳密登入)
+            const users = window.dbLogic.getUsers();
+            users[SYSTEM_CONFIG.ADMIN_USERNAME] = { password: SYSTEM_CONFIG.ADMIN_PASSWORD };
+            window.dbLogic.saveUsers(users);
+        }
         window.appState.showView('login');
     }
 };

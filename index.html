@@ -48,19 +48,19 @@
         input[type="text"], input[type="password"], input[type="number"], select { background: rgba(255,255,255,0.9); border: 1px solid rgba(183, 110, 121, 0.3); border-radius: 0.75rem; padding: 0.85rem 1.2rem; outline: none; transition: all 0.3s; color: #4A3B32; font-family: inherit; width: 100%; }
         input:focus, select:focus { border-color: #B76E79; box-shadow: 0 0 0 3px rgba(183, 110, 121, 0.15); background: #fff; }
         
-        .btn-primary { background: linear-gradient(135deg, #B76E79 0%, #E6B3A3 100%); color: white; padding: 0.85rem 2rem; border-radius: 9999px; font-weight: bold; letter-spacing: 0.1em; transition: all 0.3s; box-shadow: 0 8px 20px rgba(183, 110, 121, 0.3); cursor: pointer; border: none; }
+        .btn-primary { background: linear-gradient(135deg, #B76E79 0%, #E6B3A3 100%); color: white; padding: 0.85rem 2rem; border-radius: 9999px; font-weight: bold; letter-spacing: 0.1em; transition: all 0.3s; box-shadow: 0 8px 20px rgba(183, 110, 121, 0.3); cursor: pointer; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
         .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(183, 110, 121, 0.4); }
         .btn-primary:active:not(:disabled) { transform: translateY(1px); }
         .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
         
-        .btn-secondary { background: white; color: #B76E79; border: 1px solid rgba(183, 110, 121, 0.3); padding: 0.75rem 1.5rem; border-radius: 9999px; font-weight: bold; transition: all 0.3s; cursor: pointer; }
+        .btn-secondary { background: white; color: #B76E79; border: 1px solid rgba(183, 110, 121, 0.3); padding: 0.75rem 1.5rem; border-radius: 9999px; font-weight: bold; transition: all 0.3s; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
         .btn-secondary:hover { background: #FFFaf8; border-color: #B76E79; }
 
-        /* 視圖切換（控制畫面層級與顯示） */
+        /* 視圖切換 */
         .view-layer { position: absolute; inset: 0; width: 100%; height: 100%; display: flex; flex-direction: column; overflow: hidden; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.4s ease, visibility 0.4s; z-index: 10; }
         .view-layer.active { opacity: 1; visibility: visible; pointer-events: auto; z-index: 20; }
         
-        /* 選項按鈕樣式 (主辦人與玩家共用) */
+        /* 選項按鈕樣式 */
         .opt-card { position: relative; border-radius: 1rem; padding: 1.5rem; color: white; font-weight: bold; display: flex; align-items: center; gap: 1rem; font-size: 1.5rem; overflow: hidden; transition: all 0.3s; }
         .opt-0 { background-color: #E1707A; box-shadow: 0 8px 0 #C95660; }
         .opt-1 { background-color: #E6B941; box-shadow: 0 8px 0 #C99E2E; }
@@ -70,16 +70,41 @@
         .player-opt-btn { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; border-radius: 1rem; color: white; font-size: 1.25rem; font-weight: bold; transition: transform 0.1s; border: none; cursor: pointer; }
         .player-opt-btn:active:not(:disabled) { transform: translateY(6px); box-shadow: 0 2px 0 rgba(0,0,0,0.2) !important; }
         
-        /* 倒數計時環 */
         .timer-ring { width: 120px; height: 120px; border-radius: 50%; border: 8px solid rgba(183, 110, 121, 0.2); display: flex; align-items: center; justify-content: center; font-size: 3.5rem; font-weight: bold; color: #B76E79; font-family: sans-serif; }
 
         /* Toast 提示 */
         #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 100000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; width: auto; align-items: flex-end; }
-        .toast { background: rgba(255,255,255,0.98); border-left: 5px solid #B76E79; box-shadow: 0 10px 30px rgba(183, 110, 121, 0.2); padding: 1rem 1.5rem; border-radius: 8px; font-weight: bold; pointer-events: auto; white-space: nowrap; }
+        .toast { width: max-content; background: rgba(255,255,255,0.98); border-left: 5px solid #B76E79; box-shadow: 0 10px 30px rgba(183, 110, 121, 0.2); padding: 1rem 1.5rem; border-radius: 8px; font-weight: bold; pointer-events: auto; white-space: nowrap; }
 
-        /* 後台卡片 */
         .dashboard-card { background: white; border: 1px solid rgba(183, 110, 121, 0.15); border-radius: 1.25rem; padding: 1.5rem; transition: all 0.3s; cursor: pointer; }
         .dashboard-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(183, 110, 121, 0.15); border-color: rgba(183, 110, 121, 0.4); }
+
+        /* 拉霸機特效專用樣式 */
+        .slot-window { height: 90px; overflow: hidden; position: relative; width: 100%; mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%); }
+        @media(min-width: 768px) { .slot-window { height: 130px; } }
+        .slot-wheel { display: flex; flex-direction: column; width: 100%; will-change: transform; }
+        .slot-item { height: 90px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; width: 100%; }
+        @media(min-width: 768px) { .slot-item { height: 130px; } }
+        .slot-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 10px; color: #4A3B32; font-weight: bold; font-family: 'Noto Serif TC', serif; }
+        .slot-text.highlight { color: #B76E79; }
+        .draw-divider-line { width: 1px; height: 60px; background: rgba(183, 110, 121, 0.3); }
+
+        /* 指定獎項 UI 樣式 */
+        .mapping-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 14px; padding: 16px; background: rgba(255,255,255,.6); border-radius: 20px; border: 1px solid rgba(183,110,121,.15); }
+        .mapping-item { display: flex; flex-direction: column; gap: 8px; background: #fff; padding: 12px; border-radius: 16px; box-shadow: 0 4px 12px rgba(183,110,121,.08); }
+        .mapping-item .name-text { font-size: 15px; font-weight: 700; color: #9E5C66; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; }
+        .prize-mapping-btn { width: 100%; font-size: 14px; font-family: inherit; background: #fff; border: 1px solid rgba(183,110,121,.3); border-radius: 10px; padding: 8px 10px; cursor: pointer; transition: .2s; color: #4A3B32; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .prize-mapping-btn:hover { background: rgba(255,255,255,1); border-color: #B76E79; box-shadow: 0 4px 10px rgba(183,110,121,.15); transform: translateY(-2px); }
+        .prize-mapping-btn.has-value { background: linear-gradient(135deg, rgba(255,250,248,1) 0%, rgba(248,232,232,1) 100%); border-color: #E6B3A3; color: #B76E79; }
+        
+        .prize-list-btn { display: block; width: 100%; text-align: left; padding: 14px 18px; border: 1px solid rgba(183,110,121,.15); background: rgba(255,255,255,.8); border-radius: 14px; font-size: 16px; font-weight: 600; color: #4A3B32; margin-bottom: 10px; cursor: pointer; transition: .2s; font-family: inherit; }
+        .prize-list-btn:hover:not(:disabled) { background: #fff; border-color: #B76E79; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(183,110,121,.1); }
+        .prize-list-btn.selected { background: linear-gradient(135deg, #B76E79 0%, #E6B3A3 100%); color: #fff; border-color: transparent; box-shadow: 0 8px 20px rgba(183,110,121,.24); }
+        .prize-list-btn:disabled { opacity: 0.45; cursor: not-allowed; background: rgba(255,255,255,.4); transform: none; box-shadow: none; }
+
+        .modal { position: fixed; inset: 0; z-index: 10000; display: none; align-items: center; justify-content: center; padding: 16px; background: rgba(0,0,0,.35); backdrop-filter: blur(4px); }
+        .modal.show { display: flex !important; }
+        .modal-card { width: min(760px, 100%); background: #fff; border-radius: 28px; border: 1px solid rgba(255,255,255,.95); box-shadow: 0 24px 60px rgba(0,0,0,.18); padding: 28px; }
     </style>
 </head>
 <body>
@@ -142,14 +167,15 @@
 
     <div id="view-dashboard" class="view-layer overflow-y-auto p-4 md:p-8">
         <div class="max-w-6xl mx-auto w-full pointer-events-auto">
-            <header class="flex justify-between items-end mb-10 pb-6 border-b border-brand-rosegold/20">
+            <header class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 pb-6 border-b border-brand-rosegold/20 gap-4">
                 <div>
                     <div class="font-sans text-brand-rosegold text-sm tracking-[0.3em] mb-1 uppercase font-bold">StoryWed Admin</div>
                     <h2 class="text-3xl font-serif font-bold text-brand-dustyrose">我的遊戲房間</h2>
                 </div>
-                <div class="flex items-center gap-4">
-                    <span class="font-bold text-brand-text/70">Hi, <span id="dash-username" class="text-brand-rosegold">User</span></span>
-                    <button onclick="window.authLogic.logout()" class="btn-secondary text-sm px-4 py-2">登出</button>
+                <div class="flex flex-wrap items-center gap-3">
+                    <span class="font-bold text-brand-text/70 hidden sm:inline">Hi, <span id="dash-username" class="text-brand-rosegold">User</span></span>
+                    <button onclick="window.authLogic.showAdminPanel()" class="btn-secondary text-sm px-3 py-1.5 flex items-center gap-1"><iconify-icon icon="ph:users-three-bold"></iconify-icon> <span class="hidden sm:inline">帳號管理</span></button>
+                    <button onclick="window.authLogic.logout()" class="btn-secondary text-sm px-3 py-1.5 flex items-center gap-1"><iconify-icon icon="ph:sign-out-bold"></iconify-icon> <span class="hidden sm:inline">登出</span></button>
                 </div>
             </header>
 
@@ -157,7 +183,7 @@
                 </div>
 
             <div class="mt-10 flex justify-center">
-                <button onclick="window.dbLogic.createNewRoom()" class="btn-primary flex items-center gap-2 text-lg">
+                <button onclick="window.dbLogic.createNewRoom()" class="btn-primary flex items-center gap-2 text-lg px-8 py-3">
                     <iconify-icon icon="ph:plus-circle-bold" class="text-2xl"></iconify-icon> 建立新遊戲房間
                 </button>
             </div>
@@ -172,7 +198,7 @@
                     <input type="text" id="editor-room-title" class="text-2xl font-bold text-brand-dustyrose border-none shadow-sm" placeholder="例如：2026/05/30 晚宴快問快答">
                 </div>
                 <div class="flex gap-3">
-                    <button onclick="window.editorLogic.saveRoom(); window.authLogic.loadDashboard()" class="btn-secondary">返回列表</button>
+                    <button onclick="window.editorLogic.saveRoom(); window.authLogic.loadDashboard();" class="btn-secondary">返回列表</button>
                     <button onclick="window.editorLogic.saveRoom()" class="btn-primary">儲存設定</button>
                     <button onclick="window.editorLogic.startGame()" class="btn-primary bg-gradient-to-r from-green-500 to-emerald-400 shadow-green-200">發起遊戲</button>
                 </div>
@@ -307,14 +333,14 @@
         </div>
         
         <div class="flex items-end justify-center gap-2 md:gap-6 h-[300px] md:h-[400px] mb-12 w-full max-w-4xl relative">
-            <div id="podium-2" class="w-1/3 flex flex-col items-center z-10 transition-all duration-700">
+            <div id="podium-2" class="w-1/3 flex flex-col items-center opacity-0 transform translate-y-10">
                 <div class="text-xl md:text-3xl font-bold text-gray-600 mb-1 md:mb-2 truncate w-full text-center px-1" id="p-name-2">---</div>
                 <div class="text-sm md:text-xl font-bold text-brand-rosegold mb-3 bg-white/80 px-4 py-1 rounded-full shadow-sm" id="p-score-2">0 分</div>
                 <div class="w-full bg-gradient-to-t from-gray-300 to-gray-100 rounded-t-2xl flex items-start justify-center pt-4 md:pt-6 shadow-[0_-10px_20px_rgba(0,0,0,0.1)] border-t-4 border-gray-400 relative overflow-hidden" style="height: 65%;">
                     <span class="text-4xl md:text-6xl font-sans font-bold text-gray-500 drop-shadow-md">2</span>
                 </div>
             </div>
-            <div id="podium-1" class="w-1/3 flex flex-col items-center z-20 transition-all duration-700">
+            <div id="podium-1" class="w-1/3 flex flex-col items-center opacity-0 transform translate-y-10 z-10">
                 <iconify-icon icon="ph:crown-fill" class="text-5xl md:text-7xl text-yellow-500 mb-2 drop-shadow-[0_5px_15px_rgba(234,179,8,0.5)] animate-bounce"></iconify-icon>
                 <div class="text-2xl md:text-4xl font-bold text-yellow-600 mb-1 md:mb-2 truncate w-full text-center px-1" id="p-name-1">---</div>
                 <div class="text-base md:text-2xl font-bold text-brand-rosegold mb-3 bg-white/90 px-5 py-1.5 rounded-full shadow-md" id="p-score-1">0 分</div>
@@ -322,7 +348,7 @@
                     <span class="text-5xl md:text-8xl font-sans font-bold text-yellow-600 drop-shadow-lg">1</span>
                 </div>
             </div>
-            <div id="podium-3" class="w-1/3 flex flex-col items-center z-10 transition-all duration-700">
+            <div id="podium-3" class="w-1/3 flex flex-col items-center opacity-0 transform translate-y-10">
                 <div class="text-xl md:text-3xl font-bold text-amber-700 mb-1 md:mb-2 truncate w-full text-center px-1" id="p-name-3">---</div>
                 <div class="text-sm md:text-xl font-bold text-brand-rosegold mb-3 bg-white/80 px-4 py-1 rounded-full shadow-sm" id="p-score-3">0 分</div>
                 <div class="w-full bg-gradient-to-t from-amber-400 to-amber-200 rounded-t-2xl flex items-start justify-center pt-4 md:pt-6 shadow-[0_-10px_20px_rgba(0,0,0,0.1)] border-t-4 border-amber-600 relative overflow-hidden" style="height: 50%;">
@@ -331,13 +357,16 @@
             </div>
         </div>
 
-        <div class="w-full max-w-2xl bg-white/80 backdrop-blur-md rounded-3xl p-6 md:p-8 shadow-xl mb-10 border border-white transition-opacity duration-700" id="podium-list">
+        <div class="w-full max-w-2xl bg-white/80 backdrop-blur-md rounded-3xl p-6 md:p-8 shadow-xl mb-10 opacity-0 border border-white transition-opacity duration-700" id="podium-list">
             <h3 class="text-xl md:text-2xl font-bold text-center text-brand-dustyrose mb-6 border-b border-brand-rosegold/20 pb-4 tracking-widest">第 4 名 至 第 10 名</h3>
             <div id="leaderboard-runners-up" class="flex flex-col gap-3">
                 </div>
         </div>
         
-        <button onclick="window.hostLogic.closeRoom()" class="btn-secondary px-10 py-3 text-lg mb-10 shadow-sm">結束遊戲並返回列表</button>
+        <div class="flex flex-col sm:flex-row justify-center gap-4 mb-10 w-full max-w-2xl px-6">
+            <button onclick="window.hostLogic.exportResults()" class="btn-primary flex-1 py-3 text-lg shadow-sm flex items-center justify-center gap-2"><iconify-icon icon="ph:download-simple"></iconify-icon> 匯出成績記錄</button>
+            <button onclick="window.hostLogic.closeRoom()" class="btn-secondary flex-1 py-3 text-lg shadow-sm">結束遊戲並返回列表</button>
+        </div>
     </div>
 
     <div id="view-player-join" class="view-layer items-center justify-center p-5 bg-white">
@@ -350,7 +379,7 @@
                 </div>
                 <div class="mb-8">
                     <label class="block text-sm font-bold text-brand-text/60 mb-2">您的姓名（顯示於大螢幕）</label>
-                    <input type="text" id="pj-name-input" class="w-full text-center text-xl font-bold" placeholder="請輸入姓名">
+                    <input type="text" id="pj-name-input" class="w-full text-center text-xl font-bold" placeholder="請輸入姓名" autocomplete="off">
                 </div>
                 <button onclick="window.playerLogic.joinGame()" class="btn-primary w-full py-4 text-lg shadow-lg shadow-brand-rosegold/30">確認加入</button>
             </div>
@@ -433,7 +462,7 @@
                 <div id="pp-total" class="text-4xl font-bold font-sans text-white drop-shadow-sm">0</div>
             </div>
             
-            <button onclick="location.reload()" class="mt-10 text-white/70 hover:text-white border border-white/30 px-6 py-2 rounded-full text-sm tracking-widest transition-colors">離開遊戲</button>
+            <button onclick="window.playerLogic.leaveGame()" class="mt-10 text-white/70 hover:text-white border border-white/30 px-6 py-2 rounded-full text-sm tracking-widest transition-colors">離開遊戲（再玩一局）</button>
         </div>
     </div>
 
@@ -455,6 +484,28 @@
             <div class="flex gap-4 justify-center">
                 <button onclick="document.getElementById('import-modal').classList.add('hidden'); document.getElementById('import-modal').classList.remove('flex');" class="btn-secondary w-1/2">取消</button>
                 <button onclick="window.hostLogic.importConfig()" class="btn-primary w-1/2">確認導入</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="admin-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[99999] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl p-6 md:p-8 w-full max-w-2xl pointer-events-auto flex flex-col max-h-[85vh]">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-brand-dustyrose tracking-widest">系統帳號管理</h3>
+                <button onclick="document.getElementById('admin-modal').classList.add('hidden'); document.getElementById('admin-modal').classList.remove('flex');" class="text-gray-400 hover:text-brand-rosegold transition-colors"><iconify-icon icon="ph:x-circle-bold" class="text-3xl"></iconify-icon></button>
+            </div>
+            <div class="overflow-y-auto custom-scrollbar flex-1 border border-brand-rosegold/20 rounded-xl p-4 bg-brand-rosegold/5">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-brand-rosegold/20 text-brand-dustyrose">
+                            <th class="pb-3 pl-2">使用者帳號</th>
+                            <th class="pb-3">登入密碼</th>
+                            <th class="pb-3 text-right pr-2">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-users-list">
+                        </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -570,7 +621,7 @@ window.authLogic = {
         listEl.innerHTML = '';
         const myRooms = window.dbLogic.getRooms().filter(r => r.owner === window.authLogic.currentUser);
         if (myRooms.length === 0) {
-            listEl.innerHTML = `<div class="col-span-full text-center py-10 text-brand-text/40 font-bold tracking-widest">目前還沒有任何遊戲房間，點擊下方按鈕建立吧！</div>`;
+            listEl.innerHTML = `<div class="col-span-full text-center py-10 text-brand-text/40 font-bold tracking-widest">目前還沒有任何遊戲房間，點擊上方按鈕建立吧！</div>`;
         } else {
             myRooms.reverse().forEach(room => {
                 const card = document.createElement('div');
@@ -590,6 +641,36 @@ window.authLogic = {
             });
         }
         window.appState.showView('dashboard');
+    },
+    showAdminPanel: () => {
+        const users = window.dbLogic.getUsers();
+        const tbody = document.getElementById('admin-users-list');
+        tbody.innerHTML = '';
+        for(let u in users) {
+            tbody.innerHTML += `
+                <tr class="border-b border-gray-100 last:border-0 hover:bg-white transition-colors">
+                    <td class="py-4 pl-2 font-bold text-brand-text">${window.appState.escapeHTML(u)}</td>
+                    <td class="py-4 font-mono text-gray-500">${window.appState.escapeHTML(users[u].password)}</td>
+                    <td class="py-4 text-right pr-2">
+                        <button onclick="window.authLogic.deleteUser('${window.appState.escapeHTML(u)}')" class="text-red-400 hover:text-white px-3 py-1.5 rounded bg-red-50 hover:bg-red-400 transition-colors text-sm font-bold shadow-sm">刪除</button>
+                    </td>
+                </tr>
+            `;
+        }
+        document.getElementById('admin-modal').classList.remove('hidden');
+        document.getElementById('admin-modal').classList.add('flex');
+    },
+    deleteUser: (username) => {
+        if(username === window.authLogic.currentUser) {
+            window.appState.showToast('無法刪除目前登入的帳號', 'error'); return;
+        }
+        if(confirm(`確定要刪除帳號 ${username} 嗎？`)) {
+            const users = window.dbLogic.getUsers();
+            delete users[username];
+            window.dbLogic.saveUsers(users);
+            window.authLogic.showAdminPanel();
+            window.appState.showToast('帳號已成功刪除');
+        }
     }
 };
 
@@ -789,6 +870,7 @@ window.hostLogic = {
                 const badge = document.createElement('div');
                 badge.className = 'bg-white border border-brand-rosegold/30 text-brand-dustyrose px-4 py-2 rounded-full font-bold shadow-sm';
                 badge.innerText = name;
+                if (typeof gsap !== 'undefined') gsap.fromTo(badge, { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2)" });
                 listDiv.appendChild(badge);
             });
             document.getElementById('btn-start-quiz').disabled = false;
@@ -814,10 +896,7 @@ window.hostLogic = {
     startQuiz: () => {
         window.hostLogic.gameState.currentQIndex = 0;
         window.hostLogic.gameState.status = 'question';
-        // 絕對防呆：進入遊戲時徹底歸零所有玩家分數
-        for (let name in window.hostLogic.gameState.players) {
-            window.hostLogic.gameState.players[name].score = 0;
-        }
+        for (let name in window.hostLogic.gameState.players) { window.hostLogic.gameState.players[name].score = 0; }
         window.hostLogic.runQuestion();
     },
     runQuestion: () => {
@@ -874,6 +953,7 @@ window.hostLogic = {
         
         let sortedNames = Object.keys(window.hostLogic.gameState.players).sort((a, b) => window.hostLogic.gameState.players[b].score - window.hostLogic.gameState.players[a].score);
         
+        // 確保每一輪結束後，所有玩家都能正確收到當前的即時排名資訊
         for (let name in window.hostLogic.playerConns) {
             let ans = window.hostLogic.gameState.currentAnswers[name];
             if (window.hostLogic.playerConns[name].open) {
@@ -912,10 +992,34 @@ window.hostLogic = {
         }
         window.appState.showView('host-reveal');
     },
+    exportResults: () => {
+        if (!window.hostLogic.gameState.players || Object.keys(window.hostLogic.gameState.players).length === 0) {
+            window.appState.showToast('目前沒有成績記錄', 'error'); return;
+        }
+        let txt = "【幸福故事館】快問快答成績記錄\n";
+        txt += "記錄時間：" + new Date().toLocaleString() + "\n";
+        txt += "--------------------------------------------------\n";
+        txt += "名次\t總分\t\t姓名\n";
+        txt += "--------------------------------------------------\n";
+        
+        let sortedNames = Object.keys(window.hostLogic.gameState.players).sort((a, b) => window.hostLogic.gameState.players[b].score - window.hostLogic.gameState.players[a].score);
+        
+        sortedNames.forEach((name, idx) => {
+            let score = window.hostLogic.gameState.players[name].score;
+            txt += `${idx + 1}\t${score}\t\t${name}\n`;
+        });
+        
+        const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url;
+        a.download = `快問快答成績記錄_${new Date().toISOString().split('T')[0].replace(/-/g, '')}.txt`;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+        window.appState.showToast('成績記錄已成功匯出為 TXT 檔案！');
+    },
     showPodium: (sortedNames) => {
         window.appState.showView('host-podium');
         
-        // 確保玩家手機端也能接收到最終成績與排名
+        // 絕對保證最後一刻，強制向所有玩家設備同步最終總分與排名
         for (let name in window.hostLogic.playerConns) {
             if (window.hostLogic.playerConns[name].open) {
                 window.hostLogic.playerConns[name].send({ 
@@ -927,8 +1031,6 @@ window.hostLogic = {
         }
         
         const top3 = sortedNames.slice(0, 3); const runnersUp = sortedNames.slice(3, 10);
-        
-        // 淨空與強制隱藏，以確保不管是否有 GSAP 都能正確呈現
         for(let i=1; i<=3; i++) {
             document.getElementById(`p-name-${i}`).innerText = '---'; document.getElementById(`p-score-${i}`).innerText = '0 分';
             const el = document.getElementById(`podium-${i}`);
@@ -967,10 +1069,7 @@ window.hostLogic = {
                 tl.to("#podium-list", { opacity: 1, duration: 0.5 });
             }
         } else {
-            // 降級保護：若無 GSAP 直接顯示
-            for(let i=1; i<=3; i++) {
-                if(top3[i-1]) { document.getElementById(`podium-${i}`).style.opacity = 1; document.getElementById(`podium-${i}`).style.transform = 'translateY(0)'; }
-            }
+            for(let i=1; i<=3; i++) { if(top3[i-1]) { document.getElementById(`podium-${i}`).style.opacity = 1; document.getElementById(`podium-${i}`).style.transform = 'translateY(0)'; } }
             document.getElementById('podium-list').style.opacity = 1;
         }
     }
@@ -1002,6 +1101,15 @@ window.playerLogic = {
         });
         window.playerLogic.peer.on('error', () => { window.appState.hideLoading(); window.appState.showToast('網路連線不穩，請重試', 'error'); });
     },
+    leaveGame: () => {
+        if(window.playerLogic.hostConn) window.playerLogic.hostConn.close();
+        if(window.playerLogic.peer) window.playerLogic.peer.destroy();
+        window.playerLogic.myName = '';
+        // 完全清空玩家之前輸入的名字，不留殘影
+        const nameInput = document.getElementById('pj-name-input');
+        if(nameInput) nameInput.value = '';
+        window.appState.showView('player-join');
+    },
     handleQuestionStart: (data) => {
         document.getElementById('pq-text').innerText = data.text;
         for(let i=0; i<4; i++) document.getElementById(`pq-opt-${i}`).innerText = data.options[i];
@@ -1030,7 +1138,6 @@ window.playerLogic = {
         const viewBg = document.getElementById('view-player-result');
         const icon = document.getElementById('pr-icon');
         const title = document.getElementById('pr-title');
-        
         if (data.isCorrect) { 
             viewBg.className = 'view-layer items-center justify-center p-6 text-white bg-green-500 active'; 
             icon.setAttribute('icon', 'ph:check-bold'); 
@@ -1040,17 +1147,19 @@ window.playerLogic = {
             icon.setAttribute('icon', 'ph:x-bold'); 
             title.innerText = '答錯了...'; 
         }
-        
         document.getElementById('pr-earned').innerText = data.pointsEarned;
         document.getElementById('pr-total').innerText = `${data.totalScore}`;
         document.getElementById('pr-rank').innerText = `目前排名：第 ${data.rank || '-'} 名`;
-        
         window.appState.showView('player-result');
     },
     handleGameOver: (data) => {
         if (data) {
             document.getElementById('pp-rank').innerText = data.finalRank || '-';
             document.getElementById('pp-total').innerText = data.finalScore || '0';
+        } else {
+            // 如果斷線或無資料，取最後一次記錄
+            document.getElementById('pp-rank').innerText = document.getElementById('pr-rank').innerText.replace(/\D/g, '');
+            document.getElementById('pp-total').innerText = document.getElementById('pr-total').innerText;
         }
         window.appState.showView('player-podium');
     }
@@ -1062,17 +1171,16 @@ window.playerLogic = {
 window.initApp = function() {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('role') === 'player' || urlParams.get('room')) {
-        if (urlParams.get('room')) {
-            const inputEl = document.getElementById('pj-room-input');
-            if (inputEl) inputEl.value = urlParams.get('room');
-        }
+        const inputEl = document.getElementById('pj-room-input');
+        if (inputEl && urlParams.get('room')) inputEl.value = urlParams.get('room');
+        const nameInput = document.getElementById('pj-name-input');
+        if(nameInput) nameInput.value = ''; // 防呆：確保玩家剛進來名字清空
         window.appState.goToPlayerJoin();
     } else {
         window.appState.showView('login');
     }
 };
 
-// 保證畫面讀取後絕對會執行初始化，杜絕白畫面
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', window.initApp);
 } else {

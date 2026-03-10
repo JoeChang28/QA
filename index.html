@@ -244,7 +244,6 @@
             <div class="glass-panel p-8 md:p-12 rounded-3xl w-full max-w-5xl flex flex-col items-center justify-center shadow-xl relative overflow-hidden text-center min-h-[40vh]">
                 <h2 id="hq-text" class="text-4xl md:text-6xl font-bold leading-tight tracking-wide text-brand-dustyrose drop-shadow-sm z-10">題目內容</h2>
                 <img id="hq-img" src="" class="hidden mt-8 max-h-[35vh] object-contain rounded-xl shadow-lg border-4 border-white z-10">
-                
                 <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
                     <iconify-icon icon="ph:clock-light" class="text-[300px] text-brand-rosegold"></iconify-icon>
                 </div>
@@ -354,8 +353,7 @@
 
         <div class="w-full max-w-2xl bg-white/80 backdrop-blur-md rounded-3xl p-6 md:p-8 shadow-xl mb-10 opacity-0 border border-white transition-opacity duration-700" id="podium-list">
             <h3 class="text-xl md:text-2xl font-bold text-center text-brand-dustyrose mb-6 border-b border-brand-rosegold/20 pb-4 tracking-widest">第 4 名 至 第 10 名</h3>
-            <div id="leaderboard-runners-up" class="flex flex-col gap-3">
-                </div>
+            <div id="leaderboard-runners-up" class="flex flex-col gap-3"></div>
         </div>
         
         <div class="flex flex-col sm:flex-row justify-center gap-4 mb-10 w-full max-w-2xl px-6">
@@ -370,11 +368,11 @@
             <div class="w-full bg-brand-bg rounded-3xl p-8 border border-brand-rosegold/20 shadow-2xl">
                 <div class="mb-6">
                     <label class="block text-sm font-bold text-brand-text/60 mb-2">房間代碼</label>
-                    <input type="text" id="pj-room-input" class="w-full text-center text-2xl tracking-widest font-sans uppercase font-bold text-brand-rosegold" placeholder="請看大螢幕" autocomplete="new-password">
+                    <input type="text" id="pj-room-input" class="w-full text-center text-2xl tracking-widest font-sans uppercase font-bold text-brand-rosegold" placeholder="請看大螢幕" autocomplete="off">
                 </div>
                 <div class="mb-8">
                     <label class="block text-sm font-bold text-brand-text/60 mb-2">您的姓名（顯示於大螢幕）</label>
-                    <input type="text" id="pj-name-input" class="w-full text-center text-xl font-bold" placeholder="請輸入姓名" autocomplete="new-password">
+                    <input type="text" id="pj-name-input" class="w-full text-center text-xl font-bold" placeholder="請輸入姓名" autocomplete="off">
                 </div>
                 <button onclick="window.playerLogic.joinGame()" class="btn-primary w-full py-4 text-lg shadow-lg shadow-brand-rosegold/30">確認加入</button>
             </div>
@@ -734,6 +732,7 @@ window.editorLogic = {
     addQuestionBlock: (data = null) => { window.hostLogic.addQuestionBlock(data); }
 };
 
+// 圖片壓縮
 function compressImage(file, callback) {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -763,6 +762,7 @@ window.hostLogic = {
     
     addQuestionBlock: (data = null) => {
         const container = document.getElementById('questions-container');
+        // 使用隨機字串保證正解 Radio Button 不會互相干擾
         const qid = 'q_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
         const div = document.createElement('div');
         div.className = 'question-setup-block glass-panel p-5 md:p-8 rounded-[1.5rem] relative border-t-4 border-t-brand-rosegold mb-6';
@@ -968,7 +968,10 @@ window.hostLogic = {
     startQuiz: () => {
         window.hostLogic.gameState.currentQIndex = 0;
         window.hostLogic.gameState.status = 'question';
-        for (let name in window.hostLogic.gameState.players) { window.hostLogic.gameState.players[name].score = 0; }
+        // 絕對防呆：進入遊戲時徹底歸零所有玩家分數
+        for (let name in window.hostLogic.gameState.players) {
+            window.hostLogic.gameState.players[name].score = 0;
+        }
         window.hostLogic.runQuestion();
     },
     runQuestion: () => {
@@ -1205,37 +1208,79 @@ window.playerLogic = {
         if(!nameInput) { window.appState.showToast('請輸入您的姓名', 'error'); return; }
         window.appState.showLoading('連線至遊戲室中...');
         window.playerLogic.myName = nameInput;
-        window.playerLogic.peer = new Peer();
-        window.playerLogic.peer.on('open', () => {
-            window.playerLogic.hostConn = window.playerLogic.peer.connect(roomInput, { reliable: true });
-            window.playerLogic.hostConn.on('open', () => {
+        
+        const connectServer = () => {
+            try {
+                window.playerLogic.peer = new Peer();
+                
+                const peerTimeout = setTimeout(() => {
+                    window.appState.hideLoading();
+                    window.appState.showToast('連線超時，請檢查代碼或網路', 'error');
+                    if(window.playerLogic.peer) {
+                        try { window.playerLogic.peer.destroy(); } catch(e) {}
+                        window.playerLogic.peer = null;
+                    }
+                }, 10000);
+
+                window.playerLogic.peer.on('open', () => {
+                    window.playerLogic.hostConn = window.playerLogic.peer.connect(roomInput, { reliable: true });
+                    
+                    window.playerLogic.hostConn.on('open', () => {
+                        clearTimeout(peerTimeout);
+                        window.appState.hideLoading();
+                        window.playerLogic.hostConn.send({ type: 'JOIN', name: window.playerLogic.myName });
+                    });
+                    
+                    window.playerLogic.hostConn.on('data', (data) => {
+                        if (data.type === 'JOIN_ACK') { window.appState.showView('player-waiting'); document.getElementById('pw-name').innerText = window.playerLogic.myName; }
+                        if (data.type === 'QUESTION_START') window.playerLogic.handleQuestionStart(data);
+                        if (data.type === 'QUESTION_RESULT') window.playerLogic.handleQuestionResult(data);
+                        if (data.type === 'GAME_OVER') window.playerLogic.handleGameOver(data);
+                        if (data.type === 'HOST_CLOSED') { 
+                            window.appState.showToast('主辦人已關閉房間', 'error'); 
+                            window.playerLogic.leaveGame(); 
+                        }
+                    });
+                    
+                    window.playerLogic.hostConn.on('error', () => {
+                        clearTimeout(peerTimeout);
+                        window.appState.hideLoading(); 
+                        window.appState.showToast('無法與主辦人連線', 'error'); 
+                    });
+                });
+                window.playerLogic.peer.on('error', () => {
+                    clearTimeout(peerTimeout);
+                    window.appState.hideLoading(); 
+                    window.appState.showToast('網路連線不穩，請重試', 'error'); 
+                });
+            } catch(e) {
                 window.appState.hideLoading();
-                window.playerLogic.hostConn.send({ type: 'JOIN', name: window.playerLogic.myName });
-            });
-            window.playerLogic.hostConn.on('data', (data) => {
-                if (data.type === 'JOIN_ACK') { window.appState.showView('player-waiting'); document.getElementById('pw-name').innerText = window.playerLogic.myName; }
-                if (data.type === 'QUESTION_START') window.playerLogic.handleQuestionStart(data);
-                if (data.type === 'QUESTION_RESULT') window.playerLogic.handleQuestionResult(data);
-                if (data.type === 'GAME_OVER') window.playerLogic.handleGameOver(data);
-                if (data.type === 'HOST_CLOSED') { 
-                    window.appState.showToast('主辦人已關閉房間', 'error'); 
-                    window.playerLogic.leaveGame(); 
-                }
-            });
-            window.playerLogic.hostConn.on('error', () => { window.appState.hideLoading(); window.appState.showToast('無法與主辦人連線', 'error'); });
-        });
-        window.playerLogic.peer.on('error', () => { window.appState.hideLoading(); window.appState.showToast('網路連線不穩，請重試', 'error'); });
+                window.appState.showToast('系統發生錯誤，無法建立連線', 'error');
+            }
+        };
+
+        if (window.playerLogic.peer) {
+            try { window.playerLogic.peer.destroy(); } catch(e) {}
+            window.playerLogic.peer = null;
+        }
+        setTimeout(connectServer, 500);
     },
     leaveGame: () => {
-        if(window.playerLogic.hostConn) window.playerLogic.hostConn.close();
-        if(window.playerLogic.peer) window.playerLogic.peer.destroy();
+        if(window.playerLogic.hostConn) {
+            try { window.playerLogic.hostConn.close(); } catch(e) {}
+        }
+        if(window.playerLogic.peer) {
+            try { window.playerLogic.peer.destroy(); } catch(e) {}
+        }
+        window.playerLogic.peer = null;
+        window.playerLogic.hostConn = null;
         window.playerLogic.myName = '';
         
         // 絕對清空玩家殘留名字，並重置狀態
         const nameInput = document.getElementById('pj-name-input');
         if(nameInput) { 
             nameInput.value = ''; 
-            nameInput.setAttribute('autocomplete', 'new-password'); // 阻擋瀏覽器自動填入
+            nameInput.setAttribute('autocomplete', 'new-password'); 
         }
         window.appState.showView('player-join');
     },
@@ -1248,7 +1293,8 @@ window.playerLogic = {
         window.appState.showView('player-question');
         let timeLeft = window.playerLogic.timeLimit;
         const timerEl = document.getElementById('pq-timer');
-        timerEl.innerText = timeLeft; timerEl.style.color = '#B76E79';
+        timerEl.innerText = timeLeft;
+        timerEl.style.color = '#B76E79';
         clearInterval(window.playerLogic.localTimerInterval);
         window.playerLogic.localTimerInterval = setInterval(() => {
             timeLeft--; timerEl.innerText = timeLeft;
@@ -1267,6 +1313,7 @@ window.playerLogic = {
         const viewBg = document.getElementById('view-player-result');
         const icon = document.getElementById('pr-icon');
         const title = document.getElementById('pr-title');
+        
         if (data.isCorrect) { 
             viewBg.className = 'view-layer items-center justify-center p-6 text-white bg-green-500 active'; 
             icon.setAttribute('icon', 'ph:check-bold'); 
@@ -1276,9 +1323,11 @@ window.playerLogic = {
             icon.setAttribute('icon', 'ph:x-bold'); 
             title.innerText = '答錯了...'; 
         }
+        
         document.getElementById('pr-earned').innerText = data.pointsEarned;
         document.getElementById('pr-total').innerText = `${data.totalScore}`;
         document.getElementById('pr-rank').innerText = `目前排名：第 ${data.rank || '-'} 名`;
+        
         window.appState.showView('player-result');
     },
     handleGameOver: (data) => {
@@ -1286,6 +1335,7 @@ window.playerLogic = {
             document.getElementById('pp-rank').innerText = data.finalRank || '-';
             document.getElementById('pp-total').innerText = data.finalScore || '0';
         } else {
+            // 如果斷線或無資料，取最後一次記錄
             document.getElementById('pp-rank').innerText = document.getElementById('pr-rank').innerText.replace(/\D/g, '');
             document.getElementById('pp-total').innerText = document.getElementById('pr-total').innerText;
         }

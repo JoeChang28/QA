@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>幸福故事館 - 互動快問快答系統</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Noto+Serif+TC:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { rosegold: '#B76E79', rosegold_light: '#E6B3A3', dustyrose: '#9E5C66', champagne: '#D4AF37', text: '#4A3B32', bg: '#FFFaf8' },
+                        opt: { red: '#E1707A', yellow: '#E6B941', blue: '#4A8EB3', green: '#5A9E72' }
+                    },
+                    fontFamily: {
+                        serif: ['"Noto Serif TC"', 'serif'],
+                        sans: ['"Cormorant Garamond"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        html, body { margin: 0; padding: 0; width: 100%; height: 100vh; overflow: hidden; background-color: #FFFaf8; color: #4A3B32; font-family: 'Noto Serif TC', serif; }
+        
+        /* 捲軸美化 */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(230, 179, 163, 0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #E6B3A3 0%, #B76E79 100%); border-radius: 10px; }
+        
+        .glass-panel { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.9); box-shadow: 0 12px 40px rgba(183, 110, 121, 0.1); }
+        .text-gradient { background: linear-gradient(135deg, #B76E79 0%, #D4AF37 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        
+        /* 基礎 UI 元素 */
+        input[type="text"], input[type="password"], input[type="number"], select { background: rgba(255,255,255,0.9); border: 1px solid rgba(183, 110, 121, 0.3); border-radius: 0.5rem; padding: 0.75rem 1rem; outline: none; transition: all 0.3s; color: #4A3B32; font-family: inherit; width: 100%; }
+        input:focus, select:focus { border-color: #B76E79; box-shadow: 0 0 0 3px rgba(183, 110, 121, 0.15); background: #fff; }
+        
+        .btn-primary { background: linear-gradient(135deg, #B76E79 0%, #E6B3A3 100%); color: white; padding: 0.75rem 2rem; border-radius: 9999px; font-weight: bold; letter-spacing: 0.1em; transition: all 0.3s; box-shadow: 0 8px 20px rgba(183, 110, 121, 0.3); cursor: pointer; border: none; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(183, 110, 121, 0.4); }
+        .btn-primary:active { transform: translateY(1px); }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+        
+        .btn-secondary { background: white; color: #B76E79; border: 1px solid rgba(183, 110, 121, 0.3); padding: 0.75rem 1.5rem; border-radius: 9999px; font-weight: bold; transition: all 0.3s; cursor: pointer; }
+        .btn-secondary:hover { background: #FFFaf8; border-color: #B76E79; }
+
+        /* 視圖切換 */
+        .view-layer { position: absolute; inset: 0; width: 100%; height: 100%; display: flex; flex-direction: column; overflow: hidden; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; z-index: 10; }
+        .view-layer.active { opacity: 1; pointer-events: auto; z-index: 20; }
+        
+        /* 選項按鈕樣式 */
+        .opt-card { position: relative; border-radius: 1rem; padding: 1.5rem; color: white; font-weight: bold; display: flex; align-items: center; gap: 1rem; font-size: 1.5rem; overflow: hidden; transition: all 0.3s; }
+        .opt-0 { background-color: #E1707A; box-shadow: 0 8px 0 #C95660; }
+        .opt-1 { background-color: #E6B941; box-shadow: 0 8px 0 #C99E2E; }
+        .opt-2 { background-color: #4A8EB3; box-shadow: 0 8px 0 #367294; }
+        .opt-3 { background-color: #5A9E72; box-shadow: 0 8px 0 #427E58; }
+        
+        .player-opt-btn { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; border-radius: 1rem; color: white; font-size: 1.25rem; font-weight: bold; transition: transform 0.1s; border: none; cursor: pointer; }
+        .player-opt-btn:active:not(:disabled) { transform: translateY(6px); box-shadow: 0 2px 0 rgba(0,0,0,0.2) !important; }
+        
+        /* 倒數計時環 */
+        .timer-ring { width: 120px; height: 120px; border-radius: 50%; border: 8px solid rgba(183, 110, 121, 0.2); display: flex; align-items: center; justify-content: center; font-size: 3.5rem; font-weight: bold; color: #B76E79; font-family: sans-serif; }
+
+        /* Toast 提示 */
+        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 100000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast { background: rgba(255,255,255,0.98); border-left: 5px solid #B76E79; box-shadow: 0 10px 30px rgba(183, 110, 121, 0.2); padding: 1rem 1.5rem; border-radius: 8px; font-weight: bold; pointer-events: auto; }
+
+        /* 後台卡片 */
+        .dashboard-card { background: white; border: 1px solid rgba(183, 110, 121, 0.15); border-radius: 1.25rem; padding: 1.5rem; transition: all 0.3s; cursor: pointer; }
+        .dashboard-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(183, 110, 121, 0.15); border-color: rgba(183, 110, 121, 0.4); }
+    </style>
+</head>
+<body>
+
+<div id="loading-overlay" class="fixed inset-0 bg-white/90 backdrop-blur-sm z-[99999] flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+    <iconify-icon icon="line-md:loading-twotone-loop" class="text-7xl text-brand-rosegold mb-4"></iconify-icon>
+    <div id="loading-text" class="text-xl font-bold tracking-widest text-brand-dustyrose">處理中...</div>
+</div>
+
+<div id="toast-container"></div>
+
+<div id="app" class="w-full h-full relative bg-gradient-to-br from-brand-bg to-[#F8E8E8]">
+    <div id="celebration-container" class="absolute top-0 left-0 w-full h-full pointer-events-none z-[9999] overflow-hidden"></div>
+    
+    <div id="view-login" class="view-layer items-center justify-center p-6">
+        <div class="glass-panel p-10 md:p-14 rounded-[2rem] w-full max-w-md">
+            <div class="text-center mb-8">
+                <div class="font-sans text-brand-rosegold text-sm tracking-[0.3em] mb-2 uppercase font-bold">StoryWed Admin</div>
+                <h1 class="text-3xl font-serif font-bold text-brand-dustyrose">快問快答後台系統</h1>
+            </div>
+            <div class="flex flex-col gap-5">
+                <div>
+                    <label class="block text-sm font-bold text-brand-text/70 mb-2">帳號</label>
+                    <input type="text" id="login-username" placeholder="請輸入您的帳號">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-brand-text/70 mb-2">密碼</label>
+                    <input type="password" id="login-password" placeholder="請輸入密碼">
+                </div>
+                <button onclick="authLogic.login()" class="btn-primary w-full mt-4 text-lg">登入系統</button>
+                <div class="text-center text-sm text-brand-text/50 mt-4">
+                    還沒有帳號？ <button onclick="appState.showView('register')" class="text-brand-rosegold font-bold hover:underline">立即註冊</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-register" class="view-layer items-center justify-center p-6">
+        <div class="glass-panel p-10 md:p-14 rounded-[2rem] w-full max-w-md">
+            <div class="text-center mb-8">
+                <div class="font-sans text-brand-rosegold text-sm tracking-[0.3em] mb-2 uppercase font-bold">Create Account</div>
+                <h1 class="text-3xl font-serif font-bold text-brand-dustyrose">建立專屬管理帳號</h1>
+            </div>
+            <div class="flex flex-col gap-5">
+                <div>
+                    <label class="block text-sm font-bold text-brand-text/70 mb-2">設定帳號</label>
+                    <input type="text" id="reg-username" placeholder="請設定帳號名稱">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-brand-text/70 mb-2">設定密碼</label>
+                    <input type="password" id="reg-password" placeholder="請設定密碼">
+                </div>
+                <button onclick="authLogic.register()" class="btn-primary w-full mt-4 text-lg">完成註冊並登入</button>
+                <div class="text-center text-sm text-brand-text/50 mt-4">
+                    已有帳號？ <button onclick="appState.showView('login')" class="text-brand-rosegold font-bold hover:underline">返回登入</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-dashboard" class="view-layer overflow-y-auto p-4 md:p-8">
+        <div class="max-w-6xl mx-auto w-full">
+            <header class="flex justify-between items-end mb-10 pb-6 border-b border-brand-rosegold/20">
+                <div>
+                    <div class="font-sans text-brand-rosegold text-sm tracking-[0.3em] mb-1 uppercase font-bold">StoryWed Admin</div>
+                    <h2 class="text-3xl font-serif font-bold text-brand-dustyrose">我的遊戲房間</h2>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span class="font-bold text-brand-text/70">Hi, <span id="dash-username" class="text-brand-rosegold">User</span></span>
+                    <button onclick="authLogic.logout()" class="btn-secondary text-sm px-4 py-2">登出</button>
+                </div>
+            </header>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="room-list">
+                </div>
+
+            <div class="mt-10 flex justify-center">
+                <button onclick="dbLogic.createNewRoom()" class="btn-primary flex items-center gap-2 text-lg">
+                    <iconify-icon icon="ph:plus-circle-bold" class="text-2xl"></iconify-icon> 建立新遊戲房間
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-editor" class="view-layer overflow-y-auto p-4 md:p-8">
+        <div class="max-w-5xl mx-auto w-full">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                <div class="w-full md:w-1/2">
+                    <label class="block text-sm font-bold text-brand-text/70 mb-2">房間名稱</label>
+                    <input type="text" id="editor-room-title" class="text-2xl font-bold text-brand-dustyrose border-none shadow-sm" placeholder="例如：2026/05/30 晚宴快問快答">
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="appState.showView('dashboard')" class="btn-secondary">返回列表</button>
+                    <button onclick="editorLogic.saveRoom()" class="btn-primary">儲存設定</button>
+                    <button onclick="editorLogic.startGame()" class="btn-primary bg-gradient-to-r from-green-500 to-emerald-400 shadow-green-200">發起遊戲</button>
+                </div>
+            </div>
+            
+            <div class="flex justify-end gap-3 mb-6">
+                <button onclick="document.getElementById('import-modal').classList.remove('hidden')" class="btn-secondary text-sm flex items-center gap-2 px-4 py-2"><iconify-icon icon="ph:download-simple"></iconify-icon> 導入題庫</button>
+                <button onclick="hostLogic.exportConfig()" class="btn-secondary text-sm flex items-center gap-2 px-4 py-2"><iconify-icon icon="ph:upload-simple"></iconify-icon> 導出題庫</button>
+            </div>
+
+            <div id="questions-container" class="flex flex-col gap-6 mb-8">
+                </div>
+
+            <div class="flex justify-center mb-12">
+                <button onclick="editorLogic.addQuestionBlock()" class="btn-secondary flex items-center gap-2 border-dashed border-2 bg-white/50 hover:bg-white px-8 py-4 w-full max-w-md justify-center text-lg">
+                    <iconify-icon icon="ph:plus-circle" class="text-2xl"></iconify-icon> 新增一道題目
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-host-waiting" class="view-layer p-6 md:p-12 items-center justify-center">
+        <div class="w-full max-w-5xl glass-panel rounded-[2rem] flex flex-col md:flex-row overflow-hidden shadow-2xl relative">
+            <button onclick="hostLogic.closeRoom()" class="absolute top-4 right-4 text-brand-text/40 hover:text-red-500 transition-colors z-50 p-2" title="關閉房間">
+                <iconify-icon icon="ph:x-circle-bold" class="text-3xl"></iconify-icon>
+            </button>
+
+            <div class="w-full md:w-2/5 bg-white p-10 flex flex-col items-center justify-center border-r border-brand-rosegold/10">
+                <div class="font-sans text-brand-rosegold text-sm tracking-[0.3em] mb-2 uppercase font-bold">Join the Game</div>
+                <h3 class="text-3xl font-bold mb-2 tracking-widest text-brand-dustyrose">掃描加入遊戲</h3>
+                <p class="text-brand-text/50 mb-8 text-sm">請賓客使用手機相機掃描下方條碼</p>
+                <div id="qrcode-container" class="p-4 border-4 border-brand-rosegold/20 rounded-2xl mb-2 bg-white shadow-sm"></div>
+            </div>
+            <div class="w-full md:w-3/5 p-8 flex flex-col h-[550px] bg-white/40">
+                <div class="flex justify-between items-end mb-6 border-b border-brand-rosegold/20 pb-4">
+                    <div>
+                        <h3 class="text-2xl font-bold tracking-widest text-brand-dustyrose" id="hw-room-title">房間名稱</h3>
+                        <p class="text-sm text-brand-text/50 mt-1">目前加入人數</p>
+                    </div>
+                    <div class="text-brand-rosegold font-bold text-5xl font-sans"><span id="host-player-count">0</span></div>
+                </div>
+                <div id="host-player-list" class="flex-1 overflow-y-auto flex flex-wrap gap-3 content-start custom-scrollbar p-2">
+                    <div class="w-full h-full flex flex-col items-center justify-center text-brand-text/30 font-bold tracking-widest gap-4" id="empty-players-msg">
+                        <iconify-icon icon="ph:users-three-light" class="text-6xl"></iconify-icon>
+                        等待玩家連線中...
+                    </div>
+                </div>
+                <div class="mt-6 pt-4 flex justify-end">
+                    <button onclick="hostLogic.startQuiz()" id="btn-start-quiz" class="btn-primary text-xl px-12 py-4 w-full md:w-auto shadow-lg shadow-brand-rosegold/30" disabled>正式開始！</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-host-question" class="view-layer p-6 md:p-10 flex flex-col">
+        <div class="flex justify-between items-center mb-6 px-4 md:px-8">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-full bg-brand-rosegold text-white flex items-center justify-center font-bold text-xl shadow-md" id="hq-qnum">1</div>
+                <div id="hq-title" class="text-xl md:text-2xl font-bold tracking-widest text-brand-dustyrose">題目載入中...</div>
+            </div>
+            <div class="text-lg font-bold bg-white px-6 py-3 rounded-full shadow-md text-brand-text flex items-center gap-3">
+                <iconify-icon icon="ph:users-fill" class="text-brand-rosegold text-xl"></iconify-icon>
+                已作答：<span id="hq-answers-count" class="text-brand-rosegold text-2xl font-sans">0</span> / <span id="hq-total-count" class="font-sans">0</span>
+            </div>
+        </div>
+        
+        <div class="flex-1 flex flex-col justify-center items-center px-4 md:px-10 relative">
+            <div class="glass-panel p-8 md:p-12 rounded-3xl w-full max-w-5xl flex flex-col items-center justify-center shadow-xl relative overflow-hidden text-center min-h-[40vh]">
+                <h2 id="hq-text" class="text-4xl md:text-6xl font-bold leading-tight tracking-wide text-brand-dustyrose drop-shadow-sm z-10">題目內容</h2>
+                <img id="hq-img" src="" class="hidden mt-8 max-h-[35vh] object-contain rounded-xl shadow-lg border-4 border-white z-10">
+                
+                <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+                    <iconify-icon icon="ph:clock-light" class="text-[300px] text-brand-rosegold"></iconify-icon>
+                </div>
+            </div>
+            
+            <div class="timer-ring absolute right-4 md:right-10 top-0 md:top-1/2 md:-translate-y-1/2 bg-white shadow-2xl">
+                <span id="hq-timer">20</span>
+            </div>
+        </div>
+        
+        <div class="h-auto md:h-1/3 p-4 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 max-w-6xl mx-auto w-full">
+            <div class="opt-card opt-0 shadow-lg"><iconify-icon icon="ph:triangle-fill"></iconify-icon> <span id="hq-opt-0">選項 1</span></div>
+            <div class="opt-card opt-1 shadow-lg"><iconify-icon icon="ph:diamond-fill"></iconify-icon> <span id="hq-opt-1">選項 2</span></div>
+            <div class="opt-card opt-2 shadow-lg"><iconify-icon icon="ph:circle-fill"></iconify-icon> <span id="hq-opt-2">選項 3</span></div>
+            <div class="opt-card opt-3 shadow-lg"><iconify-icon icon="ph:square-fill"></iconify-icon> <span id="hq-opt-3">選項 4</span></div>
+        </div>
+    </div>
+
+    <div id="view-host-reveal" class="view-layer p-6 md:p-10 flex flex-col">
+        <div class="text-center mb-6 px-6">
+            <h2 id="hr-text" class="text-3xl md:text-5xl font-bold leading-tight tracking-wide text-brand-dustyrose drop-shadow-sm">題目內容</h2>
+        </div>
+        
+        <div class="flex-1 flex items-end justify-center gap-4 md:gap-12 pb-10 px-4 md:px-10 mt-4">
+            <div class="flex flex-col items-center gap-3 h-full justify-end w-20 md:w-32 relative group">
+                <div class="absolute -top-10 opacity-0 group-hover:opacity-100 transition-opacity bg-white px-3 py-1 rounded-lg shadow-md text-sm font-bold whitespace-nowrap z-20 pointer-events-none" id="hr-label-0">選項 1</div>
+                <span id="hr-count-0" class="text-2xl md:text-3xl font-bold text-brand-text font-sans">0</span>
+                <div class="w-full bg-[#E1707A] rounded-t-xl transition-all duration-1000 shadow-lg" id="hr-bar-0" style="height: 0%;"></div>
+            </div>
+            <div class="flex flex-col items-center gap-3 h-full justify-end w-20 md:w-32 relative group">
+                <div class="absolute -top-10 opacity-0 group-hover:opacity-100 transition-opacity bg-white px-3 py-1 rounded-lg shadow-md text-sm font-bold whitespace-nowrap z-20 pointer-events-none" id="hr-label-1">選項 2</div>
+                <span id="hr-count-1" class="text-2xl md:text-3xl font-bold text-brand-text font-sans">0</span>
+                <div class="w-full bg-[#E6B941] rounded-t-xl transition-all duration-1000 shadow-lg" id="hr-bar-1" style="height: 0%;"></div>
+            </div>
+            <div class="flex flex-col items-center gap-3 h-full justify-end w-20 md:w-32 relative group">
+                <div class="absolute -top-10 opacity-0 group-hover:opacity-100 transition-opacity bg-white px-3 py-1 rounded-lg shadow-md text-sm font-bold whitespace-nowrap z-20 pointer-events-none" id="hr-label-2">選項 3</div>
+                <span id="hr-count-2" class="text-2xl md:text-3xl font-bold text-brand-text font-sans">0</span>
+                <div class="w-full bg-[#4A8EB3] rounded-t-xl transition-all duration-1000 shadow-lg" id="hr-bar-2" style="height: 0%;"></div>
+            </div>
+            <div class="flex flex-col items-center gap-3 h-full justify-end w-20 md:w-32 relative group">
+                <div class="absolute -top-10 opacity-0 group-hover:opacity-100 transition-opacity bg-white px-3 py-1 rounded-lg shadow-md text-sm font-bold whitespace-nowrap z-20 pointer-events-none" id="hr-label-3">選項 4</div>
+                <span id="hr-count-3" class="text-2xl md:text-3xl font-bold text-brand-text font-sans">0</span>
+                <div class="w-full bg-[#5A9E72] rounded-t-xl transition-all duration-1000 shadow-lg" id="hr-bar-3" style="height: 0%;"></div>
+            </div>
+        </div>
+        
+        <div class="h-auto md:h-1/4 p-4 grid grid-cols-2 gap-4 relative max-w-6xl mx-auto w-full">
+            <div id="hr-optcard-0" class="opt-card opt-0 text-base md:text-xl"><iconify-icon icon="ph:triangle-fill"></iconify-icon> <span id="hr-opt-0" class="truncate">選項 1</span></div>
+            <div id="hr-optcard-1" class="opt-card opt-1 text-base md:text-xl"><iconify-icon icon="ph:diamond-fill"></iconify-icon> <span id="hr-opt-1" class="truncate">選項 2</span></div>
+            <div id="hr-optcard-2" class="opt-card opt-2 text-base md:text-xl"><iconify-icon icon="ph:circle-fill"></iconify-icon> <span id="hr-opt-2" class="truncate">選項 3</span></div>
+            <div id="hr-optcard-3" class="opt-card opt-3 text-base md:text-xl"><iconify-icon icon="ph:square-fill"></iconify-icon> <span id="hr-opt-3" class="truncate">選項 4</span></div>
+            
+            <button id="btn-host-next" class="absolute right-0 -top-20 md:-top-24 btn-primary text-lg md:text-xl px-6 md:px-10 py-3 md:py-4 shadow-2xl border-2 border-white flex items-center gap-2">下一題 <iconify-icon icon="ph:arrow-right-bold"></iconify-icon></button>
+        </div>
+    </div>
+
+    <div id="view-host-podium" class="view-layer overflow-y-auto items-center p-6 md:p-10">
+        <div class="text-center mb-10 mt-4 gs-reveal">
+            <div class="font-sans text-brand-rosegold text-sm tracking-[0.3em] mb-2 uppercase font-bold">Final Results</div>
+            <h1 class="text-4xl md:text-6xl font-serif text-gradient font-bold tracking-widest drop-shadow-sm">終極排行榜</h1>
+        </div>
+        
+        <div class="flex items-end justify-center gap-2 md:gap-6 h-[300px] md:h-[400px] mb-12 w-full max-w-4xl relative">
+            <div id="podium-2" class="w-1/3 flex flex-col items-center opacity-0 transform translate-y-10">
+                <div class="text-xl md:text-3xl font-bold text-gray-600 mb-1 md:mb-2 truncate w-full text-center px-1" id="p-name-2">---</div>
+                <div class="text-sm md:text-xl font-bold text-brand-rosegold mb-3 bg-white/80 px-4 py-1 rounded-full shadow-sm" id="p-score-2">0 分</div>
+                <div class="w-full bg-gradient-to-t from-gray-300 to-gray-100 rounded-t-2xl flex items-start justify-center pt-4 md:pt-6 shadow-[0_-10px_20px_rgba(0,0,0,0.1)] border-t-4 border-gray-400 relative overflow-hidden" style="height: 65%;">
+                    <span class="text-4xl md:text-6xl font-sans font-bold text-gray-500 drop-shadow-md">2</span>
+                </div>
+            </div>
+            <div id="podium-1" class="w-1/3 flex flex-col items-center opacity-0 transform translate-y-10 z-10">
+                <iconify-icon icon="ph:crown-fill" class="text-5xl md:text-7xl text-yellow-500 mb-2 drop-shadow-[0_5px_15px_rgba(234,179,8,0.5)] animate-bounce"></iconify-icon>
+                <div class="text-2xl md:text-4xl font-bold text-yellow-600 mb-1 md:mb-2 truncate w-full text-center px-1" id="p-name-1">---</div>
+                <div class="text-base md:text-2xl font-bold text-brand-rosegold mb-3 bg-white/90 px-5 py-1.5 rounded-full shadow-md" id="p-score-1">0 分</div>
+                <div class="w-full bg-gradient-to-t from-yellow-300 to-yellow-100 rounded-t-2xl flex items-start justify-center pt-4 md:pt-8 shadow-[0_-15px_30px_rgba(234,179,8,0.3)] border-t-4 border-yellow-400 relative overflow-hidden" style="height: 90%;">
+                    <span class="text-5xl md:text-8xl font-sans font-bold text-yellow-600 drop-shadow-lg">1</span>
+                </div>
+            </div>
+            <div id="podium-3" class="w-1/3 flex flex-col items-center opacity-0 transform translate-y-10">
+                <div class="text-xl md:text-3xl font-bold text-amber-700 mb-1 md:mb-2 truncate w-full text-center px-1" id="p-name-3">---</div>
+                <div class="text-sm md:text-xl font-bold text-brand-rosegold mb-3 bg-white/80 px-4 py-1 rounded-full shadow-sm" id="p-score-3">0 分</div>
+                <div class="w-full bg-gradient-to-t from-amber-400 to-amber-200 rounded-t-2xl flex items-start justify-center pt-4 md:pt-6 shadow-[0_-10px_20px_rgba(0,0,0,0.1)] border-t-4 border-amber-600 relative overflow-hidden" style="height: 50%;">
+                    <span class="text-4xl md:text-6xl font-sans font-bold text-amber-800 drop-shadow-md">3</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="w-full max-w-2xl bg-white/80 backdrop-blur-md rounded-3xl p-6 md:p-8 shadow-xl mb-10 opacity-0 border border-white" id="podium-list">
+            <h3 class="text-xl md:text-2xl font-bold text-center text-brand-dustyrose mb-6 border-b border-brand-rosegold/20 pb-4 tracking-widest">第 4 名 至 第 10 名</h3>
+            <div id="leaderboard-runners-up" class="flex flex-col gap-3"></div>
+        </div>
+        
+        <button onclick="hostLogic.closeRoom()" class="btn-secondary px-10 py-3 text-lg mb-10 shadow-sm">結束遊戲並返回列表</button>
+    </div>
+
+
+    <div id="view-player-join" class="view-layer items-center justify-center p-5 bg-white">
+        <div class="w-full max-w-md flex flex-col items-center">
+            <div class="font-sans text-brand-rosegold text-sm tracking-[0.3em] mb-8 uppercase font-bold text-center">StoryWed Interactive<br><span class="text-2xl font-serif text-brand-dustyrose mt-2 block tracking-widest">快問快答</span></div>
+            <div class="w-full bg-brand-bg rounded-3xl p-8 border border-brand-rosegold/20 shadow-2xl">
+                <div class="mb-6">
+                    <label class="block text-sm font-bold text-brand-text/60 mb-2">房間代碼</label>
+                    <input type="text" id="pj-room-input" class="w-full text-center text-2xl tracking-widest font-sans uppercase font-bold text-brand-rosegold" placeholder="請看大螢幕">
+                </div>
+                <div class="mb-8">
+                    <label class="block text-sm font-bold text-brand-text/60 mb-2">您的姓名（顯示於大螢幕）</label>
+                    <input type="text" id="pj-name-input" class="w-full text-center text-xl font-bold" placeholder="請輸入姓名">
+                </div>
+                <button onclick="playerLogic.joinGame()" class="btn-primary w-full py-4 text-lg shadow-lg shadow-brand-rosegold/30">確認加入</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-player-waiting" class="view-layer items-center justify-center p-6 bg-gradient-to-br from-brand-dustyrose to-brand-rosegold text-white">
+        <div class="text-center w-full max-w-sm">
+            <div class="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 backdrop-blur-sm border border-white/30 shadow-lg">
+                <iconify-icon icon="ph:check-bold" class="text-5xl"></iconify-icon>
+            </div>
+            <h2 class="text-3xl font-bold mb-4 tracking-widest drop-shadow-md">您已成功加入！</h2>
+            <div class="text-2xl font-bold bg-white/20 px-8 py-3 rounded-full mb-10 inline-block shadow-inner backdrop-blur-md border border-white/20" id="pw-name">玩家姓名</div>
+            <div class="bg-black/10 rounded-2xl p-6 backdrop-blur-sm">
+                <iconify-icon icon="line-md:loading-twotone-loop" class="text-4xl mb-3"></iconify-icon>
+                <p class="text-lg tracking-wide">請看大螢幕，等待遊戲開始...</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-player-question" class="view-layer bg-gray-50 flex flex-col">
+        <div class="bg-white shadow-md px-5 py-4 flex justify-between items-center z-10 shrink-0 border-b border-gray-200">
+            <div class="font-bold text-brand-dustyrose truncate pr-4 flex-1 text-lg" id="pq-text">題目文字...</div>
+            <div class="w-12 h-12 rounded-full border-4 border-brand-rosegold flex items-center justify-center font-sans font-bold text-xl text-brand-rosegold bg-brand-bg shadow-sm" id="pq-timer">20</div>
+        </div>
+        <div class="flex-1 grid grid-cols-2 gap-3 p-3">
+            <button onclick="playerLogic.submitAnswer(0)" class="pq-btn opt-0 player-opt-btn shadow-lg"><iconify-icon icon="ph:triangle-fill" class="text-7xl drop-shadow-md"></iconify-icon><span id="pq-opt-0" class="px-2 text-center text-lg md:text-xl line-clamp-3 leading-snug">選項 1</span></button>
+            <button onclick="playerLogic.submitAnswer(1)" class="pq-btn opt-1 player-opt-btn shadow-lg"><iconify-icon icon="ph:diamond-fill" class="text-7xl drop-shadow-md"></iconify-icon><span id="pq-opt-1" class="px-2 text-center text-lg md:text-xl line-clamp-3 leading-snug">選項 2</span></button>
+            <button onclick="playerLogic.submitAnswer(2)" class="pq-btn opt-2 player-opt-btn shadow-lg"><iconify-icon icon="ph:circle-fill" class="text-7xl drop-shadow-md"></iconify-icon><span id="pq-opt-2" class="px-2 text-center text-lg md:text-xl line-clamp-3 leading-snug">選項 3</span></button>
+            <button onclick="playerLogic.submitAnswer(3)" class="pq-btn opt-3 player-opt-btn shadow-lg"><iconify-icon icon="ph:square-fill" class="text-7xl drop-shadow-md"></iconify-icon><span id="pq-opt-3" class="px-2 text-center text-lg md:text-xl line-clamp-3 leading-snug">選項 4</span></button>
+        </div>
+    </div>
+
+    <div id="view-player-answered" class="view-layer items-center justify-center p-6 bg-gray-100">
+        <div class="text-center text-brand-text/60 w-full max-w-xs bg-white rounded-3xl p-8 shadow-xl border border-gray-200">
+            <iconify-icon icon="line-md:loading-twotone-loop" class="text-6xl mb-6 text-brand-rosegold"></iconify-icon>
+            <h2 class="text-2xl font-bold tracking-widest text-brand-dustyrose mb-2">已送出答案！</h2>
+            <p class="text-base tracking-wide">請看大螢幕等待結果揭曉...</p>
+        </div>
+    </div>
+
+    <div id="view-player-result" class="view-layer items-center justify-center p-6 text-white transition-colors duration-500">
+        <div class="text-center w-full max-w-sm">
+            <div class="w-28 h-28 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 backdrop-blur-sm border border-white/30 shadow-xl">
+                <iconify-icon id="pr-icon" icon="ph:check-bold" class="text-6xl drop-shadow-md"></iconify-icon>
+            </div>
+            <h2 id="pr-title" class="text-4xl font-bold mb-8 tracking-widest drop-shadow-md">答對了！</h2>
+            
+            <div class="bg-black/20 rounded-3xl p-8 backdrop-blur-sm shadow-inner mb-8 border border-white/10">
+                <div class="text-sm opacity-80 mb-2 tracking-widest">本題獲得</div>
+                <div class="flex items-baseline justify-center gap-1 mb-6">
+                    <span class="text-3xl font-bold">+</span><span id="pr-earned" class="text-5xl font-bold font-sans">850</span><span class="text-xl">分</span>
+                </div>
+                <div class="h-px w-full bg-white/30 mb-6"></div>
+                <div class="flex justify-between items-center text-lg font-bold">
+                    <span class="tracking-widest">總分</span><span id="pr-total" class="font-sans text-3xl text-brand-champagne drop-shadow-sm">1500</span>
+                </div>
+            </div>
+            
+            <div class="text-xl font-bold bg-white/20 py-4 rounded-full shadow-sm border border-white/30 backdrop-blur-sm tracking-widest" id="pr-rank">
+                目前排名：第 3 名
+            </div>
+        </div>
+    </div>
+
+    <div id="view-player-podium" class="view-layer items-center justify-center p-6 bg-gradient-to-br from-brand-dustyrose to-brand-rosegold text-white">
+        <div class="text-center w-full max-w-sm">
+            <iconify-icon icon="ph:confetti-light" class="text-7xl mb-6 text-brand-champagne drop-shadow-lg animate-bounce"></iconify-icon>
+            <h2 class="text-3xl font-bold mb-2 tracking-widest drop-shadow-md">遊戲結束！</h2>
+            <p class="text-lg opacity-90 mb-10 tracking-wide font-sans">StoryWed Interactive</p>
+            <div class="bg-white/10 rounded-3xl p-8 backdrop-blur-md shadow-2xl border border-white/30 relative overflow-hidden">
+                <div class="text-sm opacity-90 mb-3 tracking-widest">您的最終名次</div>
+                <div class="flex items-end justify-center gap-2 mb-8">
+                    <span class="text-2xl opacity-80 mb-2">第</span><span id="pp-rank" class="text-7xl font-bold font-sans text-brand-champagne drop-shadow-md">1</span><span class="text-2xl opacity-80 mb-2">名</span>
+                </div>
+                <div class="h-px w-full bg-white/30 mb-6"></div>
+                <div class="text-sm opacity-90 mb-2 tracking-widest">最終總分</div>
+                <div id="pp-total" class="text-4xl font-bold font-sans text-white drop-shadow-sm">1500</div>
+            </div>
+            <button onclick="location.reload()" class="mt-10 text-white/70 hover:text-white border border-white/30 px-6 py-2 rounded-full text-sm tracking-widest transition-colors">離開遊戲</button>
+        </div>
+    </div>
+
+    <div id="import-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-lg">
+            <h3 class="text-2xl font-bold text-brand-rosegold mb-2 text-center">導入設定代碼</h3>
+            <p class="text-brand-text/60 text-sm mb-4 text-center">您可以選擇上傳先前的 .txt 題庫檔案，或直接貼上代碼。</p>
+            
+            <input type="file" id="import-file-input" accept=".txt" class="mb-4 block w-full text-sm text-brand-text/70 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-rosegold/10 file:text-brand-rosegold hover:file:bg-brand-rosegold/20 cursor-pointer">
+            
+            <div class="flex items-center gap-4 mb-4">
+                <div class="h-px bg-gray-200 flex-1"></div>
+                <span class="text-xs text-gray-400 font-bold tracking-widest">或貼上代碼</span>
+                <div class="h-px bg-gray-200 flex-1"></div>
+            </div>
+
+            <textarea id="import-input" class="w-full h-24 border border-gray-300 rounded-xl p-4 mb-6 text-sm font-sans resize-none custom-scrollbar focus:border-brand-rosegold focus:ring-2 focus:ring-brand-rosegold/20" placeholder="STORYWEDKHT:..."></textarea>
+            
+            <div class="flex gap-4 justify-center">
+                <button onclick="document.getElementById('import-modal').classList.add('hidden')" class="btn-secondary w-1/2">取消</button>
+                <button onclick="hostLogic.importConfig()" class="btn-primary w-1/2">確認導入</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+/* ==========================================
+   主辦人 (Host) 其他連線與遊戲流程邏輯
+========================================== */
+
+hostLogic.exportConfig = () => {
+    hostLogic.buildConfigFromDOM();
+    if(hostLogic.quizConfig.questions.length === 0) {
+        appState.showToast('請至少完成一題設定再導出', 'error');
+        return;
+    }
+    const json = JSON.stringify(hostLogic.quizConfig);
+    const code = 'STORYWEDKHT:' + utf8_to_b64(json);
+    
+    // 生成 TXT 檔案並自動下載
+    const blob = new Blob([code], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    
+    const roomTitle = document.getElementById('editor-room-title').value.trim() || '未命名房間';
+    const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, '');
+    a.download = `快問快答題庫_${roomTitle}_${dateStr}.txt`;
+    
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    appState.showToast('設定已成功匯出為 TXT 檔案！請檢查下載資料夾。');
+};
+
+hostLogic.importConfig = () => {
+    const fileInput = document.getElementById('import-file-input');
+    const textInput = document.getElementById('import-input').value.trim();
+
+    if (fileInput.files && fileInput.files[0]) {
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            hostLogic.processImportCode(e.target.result.trim());
+        };
+        reader.onerror = () => appState.showToast('檔案讀取失敗', 'error');
+        reader.readAsText(file);
+    } else if (textInput) {
+        hostLogic.processImportCode(textInput);
+    } else {
+        appState.showToast('請選擇檔案或貼上代碼', 'error');
+    }
+};
+
+hostLogic.processImportCode = (val) => {
+    if(!val.startsWith('STORYWEDKHT:')) {
+        appState.showToast('檔案內容格式錯誤', 'error');
+        return;
+    }
+    try {
+        const b64 = val.replace('STORYWEDKHT:', '');
+        const json = b64_to_utf8(b64);
+        const data = JSON.parse(json);
+        if(data && data.questions) {
+            hostLogic.quizConfig = data;
+            document.getElementById('questions-container').innerHTML = '';
+            data.questions.forEach(q => hostLogic.addQuestionBlock(q));
+            
+            document.getElementById('import-modal').classList.add('hidden');
+            document.getElementById('import-file-input').value = '';
+            document.getElementById('import-input').value = '';
+            
+            appState.showToast('題庫導入成功！');
+        }
+    } catch(e) {
+        appState.showToast('代碼解析失敗，檔案可能已損毀', 'error');
+    }
+};
+
+hostLogic.updateWaitingRoomUI = () => {
+    const listDiv = document.getElementById('host-player-list');
+    const pNames = Object.keys(hostLogic.gameState.players);
+    document.getElementById('host-player-count').innerText = pNames.length;
+    
+    if (pNames.length > 0) {
+        document.getElementById('empty-players-msg').classList.add('hidden');
+        listDiv.innerHTML = '';
+        pNames.forEach(name => {
+            const badge = document.createElement('div');
+            badge.className = 'bg-white border border-brand-rosegold/30 text-brand-dustyrose px-4 py-2 rounded-full font-bold shadow-sm';
+            badge.innerText = name;
+            if (typeof gsap !== 'undefined') gsap.fromTo(badge, { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2)" });
+            listDiv.appendChild(badge);
+        });
+        document.getElementById('btn-start-quiz').disabled = false;
+    } else {
+        document.getElementById('empty-players-msg').classList.remove('hidden');
+        document.getElementById('btn-start-quiz').disabled = true;
+    }
+};
+
+hostLogic.handlePlayerJoin = (conn, name) => {
+    if (!hostLogic.gameState.players[name]) {
+        hostLogic.gameState.players[name] = { score: 0, answers: {} };
+    }
+    hostLogic.playerConns[name] = conn;
+    conn.send({ type: 'JOIN_ACK', name: name });
+    hostLogic.updateWaitingRoomUI();
+};
+
+hostLogic.broadcast = (data) => {
+    Object.values(hostLogic.playerConns).forEach(conn => {
+        if(conn.open) conn.send(data);
+    });
+};
+
+hostLogic.closeRoom = () => {
+    if(confirm('確定要關閉房間並結束連線嗎？玩家將會斷線。')) {
+        if(hostLogic.peer) hostLogic.peer.destroy();
+        hostLogic.playerConns = {};
+        hostLogic.gameState.players = {};
+        authLogic.loadDashboard();
+    }
+};
+
+hostLogic.startQuiz = () => {
+    hostLogic.gameState.currentQIndex = 0;
+    hostLogic.gameState.status = 'question';
+    hostLogic.runQuestion();
+};
+
+hostLogic.runQuestion = () => {
+    hostLogic.gameState.status = 'question';
+    hostLogic.gameState.currentAnswers = {};
+    
+    let qIdx = hostLogic.gameState.currentQIndex;
+    let q = hostLogic.quizConfig.questions[qIdx];
+    
+    document.getElementById('hq-qnum').innerText = qIdx + 1;
+    document.getElementById('hq-title').innerText = `共 ${hostLogic.quizConfig.questions.length} 題`;
+    document.getElementById('hq-text').innerText = q.text;
+    
+    const imgEl = document.getElementById('hq-img');
+    if (q.image) { imgEl.src = q.image; imgEl.classList.remove('hidden'); } 
+    else { imgEl.classList.add('hidden'); }
+    
+    for(let i=0; i<4; i++) {
+        document.getElementById(`hq-opt-${i}`).innerText = q.options[i];
+    }
+    
+    hostLogic.updateAnswersCountUI();
+    appState.showView('host-question');
+    
+    hostLogic.broadcast({
+        type: 'QUESTION_START',
+        qIndex: qIdx,
+        timeLimit: q.timeLimit,
+        options: q.options,
+        text: q.text
+    });
+    
+    let timeLeft = q.timeLimit;
+    const timerEl = document.getElementById('hq-timer');
+    timerEl.innerText = timeLeft;
+    timerEl.style.color = '#B76E79';
+    
+    hostLogic.gameState.questionStartTime = Date.now();
+    
+    hostLogic.gameState.timerInterval = setInterval(() => {
+        timeLeft--;
+        timerEl.innerText = timeLeft;
+        if(timeLeft <= 5) timerEl.style.color = '#ef4444'; 
+        if (timeLeft <= 0) hostLogic.endQuestion();
+    }, 1000);
+};
+
+hostLogic.updateAnswersCountUI = () => {
+    const total = Object.keys(hostLogic.gameState.players).length;
+    const answered = Object.keys(hostLogic.gameState.currentAnswers).length;
+    document.getElementById('hq-answers-count').innerText = answered;
+    document.getElementById('hq-total-count').innerText = total;
+};
+
+hostLogic.handlePlayerAnswer = (name, data) => {
+    if (hostLogic.gameState.status !== 'question') return;
+    if (hostLogic.gameState.currentAnswers[name]) return; 
+    
+    hostLogic.gameState.currentAnswers[name] = {
+        optionIndex: data.optionIndex,
+        elapsedTime: data.elapsedTime
+    };
+    
+    hostLogic.updateAnswersCountUI();
+    if (Object.keys(hostLogic.gameState.currentAnswers).length >= Object.keys(hostLogic.gameState.players).length) {
+        hostLogic.endQuestion();
+    }
+};
+
+hostLogic.endQuestion = () => {
+    clearInterval(hostLogic.gameState.timerInterval);
+    hostLogic.gameState.status = 'reveal';
+    
+    let q = hostLogic.quizConfig.questions[hostLogic.gameState.currentQIndex];
+    let voteCounts = [0, 0, 0, 0];
+    
+    for (let name in hostLogic.gameState.currentAnswers) {
+        let ans = hostLogic.gameState.currentAnswers[name];
+        voteCounts[ans.optionIndex]++;
+        
+        if (ans.optionIndex === q.correctIndex) {
+            let remaining = q.timeLimit - ans.elapsedTime;
+            if(remaining < 0) remaining = 0;
+            let pts = Math.round(500 + 500 * (remaining / q.timeLimit));
+            hostLogic.gameState.players[name].score += pts;
+            ans.scoreEarned = pts;
+            ans.correct = true;
+        } else {
+            ans.scoreEarned = 0;
+            ans.correct = false;
+        }
+    }
+    
+    let sortedNames = Object.keys(hostLogic.gameState.players).sort((a, b) => hostLogic.gameState.players[b].score - hostLogic.gameState.players[a].score);
+    
+    for (let name in hostLogic.playerConns) {
+        let ans = hostLogic.gameState.currentAnswers[name];
+        let isCorrect = ans ? ans.correct : false;
+        let earned = ans ? ans.scoreEarned : 0;
+        let total = hostLogic.gameState.players[name].score;
+        let rank = sortedNames.indexOf(name) + 1;
+        
+        if (hostLogic.playerConns[name].open) {
+            hostLogic.playerConns[name].send({
+                type: 'QUESTION_RESULT',
+                isCorrect, pointsEarned: earned, totalScore: total, rank
+            });
+        }
+    }
+    
+    document.getElementById('hr-text').innerText = q.text;
+    let maxVotes = Math.max(...voteCounts, 1); 
+    
+    for(let i=0; i<4; i++) {
+        document.getElementById(`hr-opt-${i}`).innerText = q.options[i];
+        document.getElementById(`hr-label-${i}`).innerText = q.options[i];
+        let bar = document.getElementById(`hr-bar-${i}`);
+        let countTxt = document.getElementById(`hr-count-${i}`);
+        let card = document.getElementById(`hr-optcard-${i}`);
+        
+        countTxt.innerText = voteCounts[i];
+        card.classList.remove('border-4', 'border-green-400', 'shadow-[0_0_20px_rgba(74,222,128,0.6)]', 'opacity-30', 'scale-105', 'z-10');
+        
+        setTimeout(() => { bar.style.height = `${(voteCounts[i] / maxVotes) * 100}%`; }, 100);
+        
+        if (i === q.correctIndex) {
+            card.classList.add('border-4', 'border-green-400', 'shadow-[0_0_20px_rgba(74,222,128,0.6)]', 'scale-105', 'z-10');
+        } else {
+            card.classList.add('opacity-30'); 
+        }
+    }
+    
+    const nextBtn = document.getElementById('btn-host

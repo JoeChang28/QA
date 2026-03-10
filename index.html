@@ -101,7 +101,7 @@
             <div class="flex flex-col gap-5">
                 <div>
                     <label class="block text-sm font-bold text-brand-text/70 mb-2">帳號</label>
-                    <input type="text" id="login-username" placeholder="請輸入您的帳號">
+                    <input type="text" id="login-username" placeholder="請輸入您的帳號" autocomplete="off">
                 </div>
                 <div>
                     <label class="block text-sm font-bold text-brand-text/70 mb-2">密碼</label>
@@ -124,7 +124,7 @@
             <div class="flex flex-col gap-5">
                 <div>
                     <label class="block text-sm font-bold text-brand-text/70 mb-2">設定帳號</label>
-                    <input type="text" id="reg-username" placeholder="請設定帳號名稱">
+                    <input type="text" id="reg-username" placeholder="請設定帳號名稱" autocomplete="off">
                 </div>
                 <div>
                     <label class="block text-sm font-bold text-brand-text/70 mb-2">設定密碼</label>
@@ -147,11 +147,9 @@
                 </div>
                 <div class="flex flex-wrap items-center gap-3">
                     <span class="font-bold text-brand-text/70 hidden sm:inline">Hi, <span id="dash-username" class="text-brand-rosegold">User</span></span>
-                    
                     <button id="btn-admin-panel" onclick="window.authLogic.showAdminPanel()" class="btn-secondary text-sm px-3 py-1.5 hidden items-center gap-1">
                         <iconify-icon icon="ph:users-three-bold"></iconify-icon> <span class="hidden sm:inline">帳號管理</span>
                     </button>
-                    
                     <button onclick="window.authLogic.logout()" class="btn-secondary text-sm px-3 py-1.5 flex items-center gap-1"><iconify-icon icon="ph:sign-out-bold"></iconify-icon> <span class="hidden sm:inline">登出</span></button>
                 </div>
             </header>
@@ -172,7 +170,7 @@
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
                 <div class="w-full md:w-1/2">
                     <label class="block text-sm font-bold text-brand-text/70 mb-2">房間名稱</label>
-                    <input type="text" id="editor-room-title" class="text-2xl font-bold text-brand-dustyrose border-none shadow-sm" placeholder="例如：2026/05/30 晚宴快問快答">
+                    <input type="text" id="editor-room-title" class="text-2xl font-bold text-brand-dustyrose border-none shadow-sm" placeholder="（例如：2026/05/30 晚宴快問快答）">
                 </div>
                 <div class="flex gap-3">
                     <button onclick="window.editorLogic.saveRoom(); window.authLogic.loadDashboard();" class="btn-secondary">返回列表</button>
@@ -246,6 +244,7 @@
             <div class="glass-panel p-8 md:p-12 rounded-3xl w-full max-w-5xl flex flex-col items-center justify-center shadow-xl relative overflow-hidden text-center min-h-[40vh]">
                 <h2 id="hq-text" class="text-4xl md:text-6xl font-bold leading-tight tracking-wide text-brand-dustyrose drop-shadow-sm z-10">題目內容</h2>
                 <img id="hq-img" src="" class="hidden mt-8 max-h-[35vh] object-contain rounded-xl shadow-lg border-4 border-white z-10">
+                
                 <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
                     <iconify-icon icon="ph:clock-light" class="text-[300px] text-brand-rosegold"></iconify-icon>
                 </div>
@@ -253,6 +252,11 @@
             
             <div class="timer-ring absolute right-4 md:right-10 top-0 md:top-1/2 md:-translate-y-1/2 bg-white shadow-2xl">
                 <span id="hq-timer">20</span>
+            </div>
+
+            <div id="hq-reveal-overlay" class="absolute inset-0 bg-white/70 backdrop-blur-md z-30 hidden flex-col items-center justify-center transition-opacity opacity-0 rounded-[2.5rem]">
+                <h2 class="text-5xl font-bold text-brand-dustyrose mb-8 drop-shadow-md tracking-widest">作答時間結束</h2>
+                <button onclick="window.hostLogic.revealAnswer()" class="btn-primary text-2xl px-12 py-6 shadow-2xl border-4 border-white animate-pulse">公佈解答與成績</button>
             </div>
         </div>
         
@@ -298,7 +302,22 @@
             <div id="hr-optcard-2" class="opt-card opt-2 text-base md:text-xl"><iconify-icon icon="ph:circle-fill"></iconify-icon> <span id="hr-opt-2" class="truncate">選項 3</span></div>
             <div id="hr-optcard-3" class="opt-card opt-3 text-base md:text-xl"><iconify-icon icon="ph:square-fill"></iconify-icon> <span id="hr-opt-3" class="truncate">選項 4</span></div>
             
-            <button id="btn-host-next" class="absolute right-0 -top-20 md:-top-24 btn-primary text-lg md:text-xl px-6 md:px-10 py-3 md:py-4 shadow-2xl border-2 border-white flex items-center gap-2">下一題 <iconify-icon icon="ph:arrow-right-bold"></iconify-icon></button>
+            <button id="btn-host-next" class="absolute right-0 -top-20 md:-top-24 btn-primary text-lg md:text-xl px-6 md:px-10 py-3 md:py-4 shadow-2xl border-2 border-white flex items-center gap-2">查看目前排名 <iconify-icon icon="ph:list-numbers-bold"></iconify-icon></button>
+        </div>
+    </div>
+
+    <div id="view-host-leaderboard" class="view-layer p-6 md:p-10 flex flex-col pointer-events-auto">
+        <div class="text-center mb-6 mt-4">
+            <div class="font-sans text-brand-rosegold text-sm tracking-[0.3em] mb-2 uppercase font-bold">Current Ranking</div>
+            <h2 class="text-3xl md:text-5xl font-serif text-gradient font-bold tracking-widest drop-shadow-sm">目前積分排行榜</h2>
+            <p class="text-brand-text/60 mt-3 tracking-widest">前十名玩家</p>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto max-w-4xl mx-auto w-full custom-scrollbar px-2" id="inter-leaderboard-list">
+            </div>
+        
+        <div class="h-24 flex items-center justify-center mt-4">
+            <button id="btn-leaderboard-next" class="btn-primary text-xl px-12 py-4 shadow-2xl border-2 border-white">下一題 <iconify-icon icon="ph:arrow-right-bold"></iconify-icon></button>
         </div>
     </div>
 
@@ -335,7 +354,8 @@
 
         <div class="w-full max-w-2xl bg-white/80 backdrop-blur-md rounded-3xl p-6 md:p-8 shadow-xl mb-10 opacity-0 border border-white transition-opacity duration-700" id="podium-list">
             <h3 class="text-xl md:text-2xl font-bold text-center text-brand-dustyrose mb-6 border-b border-brand-rosegold/20 pb-4 tracking-widest">第 4 名 至 第 10 名</h3>
-            <div id="leaderboard-runners-up" class="flex flex-col gap-3"></div>
+            <div id="leaderboard-runners-up" class="flex flex-col gap-3">
+                </div>
         </div>
         
         <div class="flex flex-col sm:flex-row justify-center gap-4 mb-10 w-full max-w-2xl px-6">
@@ -350,11 +370,11 @@
             <div class="w-full bg-brand-bg rounded-3xl p-8 border border-brand-rosegold/20 shadow-2xl">
                 <div class="mb-6">
                     <label class="block text-sm font-bold text-brand-text/60 mb-2">房間代碼</label>
-                    <input type="text" id="pj-room-input" class="w-full text-center text-2xl tracking-widest font-sans uppercase font-bold text-brand-rosegold" placeholder="請看大螢幕">
+                    <input type="text" id="pj-room-input" class="w-full text-center text-2xl tracking-widest font-sans uppercase font-bold text-brand-rosegold" placeholder="請看大螢幕" autocomplete="new-password">
                 </div>
                 <div class="mb-8">
                     <label class="block text-sm font-bold text-brand-text/60 mb-2">您的姓名（顯示於大螢幕）</label>
-                    <input type="text" id="pj-name-input" class="w-full text-center text-xl font-bold" placeholder="請輸入姓名" autocomplete="off">
+                    <input type="text" id="pj-name-input" class="w-full text-center text-xl font-bold" placeholder="請輸入姓名" autocomplete="new-password">
                 </div>
                 <button onclick="window.playerLogic.joinGame()" class="btn-primary w-full py-4 text-lg shadow-lg shadow-brand-rosegold/30">確認加入</button>
             </div>
@@ -417,6 +437,7 @@
             <div class="text-xl font-bold bg-white/20 py-4 rounded-full shadow-sm border border-white/30 backdrop-blur-sm tracking-widest text-center" id="pr-rank">
                 目前排名：第 - 名
             </div>
+            <p class="mt-6 opacity-80 text-sm tracking-widest font-bold">（等待下一題...）</p>
         </div>
     </div>
 
@@ -494,7 +515,7 @@
 window.appState = {
     myRole: 'host', 
     showView: (viewId) => {
-        const views = ['login', 'register', 'dashboard', 'editor', 'host-waiting', 'host-question', 'host-reveal', 'host-podium', 'player-join', 'player-waiting', 'player-question', 'player-answered', 'player-result', 'player-podium'];
+        const views = ['login', 'register', 'dashboard', 'editor', 'host-waiting', 'host-question', 'host-reveal', 'host-leaderboard', 'host-podium', 'player-join', 'player-waiting', 'player-question', 'player-answered', 'player-result', 'player-podium'];
         views.forEach(v => {
             const el = document.getElementById('view-' + v);
             if (el) el.classList.remove('active');
@@ -592,7 +613,6 @@ window.authLogic = {
     loadDashboard: () => {
         document.getElementById('dash-username').innerText = window.authLogic.currentUser;
         
-        // 只有 storywed 這個最高權限帳號看得到「帳號管理」按鈕
         const adminBtn = document.getElementById('btn-admin-panel');
         if(window.authLogic.currentUser === 'storywed') {
             adminBtn.classList.remove('hidden');
@@ -627,20 +647,23 @@ window.authLogic = {
         }
         window.appState.showView('dashboard');
     },
-    // 最高權限：查看所有帳號密碼
+    // 最高權限：查看所有帳號密碼與防刪除保護
     showAdminPanel: () => {
         if(window.authLogic.currentUser !== 'storywed') { window.appState.showToast('權限不足', 'error'); return; }
         const users = window.dbLogic.getUsers();
         const tbody = document.getElementById('admin-users-list');
         tbody.innerHTML = '';
         for(let u in users) {
+            let isSuperAdmin = (u === 'storywed');
+            let deleteBtnHTML = isSuperAdmin ? 
+                `<span class="text-gray-400 text-sm font-bold tracking-widest">無法刪除</span>` : 
+                `<button onclick="window.authLogic.deleteUser('${window.appState.escapeHTML(u)}')" class="text-red-400 hover:text-white px-3 py-1.5 rounded bg-red-50 hover:bg-red-400 transition-colors text-sm font-bold shadow-sm">刪除</button>`;
+            
             tbody.innerHTML += `
                 <tr class="border-b border-gray-100 last:border-0 hover:bg-white transition-colors">
                     <td class="py-4 pl-2 font-bold text-brand-text">${window.appState.escapeHTML(u)}</td>
                     <td class="py-4 font-mono text-gray-500">${window.appState.escapeHTML(users[u].password)}</td>
-                    <td class="py-4 text-right pr-2">
-                        <button onclick="window.authLogic.deleteUser('${window.appState.escapeHTML(u)}')" class="text-red-400 hover:text-white px-3 py-1.5 rounded bg-red-50 hover:bg-red-400 transition-colors text-sm font-bold shadow-sm">刪除</button>
-                    </td>
+                    <td class="py-4 text-right pr-2">${deleteBtnHTML}</td>
                 </tr>
             `;
         }
@@ -648,8 +671,8 @@ window.authLogic = {
         document.getElementById('admin-modal').classList.add('flex');
     },
     deleteUser: (username) => {
-        if(username === window.authLogic.currentUser) {
-            window.appState.showToast('無法刪除目前登入的帳號', 'error'); return;
+        if(username === 'storywed') {
+            window.appState.showToast('無法刪除超級管理員帳號', 'error'); return;
         }
         if(confirm(`確定要刪除帳號 ${username} 嗎？`)) {
             const users = window.dbLogic.getUsers();
@@ -711,7 +734,6 @@ window.editorLogic = {
     addQuestionBlock: (data = null) => { window.hostLogic.addQuestionBlock(data); }
 };
 
-// 圖片壓縮
 function compressImage(file, callback) {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -741,13 +763,13 @@ window.hostLogic = {
     
     addQuestionBlock: (data = null) => {
         const container = document.getElementById('questions-container');
-        const qid = window.hostLogic.qCounter++;
+        const qid = 'q_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
         const div = document.createElement('div');
         div.className = 'question-setup-block glass-panel p-5 md:p-8 rounded-[1.5rem] relative border-t-4 border-t-brand-rosegold mb-6';
-        let dText = data ? data.text : ''; let dTime = data ? data.timeLimit : 20; let dImg = data && data.image ? data.image : ''; let dOpts = data ? data.options : ['', '', '', '']; let dCorr = data ? data.correctIndex : 0;
+        let dText = data ? data.text : ''; let dTime = data ? data.timeLimit : 10; let dImg = data && data.image ? data.image : ''; let dOpts = data ? data.options : ['', '', '', '']; let dCorr = data ? data.correctIndex : 0;
         div.innerHTML = `
             <div class="absolute top-4 right-4 flex gap-3">
-                <div class="text-brand-text/40 font-bold font-sans text-lg">Q${qid + 1}</div>
+                <div class="text-brand-text/40 font-bold font-sans text-lg"><iconify-icon icon="ph:question-light"></iconify-icon></div>
                 <button onclick="this.closest('.question-setup-block').remove()" class="text-gray-300 hover:text-red-500 transition-colors bg-white rounded-full w-8 h-8 shadow-sm flex items-center justify-center border border-gray-100" title="刪除此題"><iconify-icon icon="ph:trash-bold"></iconify-icon></button>
             </div>
             <div class="mb-6 pr-16">
@@ -763,16 +785,42 @@ window.hostLogic = {
                 <div class="w-full md:w-48 bg-brand-rosegold/5 p-4 rounded-2xl border border-brand-rosegold/10 flex flex-col justify-center">
                     <label class="block font-bold mb-2 text-sm text-brand-dustyrose tracking-widest text-center"><iconify-icon icon="ph:timer"></iconify-icon> 答題秒數</label>
                     <select class="q-time w-full font-bold text-brand-text text-xl text-center py-3 border-white shadow-sm">
-                        <option value="10" ${dTime===10?'selected':''}>10 秒</option><option value="15" ${dTime===15?'selected':''}>15 秒</option><option value="20" ${dTime===20?'selected':''}>20 秒</option><option value="30" ${dTime===30?'selected':''}>30 秒</option><option value="60" ${dTime===60?'selected':''}>60 秒</option>
+                        <option value="10" ${dTime===10?'selected':''}>10 秒</option>
+                        <option value="15" ${dTime===15?'selected':''}>15 秒</option>
+                        <option value="20" ${dTime===20?'selected':''}>20 秒</option>
                     </select>
                 </div>
             </div>
             <label class="block font-bold mb-3 text-brand-dustyrose tracking-widest text-sm">設定選項與正確答案（點擊左側圓圈設定正解）</label>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="flex items-center gap-3 p-2 bg-white rounded-2xl border-2 border-opt-red/30 focus-within:border-opt-red focus-within:shadow-md transition-all"><div class="w-12 h-12 flex items-center justify-center bg-opt-red/10 rounded-xl relative cursor-pointer"><input type="radio" name="correct-${qid}" class="q-correct-radio absolute inset-0 w-full h-full opacity-0 cursor-pointer peer" ${dCorr===0?'checked':''}><iconify-icon icon="ph:check-circle-fill" class="text-3xl text-opt-red opacity-20 peer-checked:opacity-100 transition-opacity"></iconify-icon></div><input type="text" class="q-opt-0 flex-1 border-none bg-transparent font-bold text-lg px-2 placeholder-gray-300" placeholder="選項 1" value="${window.appState.escapeHTML(dOpts[0])}"></div>
-                <div class="flex items-center gap-3 p-2 bg-white rounded-2xl border-2 border-opt-yellow/30 focus-within:border-opt-yellow focus-within:shadow-md transition-all"><div class="w-12 h-12 flex items-center justify-center bg-opt-yellow/10 rounded-xl relative cursor-pointer"><input type="radio" name="correct-${qid}" class="q-correct-radio absolute inset-0 w-full h-full opacity-0 cursor-pointer peer" ${dCorr===1?'checked':''}><iconify-icon icon="ph:check-circle-fill" class="text-3xl text-opt-yellow opacity-20 peer-checked:opacity-100 transition-opacity"></iconify-icon></div><input type="text" class="q-opt-1 flex-1 border-none bg-transparent font-bold text-lg px-2 placeholder-gray-300" placeholder="選項 2" value="${window.appState.escapeHTML(dOpts[1])}"></div>
-                <div class="flex items-center gap-3 p-2 bg-white rounded-2xl border-2 border-opt-blue/30 focus-within:border-opt-blue focus-within:shadow-md transition-all"><div class="w-12 h-12 flex items-center justify-center bg-opt-blue/10 rounded-xl relative cursor-pointer"><input type="radio" name="correct-${qid}" class="q-correct-radio absolute inset-0 w-full h-full opacity-0 cursor-pointer peer" ${dCorr===2?'checked':''}><iconify-icon icon="ph:check-circle-fill" class="text-3xl text-opt-blue opacity-20 peer-checked:opacity-100 transition-opacity"></iconify-icon></div><input type="text" class="q-opt-2 flex-1 border-none bg-transparent font-bold text-lg px-2 placeholder-gray-300" placeholder="選項 3" value="${window.appState.escapeHTML(dOpts[2])}"></div>
-                <div class="flex items-center gap-3 p-2 bg-white rounded-2xl border-2 border-opt-green/30 focus-within:border-opt-green focus-within:shadow-md transition-all"><div class="w-12 h-12 flex items-center justify-center bg-opt-green/10 rounded-xl relative cursor-pointer"><input type="radio" name="correct-${qid}" class="q-correct-radio absolute inset-0 w-full h-full opacity-0 cursor-pointer peer" ${dCorr===3?'checked':''}><iconify-icon icon="ph:check-circle-fill" class="text-3xl text-opt-green opacity-20 peer-checked:opacity-100 transition-opacity"></iconify-icon></div><input type="text" class="q-opt-3 flex-1 border-none bg-transparent font-bold text-lg px-2 placeholder-gray-300" placeholder="選項 4" value="${window.appState.escapeHTML(dOpts[3])}"></div>
+                <div class="flex items-center gap-3 p-2 bg-white rounded-2xl border-2 border-opt-red/30 focus-within:border-opt-red focus-within:shadow-md transition-all">
+                    <label class="w-12 h-12 flex items-center justify-center bg-opt-red/10 rounded-xl relative cursor-pointer m-0">
+                        <input type="radio" name="correct-${qid}" class="q-correct-radio absolute w-0 h-0 opacity-0 peer" ${dCorr===0?'checked':''}>
+                        <iconify-icon icon="ph:check-circle-fill" class="text-3xl text-opt-red opacity-20 peer-checked:opacity-100 transition-opacity"></iconify-icon>
+                    </label>
+                    <input type="text" class="q-opt-0 flex-1 border-none bg-transparent font-bold text-lg px-2 placeholder-gray-300" placeholder="選項 1" value="${window.appState.escapeHTML(dOpts[0])}">
+                </div>
+                <div class="flex items-center gap-3 p-2 bg-white rounded-2xl border-2 border-opt-yellow/30 focus-within:border-opt-yellow focus-within:shadow-md transition-all">
+                    <label class="w-12 h-12 flex items-center justify-center bg-opt-yellow/10 rounded-xl relative cursor-pointer m-0">
+                        <input type="radio" name="correct-${qid}" class="q-correct-radio absolute w-0 h-0 opacity-0 peer" ${dCorr===1?'checked':''}>
+                        <iconify-icon icon="ph:check-circle-fill" class="text-3xl text-opt-yellow opacity-20 peer-checked:opacity-100 transition-opacity"></iconify-icon>
+                    </label>
+                    <input type="text" class="q-opt-1 flex-1 border-none bg-transparent font-bold text-lg px-2 placeholder-gray-300" placeholder="選項 2" value="${window.appState.escapeHTML(dOpts[1])}">
+                </div>
+                <div class="flex items-center gap-3 p-2 bg-white rounded-2xl border-2 border-opt-blue/30 focus-within:border-opt-blue focus-within:shadow-md transition-all">
+                    <label class="w-12 h-12 flex items-center justify-center bg-opt-blue/10 rounded-xl relative cursor-pointer m-0">
+                        <input type="radio" name="correct-${qid}" class="q-correct-radio absolute w-0 h-0 opacity-0 peer" ${dCorr===2?'checked':''}>
+                        <iconify-icon icon="ph:check-circle-fill" class="text-3xl text-opt-blue opacity-20 peer-checked:opacity-100 transition-opacity"></iconify-icon>
+                    </label>
+                    <input type="text" class="q-opt-2 flex-1 border-none bg-transparent font-bold text-lg px-2 placeholder-gray-300" placeholder="選項 3" value="${window.appState.escapeHTML(dOpts[2])}">
+                </div>
+                <div class="flex items-center gap-3 p-2 bg-white rounded-2xl border-2 border-opt-green/30 focus-within:border-opt-green focus-within:shadow-md transition-all">
+                    <label class="w-12 h-12 flex items-center justify-center bg-opt-green/10 rounded-xl relative cursor-pointer m-0">
+                        <input type="radio" name="correct-${qid}" class="q-correct-radio absolute w-0 h-0 opacity-0 peer" ${dCorr===3?'checked':''}>
+                        <iconify-icon icon="ph:check-circle-fill" class="text-3xl text-opt-green opacity-20 peer-checked:opacity-100 transition-opacity"></iconify-icon>
+                    </label>
+                    <input type="text" class="q-opt-3 flex-1 border-none bg-transparent font-bold text-lg px-2 placeholder-gray-300" placeholder="選項 4" value="${window.appState.escapeHTML(dOpts[3])}">
+                </div>
             </div>`;
         container.appendChild(div);
     },
@@ -844,33 +892,39 @@ window.hostLogic = {
     createGameRoom: () => {
         window.appState.showLoading('啟動遊戲伺服器中...');
         
-        // 強制清空所有舊的連線與狀態，準備乾淨的下一輪
+        const startServer = () => {
+            window.hostLogic.playerConns = {};
+            window.hostLogic.gameState.players = {};
+            window.hostLogic.gameState.currentAnswers = {};
+            window.hostLogic.gameState.status = 'idle';
+            window.hostLogic.updateWaitingRoomUI();
+
+            window.hostLogic.peer = new Peer();
+            window.hostLogic.peer.on('open', (id) => {
+                window.hostLogic.roomId = id;
+                const joinUrl = window.location.href.split('?')[0] + '?role=player&room=' + id;
+                document.getElementById('qrcode-container').innerHTML = '';
+                new QRCode(document.getElementById("qrcode-container"), { text: joinUrl, width: 220, height: 220, colorDark : "#B76E79", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.H });
+                document.getElementById('hw-room-title').innerText = window.dbLogic.getRooms().find(r=>r.id===window.editorLogic.currentRoomId)?.title || '快問快答遊戲';
+                window.appState.hideLoading();
+                window.appState.showView('host-waiting');
+            });
+            window.hostLogic.peer.on('connection', (conn) => {
+                conn.on('data', (data) => {
+                    if (data.type === 'JOIN') window.hostLogic.handlePlayerJoin(conn, data.name);
+                    if (data.type === 'ANSWER') window.hostLogic.handlePlayerAnswer(data.name, data);
+                });
+            });
+            window.hostLogic.peer.on('error', () => { window.appState.hideLoading(); window.appState.showToast('伺服器連線失敗', 'error'); });
+        };
+
         if (window.hostLogic.peer) {
             window.hostLogic.peer.destroy();
+            window.hostLogic.peer = null;
+            setTimeout(startServer, 600); // 防卡死延遲清理
+        } else {
+            startServer();
         }
-        window.hostLogic.playerConns = {};
-        window.hostLogic.gameState.players = {};
-        window.hostLogic.gameState.currentAnswers = {};
-        window.hostLogic.gameState.status = 'idle';
-        window.hostLogic.updateWaitingRoomUI();
-
-        window.hostLogic.peer = new Peer();
-        window.hostLogic.peer.on('open', (id) => {
-            window.hostLogic.roomId = id;
-            const joinUrl = window.location.href.split('?')[0] + '?role=player&room=' + id;
-            document.getElementById('qrcode-container').innerHTML = '';
-            new QRCode(document.getElementById("qrcode-container"), { text: joinUrl, width: 220, height: 220, colorDark : "#B76E79", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.H });
-            document.getElementById('hw-room-title').innerText = window.dbLogic.getRooms().find(r=>r.id===window.editorLogic.currentRoomId)?.title || '快問快答遊戲';
-            window.appState.hideLoading();
-            window.appState.showView('host-waiting');
-        });
-        window.hostLogic.peer.on('connection', (conn) => {
-            conn.on('data', (data) => {
-                if (data.type === 'JOIN') window.hostLogic.handlePlayerJoin(conn, data.name);
-                if (data.type === 'ANSWER') window.hostLogic.handlePlayerAnswer(data.name, data);
-            });
-        });
-        window.hostLogic.peer.on('error', () => { window.appState.hideLoading(); window.appState.showToast('伺服器連線失敗', 'error'); });
     },
     updateWaitingRoomUI: () => {
         const listDiv = document.getElementById('host-player-list');
@@ -903,7 +957,10 @@ window.hostLogic = {
     closeRoom: (force = false) => {
         if(!force && !confirm('確定要關閉房間並結束連線嗎？玩家將會斷線。')) return;
         window.hostLogic.broadcast({ type: 'HOST_CLOSED' }); // 通知所有玩家強制離開
-        if(window.hostLogic.peer) window.hostLogic.peer.destroy();
+        if(window.hostLogic.peer) {
+            window.hostLogic.peer.destroy();
+            window.hostLogic.peer = null;
+        }
         window.hostLogic.playerConns = {}; 
         window.hostLogic.gameState.players = {};
         window.authLogic.loadDashboard();
@@ -931,7 +988,13 @@ window.hostLogic = {
         
         let timeLeft = q.timeLimit;
         const timerEl = document.getElementById('hq-timer');
-        timerEl.innerText = timeLeft; timerEl.style.color = '#B76E79';
+        timerEl.innerText = timeLeft;
+        timerEl.style.color = '#B76E79';
+        timerEl.style.fontSize = '3.5rem';
+        
+        document.getElementById('hq-reveal-overlay').classList.add('hidden');
+        document.getElementById('hq-reveal-overlay').classList.remove('flex', 'opacity-100');
+        
         window.hostLogic.gameState.questionStartTime = Date.now();
         window.hostLogic.gameState.timerInterval = setInterval(() => {
             timeLeft--; timerEl.innerText = timeLeft;
@@ -951,7 +1014,23 @@ window.hostLogic = {
     },
     endQuestion: () => {
         clearInterval(window.hostLogic.gameState.timerInterval);
-        window.hostLogic.gameState.status = 'reveal';
+        window.hostLogic.gameState.status = 'wait_reveal'; // 防作弊第一段：等待公佈
+        
+        document.getElementById('hq-timer').innerText = '時間到';
+        document.getElementById('hq-timer').style.fontSize = '1.5rem';
+        
+        const overlay = document.getElementById('hq-reveal-overlay');
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+        setTimeout(() => { overlay.classList.remove('opacity-0'); overlay.classList.add('opacity-100'); }, 50);
+    },
+    revealAnswer: () => {
+        const overlay = document.getElementById('hq-reveal-overlay');
+        overlay.classList.add('hidden', 'opacity-0');
+        overlay.classList.remove('flex', 'opacity-100');
+        
+        window.hostLogic.gameState.status = 'reveal'; // 防作弊第二段：正式公佈
+        
         let q = window.hostLogic.quizConfig.questions[window.hostLogic.gameState.currentQIndex];
         let voteCounts = [0, 0, 0, 0];
         
@@ -968,7 +1047,7 @@ window.hostLogic = {
         
         let sortedNames = Object.keys(window.hostLogic.gameState.players).sort((a, b) => window.hostLogic.gameState.players[b].score - window.hostLogic.gameState.players[a].score);
         
-        // 確保每一輪結束後，所有玩家都能正確收到當前的即時排名資訊
+        // 正式推播成績到玩家手機
         for (let name in window.hostLogic.playerConns) {
             let ans = window.hostLogic.gameState.currentAnswers[name];
             if (window.hostLogic.playerConns[name].open) {
@@ -994,6 +1073,30 @@ window.hostLogic = {
         }
         
         const nextBtn = document.getElementById('btn-host-next');
+        nextBtn.innerHTML = '查看目前排名 <iconify-icon icon="ph:list-numbers-bold"></iconify-icon>';
+        nextBtn.onclick = () => { window.hostLogic.showIntermediateLeaderboard(sortedNames); };
+        
+        window.appState.showView('host-reveal');
+    },
+    showIntermediateLeaderboard: (sortedNames) => {
+        const listContainer = document.getElementById('inter-leaderboard-list');
+        listContainer.innerHTML = '';
+        
+        const top10 = sortedNames.slice(0, 10);
+        top10.forEach((name, idx) => {
+            let score = window.hostLogic.gameState.players[name].score;
+            listContainer.innerHTML += `
+                <div class="flex justify-between items-center bg-white p-4 md:p-5 rounded-2xl border border-brand-rosegold/20 shadow-sm mb-3">
+                    <div class="flex items-center gap-4">
+                        <span class="text-brand-rosegold font-bold w-8 text-right text-2xl font-sans">${idx + 1}.</span>
+                        <span class="font-bold text-xl text-brand-text tracking-wide">${window.appState.escapeHTML(name)}</span>
+                    </div>
+                    <span class="font-bold text-brand-dustyrose font-sans text-2xl">${score} 分</span>
+                </div>
+            `;
+        });
+        
+        const nextBtn = document.getElementById('btn-leaderboard-next');
         if (window.hostLogic.gameState.currentQIndex < window.hostLogic.quizConfig.questions.length - 1) {
             nextBtn.innerHTML = '下一題 <iconify-icon icon="ph:arrow-right-bold"></iconify-icon>';
             nextBtn.onclick = () => {
@@ -1002,10 +1105,11 @@ window.hostLogic = {
                 window.hostLogic.runQuestion();
             };
         } else {
-            nextBtn.innerHTML = '🏆 終極排行榜 🏆';
+            nextBtn.innerHTML = '🏆 進入最終頒獎台 🏆';
             nextBtn.onclick = () => { window.hostLogic.showPodium(sortedNames); };
         }
-        window.appState.showView('host-reveal');
+        
+        window.appState.showView('host-leaderboard');
     },
     exportResults: () => {
         if (!window.hostLogic.gameState.players || Object.keys(window.hostLogic.gameState.players).length === 0) {
@@ -1034,7 +1138,6 @@ window.hostLogic = {
     showPodium: (sortedNames) => {
         window.appState.showView('host-podium');
         
-        // 絕對保證最後一刻，強制向所有玩家設備同步最終總分與排名
         for (let name in window.hostLogic.playerConns) {
             if (window.hostLogic.playerConns[name].open) {
                 window.hostLogic.playerConns[name].send({ 
@@ -1090,6 +1193,9 @@ window.hostLogic = {
     }
 };
 
+/* ==========================================
+   玩家 (Player) 邏輯
+========================================== */
 window.playerLogic = {
     peer: null, hostConn: null, myName: '', questionStartTime: 0, timeLimit: 20, localTimerInterval: null,
     joinGame: () => {
@@ -1124,8 +1230,13 @@ window.playerLogic = {
         if(window.playerLogic.hostConn) window.playerLogic.hostConn.close();
         if(window.playerLogic.peer) window.playerLogic.peer.destroy();
         window.playerLogic.myName = '';
+        
+        // 絕對清空玩家殘留名字，並重置狀態
         const nameInput = document.getElementById('pj-name-input');
-        if(nameInput) { nameInput.value = ''; nameInput.focus(); nameInput.blur(); }
+        if(nameInput) { 
+            nameInput.value = ''; 
+            nameInput.setAttribute('autocomplete', 'new-password'); // 阻擋瀏覽器自動填入
+        }
         window.appState.showView('player-join');
     },
     handleQuestionStart: (data) => {
@@ -1197,14 +1308,20 @@ window.initApp = function() {
     if (urlParams.get('role') === 'player' || urlParams.get('room')) {
         const inputEl = document.getElementById('pj-room-input');
         if (inputEl && urlParams.get('room')) inputEl.value = urlParams.get('room');
+        
+        // 確保剛進來時，名字框被強制清空
         const nameInput = document.getElementById('pj-name-input');
-        if(nameInput) { nameInput.value = ''; nameInput.focus(); nameInput.blur(); } 
+        if(nameInput) { 
+            nameInput.value = ''; 
+            nameInput.setAttribute('autocomplete', 'new-password'); 
+        } 
         window.appState.goToPlayerJoin();
     } else {
         window.appState.showView('login');
     }
 };
 
+// 保證畫面讀取後絕對會執行初始化，杜絕白畫面
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', window.initApp);
 } else {

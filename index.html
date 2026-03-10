@@ -49,18 +49,18 @@
         input:focus, select:focus { border-color: #B76E79; box-shadow: 0 0 0 3px rgba(183, 110, 121, 0.15); background: #fff; }
         
         .btn-primary { background: linear-gradient(135deg, #B76E79 0%, #E6B3A3 100%); color: white; padding: 0.85rem 2rem; border-radius: 9999px; font-weight: bold; letter-spacing: 0.1em; transition: all 0.3s; box-shadow: 0 8px 20px rgba(183, 110, 121, 0.3); cursor: pointer; border: none; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(183, 110, 121, 0.4); }
-        .btn-primary:active { transform: translateY(1px); }
+        .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(183, 110, 121, 0.4); }
+        .btn-primary:active:not(:disabled) { transform: translateY(1px); }
         .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
         
         .btn-secondary { background: white; color: #B76E79; border: 1px solid rgba(183, 110, 121, 0.3); padding: 0.75rem 1.5rem; border-radius: 9999px; font-weight: bold; transition: all 0.3s; cursor: pointer; }
         .btn-secondary:hover { background: #FFFaf8; border-color: #B76E79; }
 
-        /* 視圖切換（修復手機版阻擋點擊的問題） */
+        /* 視圖切換（控制畫面層級與顯示） */
         .view-layer { position: absolute; inset: 0; width: 100%; height: 100%; display: flex; flex-direction: column; overflow: hidden; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.4s ease, visibility 0.4s; z-index: 10; }
         .view-layer.active { opacity: 1; visibility: visible; pointer-events: auto; z-index: 20; }
         
-        /* 選項按鈕樣式 */
+        /* 選項按鈕樣式 (主辦人與玩家共用) */
         .opt-card { position: relative; border-radius: 1rem; padding: 1.5rem; color: white; font-weight: bold; display: flex; align-items: center; gap: 1rem; font-size: 1.5rem; overflow: hidden; transition: all 0.3s; }
         .opt-0 { background-color: #E1707A; box-shadow: 0 8px 0 #C95660; }
         .opt-1 { background-color: #E6B941; box-shadow: 0 8px 0 #C99E2E; }
@@ -74,72 +74,19 @@
         .timer-ring { width: 120px; height: 120px; border-radius: 50%; border: 8px solid rgba(183, 110, 121, 0.2); display: flex; align-items: center; justify-content: center; font-size: 3.5rem; font-weight: bold; color: #B76E79; font-family: sans-serif; }
 
         /* Toast 提示 */
-        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 100000; display: flex; flex-direction: column; gap: 10px; width: 0; height: 0; overflow: visible; align-items: flex-end; justify-content: flex-end; }
-        .toast { width: max-content; background: rgba(255,255,255,0.98); border-left: 5px solid #B76E79; box-shadow: 0 10px 30px rgba(183, 110, 121, 0.2); padding: 1rem 1.5rem; border-radius: 8px; font-weight: bold; pointer-events: auto; }
+        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 100000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; width: auto; align-items: flex-end; }
+        .toast { background: rgba(255,255,255,0.98); border-left: 5px solid #B76E79; box-shadow: 0 10px 30px rgba(183, 110, 121, 0.2); padding: 1rem 1.5rem; border-radius: 8px; font-weight: bold; pointer-events: auto; white-space: nowrap; }
 
         /* 後台卡片 */
         .dashboard-card { background: white; border: 1px solid rgba(183, 110, 121, 0.15); border-radius: 1.25rem; padding: 1.5rem; transition: all 0.3s; cursor: pointer; }
         .dashboard-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(183, 110, 121, 0.15); border-color: rgba(183, 110, 121, 0.4); }
-
-        /* 拉霸機特效專用樣式 */
-        .slot-window {
-            height: 90px;
-            overflow: hidden;
-            position: relative;
-            width: 100%;
-            mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
-            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
-        }
-        @media(min-width: 768px) {
-            .slot-window { height: 130px; }
-        }
-        .slot-wheel {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            will-change: transform;
-        }
-        .slot-item {
-            height: 90px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            width: 100%;
-        }
-        @media(min-width: 768px) {
-            .slot-item { height: 130px; }
-        }
-        .slot-text {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            padding: 0 10px;
-            color: #4A3B32;
-            font-weight: bold;
-            font-family: 'Noto Serif TC', serif;
-        }
-        .slot-text.highlight { color: #B76E79; }
-        .draw-divider-line { width: 1px; height: 60px; background: rgba(183, 110, 121, 0.3); }
-
-        /* 指定獎項按鈕樣式 */
-        .mapping-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 14px; padding: 16px; background: rgba(255,255,255,.6); border-radius: 20px; border: 1px solid rgba(183,110,121,.15); }
-        .mapping-item { display: flex; flex-direction: column; gap: 8px; background: #fff; padding: 12px; border-radius: 16px; box-shadow: 0 4px 12px rgba(183,110,121,.08); }
-        .mapping-item .name-text { font-size: 15px; font-weight: 700; color: #9E5C66; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; }
-        .prize-mapping-btn { width: 100%; font-size: 14px; font-family: inherit; background: #fff; border: 1px solid rgba(183,110,121,.3); border-radius: 10px; padding: 8px 10px; cursor: pointer; transition: .2s; color: #4A3B32; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .prize-mapping-btn:hover { background: rgba(255,255,255,1); border-color: #B76E79; box-shadow: 0 4px 10px rgba(183,110,121,.15); transform: translateY(-2px); }
-        .prize-mapping-btn.has-value { background: linear-gradient(135deg, rgba(255,250,248,1) 0%, rgba(248,232,232,1) 100%); border-color: #E6B3A3; color: #B76E79; }
-        .prize-list-btn { display: block; width: 100%; text-align: left; padding: 14px 18px; border: 1px solid rgba(183,110,121,.15); background: rgba(255,255,255,.8); border-radius: 14px; font-size: 16px; font-weight: 600; color: #4A3B32; margin-bottom: 10px; cursor: pointer; transition: .2s; font-family: inherit; }
-        .prize-list-btn:hover:not(:disabled) { background: #fff; border-color: #B76E79; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(183,110,121,.1); }
-        .prize-list-btn.selected { background: linear-gradient(135deg, #B76E79 0%, #E6B3A3 100%); color: #fff; border-color: transparent; box-shadow: 0 8px 20px rgba(183,110,121,.24); }
-        .prize-list-btn:disabled { opacity: 0.45; cursor: not-allowed; background: rgba(255,255,255,.4); transform: none; box-shadow: none; }
     </style>
 </head>
 <body>
 
 <div id="toast-container"></div>
 
-<div id="loading-overlay" class="fixed inset-0 bg-white/90 backdrop-blur-sm z-[99999] hidden flex-col items-center justify-center">
+<div id="loading-overlay" class="fixed inset-0 bg-white/90 backdrop-blur-sm z-[99999] hidden flex-col items-center justify-center pointer-events-none">
     <iconify-icon icon="line-md:loading-twotone-loop" class="text-7xl text-brand-rosegold mb-4"></iconify-icon>
     <div id="loading-text" class="text-xl font-bold tracking-widest text-brand-dustyrose">處理中...</div>
 </div>
@@ -225,7 +172,7 @@
                     <input type="text" id="editor-room-title" class="text-2xl font-bold text-brand-dustyrose border-none shadow-sm" placeholder="例如：2026/05/30 晚宴快問快答">
                 </div>
                 <div class="flex gap-3">
-                    <button onclick="window.appState.showView('dashboard')" class="btn-secondary">返回列表</button>
+                    <button onclick="window.editorLogic.saveRoom(); window.authLogic.loadDashboard()" class="btn-secondary">返回列表</button>
                     <button onclick="window.editorLogic.saveRoom()" class="btn-primary">儲存設定</button>
                     <button onclick="window.editorLogic.startGame()" class="btn-primary bg-gradient-to-r from-green-500 to-emerald-400 shadow-green-200">發起遊戲</button>
                 </div>
@@ -360,14 +307,14 @@
         </div>
         
         <div class="flex items-end justify-center gap-2 md:gap-6 h-[300px] md:h-[400px] mb-12 w-full max-w-4xl relative">
-            <div id="podium-2" class="w-1/3 flex flex-col items-center opacity-0 transform translate-y-10">
+            <div id="podium-2" class="w-1/3 flex flex-col items-center z-10 transition-all duration-700">
                 <div class="text-xl md:text-3xl font-bold text-gray-600 mb-1 md:mb-2 truncate w-full text-center px-1" id="p-name-2">---</div>
                 <div class="text-sm md:text-xl font-bold text-brand-rosegold mb-3 bg-white/80 px-4 py-1 rounded-full shadow-sm" id="p-score-2">0 分</div>
                 <div class="w-full bg-gradient-to-t from-gray-300 to-gray-100 rounded-t-2xl flex items-start justify-center pt-4 md:pt-6 shadow-[0_-10px_20px_rgba(0,0,0,0.1)] border-t-4 border-gray-400 relative overflow-hidden" style="height: 65%;">
                     <span class="text-4xl md:text-6xl font-sans font-bold text-gray-500 drop-shadow-md">2</span>
                 </div>
             </div>
-            <div id="podium-1" class="w-1/3 flex flex-col items-center opacity-0 transform translate-y-10 z-10">
+            <div id="podium-1" class="w-1/3 flex flex-col items-center z-20 transition-all duration-700">
                 <iconify-icon icon="ph:crown-fill" class="text-5xl md:text-7xl text-yellow-500 mb-2 drop-shadow-[0_5px_15px_rgba(234,179,8,0.5)] animate-bounce"></iconify-icon>
                 <div class="text-2xl md:text-4xl font-bold text-yellow-600 mb-1 md:mb-2 truncate w-full text-center px-1" id="p-name-1">---</div>
                 <div class="text-base md:text-2xl font-bold text-brand-rosegold mb-3 bg-white/90 px-5 py-1.5 rounded-full shadow-md" id="p-score-1">0 分</div>
@@ -375,7 +322,7 @@
                     <span class="text-5xl md:text-8xl font-sans font-bold text-yellow-600 drop-shadow-lg">1</span>
                 </div>
             </div>
-            <div id="podium-3" class="w-1/3 flex flex-col items-center opacity-0 transform translate-y-10">
+            <div id="podium-3" class="w-1/3 flex flex-col items-center z-10 transition-all duration-700">
                 <div class="text-xl md:text-3xl font-bold text-amber-700 mb-1 md:mb-2 truncate w-full text-center px-1" id="p-name-3">---</div>
                 <div class="text-sm md:text-xl font-bold text-brand-rosegold mb-3 bg-white/80 px-4 py-1 rounded-full shadow-sm" id="p-score-3">0 分</div>
                 <div class="w-full bg-gradient-to-t from-amber-400 to-amber-200 rounded-t-2xl flex items-start justify-center pt-4 md:pt-6 shadow-[0_-10px_20px_rgba(0,0,0,0.1)] border-t-4 border-amber-600 relative overflow-hidden" style="height: 50%;">
@@ -384,169 +331,14 @@
             </div>
         </div>
 
-        <div class="w-full max-w-2xl bg-white/80 backdrop-blur-md rounded-3xl p-6 md:p-8 shadow-xl mb-10 opacity-0 border border-white" id="podium-list">
+        <div class="w-full max-w-2xl bg-white/80 backdrop-blur-md rounded-3xl p-6 md:p-8 shadow-xl mb-10 border border-white transition-opacity duration-700" id="podium-list">
             <h3 class="text-xl md:text-2xl font-bold text-center text-brand-dustyrose mb-6 border-b border-brand-rosegold/20 pb-4 tracking-widest">第 4 名 至 第 10 名</h3>
-            <div id="leaderboard-runners-up" class="flex flex-col gap-3"></div>
+            <div id="leaderboard-runners-up" class="flex flex-col gap-3">
+                </div>
         </div>
         
         <button onclick="window.hostLogic.closeRoom()" class="btn-secondary px-10 py-3 text-lg mb-10 shadow-sm">結束遊戲並返回列表</button>
     </div>
-
-    <div id="view-draw-setup" class="view-layer overflow-y-auto p-4 md:p-8 pointer-events-auto">
-        <div class="max-w-5xl mx-auto w-full">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-                <div class="w-full md:w-1/2">
-                    <h2 class="text-3xl font-serif font-bold text-brand-dustyrose">抽獎系統設定</h2>
-                </div>
-                <div class="flex gap-3">
-                    <button onclick="window.appState.showView('dashboard')" class="btn-secondary">返回列表</button>
-                </div>
-            </div>
-            
-            <section class="w-full glass-panel rounded-[2rem] p-6 md:p-10 flex flex-col">
-                <div class="text-center mb-8 gs-reveal">
-                    <div class="font-sans text-brand-rosegold text-sm tracking-[0.3em] mb-2 uppercase font-bold">StoryWed Wedding</div>
-                    <h1 class="text-4xl md:text-5xl font-serif mb-3 text-gradient font-semibold tracking-tight">幸福故事館抽獎系統</h1>
-                    <p class="text-brand-text/60 font-serif text-base tracking-widest max-w-2xl mx-auto">設定您的專屬名單。若不需獎項，將右側獎項全數刪除即可啟用「純抽名字」模式。</p>
-                </div>
-
-                <div class="gs-reveal mb-8">
-                    <div class="mb-3 font-serif text-sm tracking-widest text-brand-text flex items-center gap-2 font-semibold">
-                        <iconify-icon icon="ph:shuffle-angular-light" class="text-xl text-brand-rosegold"></iconify-icon> 獎項抽出方式
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <label class="draw-mode-card"><input type="radio" name="draw-mode" value="random" checked><span class="draw-mode-indicator"></span><div class="draw-mode-title">隨機抽出</div><div class="draw-mode-desc">維持目前模式，先抽出得獎名字，再從獎項池中隨機抽出對應獎項。</div></label>
-                        <label class="draw-mode-card"><input type="radio" name="draw-mode" value="sequential"><span class="draw-mode-indicator"></span><div class="draw-mode-title">依序抽出（由上往下）</div><div class="draw-mode-desc">先依照獎項列表順序公佈本輪獎項，再從賓客名單中隨機抽出該獎項得主。</div></label>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
-                    <div class="gs-reveal flex flex-col h-[320px]">
-                        <label class="font-serif text-sm tracking-widest text-brand-text mb-3 flex items-center gap-2 font-semibold shrink-0">
-                            <iconify-icon icon="ph:users-three-light" class="text-xl text-brand-rosegold"></iconify-icon> 參加賓客名單（每行一位）
-                        </label>
-                        <div class="relative flex-1 group">
-                            <textarea id="participants-data" class="w-full h-full rounded-2xl p-5 font-serif text-base leading-relaxed resize-none shadow-inner custom-scrollbar" placeholder="例如：&#10;Nicole&#10;Annie&#10;李小明..."></textarea>
-                            <div class="absolute bottom-4 right-4 text-sm font-serif text-brand-text/40 pointer-events-none group-focus-within:text-brand-rosegold transition-colors">共 <span id="participant-count" class="font-bold text-brand-rosegold text-base">0</span> 位</div>
-                        </div>
-                    </div>
-
-                    <div class="gs-reveal flex flex-col h-[320px]">
-                        <div class="flex justify-between items-end mb-3 shrink-0">
-                            <label class="font-serif text-sm tracking-widest text-brand-text flex items-center gap-2 font-semibold"><iconify-icon icon="ph:gift-light" class="text-xl text-brand-rosegold"></iconify-icon> 獎項池（選填）</label>
-                            <button type="button" id="add-prize-btn" class="text-sm font-serif text-brand-rosegold hover:text-brand-champagne flex items-center gap-1.5 transition-colors bg-white/50 px-3 py-1.5 rounded-full shadow-sm hover:bg-white border border-white"><iconify-icon icon="ph:plus-circle-light" class="text-lg"></iconify-icon> 新增獎項</button>
-                        </div>
-                        <div id="prizes-list" class="flex-1 overflow-y-auto pr-2 space-y-3 pb-2 custom-scrollbar"></div>
-                    </div>
-                </div>
-
-                <div class="mt-8 gs-reveal flex flex-col">
-                    <label class="font-serif text-sm tracking-widest text-brand-text mb-1 flex items-center justify-center gap-2 font-semibold">
-                        <iconify-icon icon="ph:target-light" class="text-xl text-brand-rosegold"></iconify-icon> 內定中獎名單（選填）
-                    </label>
-                    <div class="text-center text-brand-text/60 text-sm mb-2 font-serif">點選名字為該賓客設定特定獎項，預設為隨機分配</div>
-                    <div id="prize-mapping-area" class="mapping-grid"></div>
-                </div>
-
-                <div class="mt-6 gs-reveal flex flex-col">
-                    <label class="font-serif text-sm tracking-widest text-brand-text mb-1 flex items-center justify-center gap-2 font-semibold">
-                        <iconify-icon icon="ph:crown-simple-light" class="text-xl text-brand-rosegold"></iconify-icon> 最後壓軸獎項（選填）
-                    </label>
-                    <div class="text-center text-brand-text/60 text-sm mb-4 font-serif">不管名單順序為何，此獎項將強制安排在「最後一次」抽出</div>
-                    <div class="flex justify-center">
-                       <button type="button" id="btn-set-last-prize" class="prize-mapping-btn" style="max-width:320px; padding: 12px 28px; font-size:16px; border-radius:999px;">🎲 隨機（無指定）</button>
-                    </div>
-                </div>
-
-                <div class="mt-10 gs-reveal">
-                    <div class="flex flex-col sm:flex-row gap-3 justify-center items-center">
-                        <button type="button" id="btn-export-draw-config" class="utility-button font-serif"><iconify-icon icon="ph:upload-simple-light" class="text-lg"></iconify-icon>一鍵導出</button>
-                        <button type="button" onclick="document.getElementById('import-draw-modal').classList.remove('hidden'); document.getElementById('import-draw-modal').classList.add('flex');" class="utility-button font-serif"><iconify-icon icon="ph:download-simple-light" class="text-lg"></iconify-icon>一鍵導入</button>
-                    </div>
-                    <p class="mt-3 text-center text-brand-text/45 text-sm tracking-widest font-serif">可先完成設定並導出代碼，活動開始前再貼上代碼快速還原。</p>
-                </div>
-
-                <div class="mt-8 flex flex-col items-center justify-center gs-reveal">
-                    <button type="button" id="go-to-draw-btn" class="group relative px-14 py-4 bg-gradient-to-r from-brand-rosegold to-brand-rosegold_light text-white rounded-full hover:shadow-[0_10px_30px_rgba(183,110,121,0.4)] transition-all duration-300 font-serif tracking-widest text-base font-semibold overflow-hidden hover:-translate-y-0.5 border border-white/20">
-                        <span class="relative z-10 flex items-center gap-2">完成設定，進入抽獎 <iconify-icon icon="ph:arrow-right-bold" class="group-hover:translate-x-1 transition-transform"></iconify-icon></span>
-                    </button>
-                </div>
-            </section>
-        </div>
-    </div>
-
-    <section id="view-draw-stage" class="view-layer w-full flex flex-col items-center justify-center pointer-events-auto p-4">
-        <header class="w-full max-w-5xl z-50 mb-6 flex justify-between items-center shrink-0 pointer-events-none relative">
-            <div class="font-sans text-brand-rosegold text-xl md:text-2xl tracking-[0.3em] uppercase font-bold pointer-events-auto">StoryWed</div>
-            <div class="flex gap-3 md:gap-4 pointer-events-auto flex-wrap justify-end">
-                <div id="header-draw-mode" class="mode-status-badge hidden sm:inline-flex">
-                    <iconify-icon icon="ph:sparkle-light" class="text-base"></iconify-icon>
-                    <span id="header-draw-mode-text">隨機抽出</span>
-                </div>
-                <div class="font-sans text-brand-text/80 text-sm tracking-widest bg-white/70 px-4 py-2 md:px-5 md:py-2.5 rounded-full border border-white/80 shadow-sm backdrop-blur-lg">
-                    剩餘賓客：<span id="header-pool-left" class="font-bold text-brand-rosegold text-base">0</span>
-                </div>
-                <div id="header-prize-status" class="font-sans text-brand-text/80 text-sm tracking-widest bg-white/70 px-4 py-2 md:px-5 md:py-2.5 rounded-full border border-white/80 shadow-sm backdrop-blur-lg">
-                    剩餘獎項：<span id="header-prize-left" class="font-bold text-brand-dustyrose text-base">0</span>
-                </div>
-            </div>
-        </header>
-
-        <div id="draw-stage" class="relative w-full max-w-5xl aspect-[4/3] md:aspect-[21/9] glass-panel rounded-[2.5rem] overflow-hidden shadow-[0_15px_50px_rgba(183,110,121,0.15)] border-2 border-white mb-10 flex items-center justify-center">
-            <div class="draw-aura-bg"></div>
-            
-            <div id="draw-content-wrapper" class="absolute inset-0 flex flex-row items-center justify-center z-10 w-full px-2 md:px-6">
-                
-                <div id="panel-name" class="flex flex-col items-center justify-center flex-1 w-full max-w-[50%]">
-                    <div id="title-name" class="text-brand-rosegold/80 font-serif tracking-widest text-sm md:text-lg mb-2 opacity-0">目前抽出的人選</div>
-                    <div class="slot-window">
-                        <div id="wheel-name" class="slot-wheel"></div>
-                    </div>
-                </div>
-
-                <div id="draw-divider" class="mx-2 md:mx-6 opacity-0 hidden flex-col items-center">
-                    <div class="draw-divider-line"></div>
-                    <iconify-icon icon="ph:plus-light" class="text-brand-rosegold/50 my-2 text-xl"></iconify-icon>
-                    <div class="draw-divider-line"></div>
-                </div>
-
-                <div id="panel-prize" class="flex flex-col items-center justify-center flex-1 w-full max-w-[50%] hidden">
-                    <div id="title-prize" class="text-brand-rosegold/80 font-serif tracking-widest text-sm md:text-lg mb-2 opacity-0">為他抽出的獎項內容</div>
-                    <div class="slot-window">
-                        <div id="wheel-prize" class="slot-wheel"></div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <div class="flex flex-col items-center gap-6 relative z-10 w-full max-w-md">
-            <div class="relative w-full flex justify-center h-16 items-center">
-                <button type="button" id="btn-action-main" class="z-10 px-14 py-4 bg-gradient-to-r from-brand-rosegold to-brand-rosegold_light text-white rounded-full font-bold tracking-widest text-base shadow-[0_10px_30px_rgba(183,110,121,0.4)] hover:shadow-[0_15px_40px_rgba(183,110,121,0.6)] transition-all duration-300 font-serif border border-white/20">抽取幸運兒</button>
-                <button type="button" id="btn-show-results" class="z-10 px-14 py-4 bg-gradient-to-r from-brand-dustyrose to-brand-rosegold text-white rounded-full font-bold tracking-widest text-base shadow-[0_10px_30px_rgba(158,92,102,0.35)] hover:shadow-[0_15px_40px_rgba(158,92,102,0.5)] transition-all duration-300 font-serif hidden border border-white/20">公佈結果</button>
-            </div>
-            <button type="button" id="btn-back-setup" class="mt-4 text-brand-text/50 hover:text-brand-rosegold font-serif text-sm md:text-base tracking-widest flex items-center gap-2 transition-colors bg-white/40 px-5 py-2 rounded-full border border-white/50 hover:bg-white/80"><iconify-icon icon="ph:arrow-left-light"></iconify-icon> 回到設定（重新開始）</button>
-        </div>
-    </section>
-
-    <section id="view-draw-results" class="view-layer w-full p-4 md:p-8 flex-col items-center justify-center pointer-events-auto">
-        <div class="glass-panel w-full max-w-6xl rounded-[2rem] p-6 md:p-10 flex flex-col h-[90vh]">
-            <div class="text-center mb-8 shrink-0">
-                <div class="font-sans text-brand-rosegold text-sm tracking-[0.3em] mb-2 uppercase font-bold">StoryWed Wedding</div>
-                <h2 class="text-3xl md:text-5xl font-serif text-gradient font-semibold tracking-tight mb-3">抽獎結果總覽</h2>
-            </div>
-            <div id="result-summary" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 shrink-0">
-                <div class="bg-white/70 rounded-2xl p-5 border border-white shadow-sm text-center"><div class="text-xs tracking-[0.25em] text-brand-text/40 mb-2">抽出總筆數</div><div id="summary-total-count" class="text-3xl font-serif text-brand-dustyrose font-semibold">0</div></div>
-                <div class="bg-white/70 rounded-2xl p-5 border border-white shadow-sm text-center"><div class="text-xs tracking-[0.25em] text-brand-text/40 mb-2">有獎項筆數</div><div id="summary-prize-count" class="text-3xl font-serif text-brand-dustyrose font-semibold">0</div></div>
-                <div class="bg-white/70 rounded-2xl p-5 border border-white shadow-sm text-center"><div class="text-xs tracking-[0.25em] text-brand-text/40 mb-2">抽獎模式</div><div id="summary-draw-mode" class="text-xl font-serif text-brand-dustyrose font-semibold">隨機抽出</div></div>
-            </div>
-            <div id="results-list" class="space-y-4 flex-1 overflow-y-auto custom-scrollbar pr-2"></div>
-            <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 shrink-0">
-                <button type="button" id="btn-back-draw" class="px-8 py-3 bg-white/90 text-brand-rosegold border-2 border-brand-rosegold/30 rounded-full font-bold tracking-widest text-base shadow-md hover:bg-brand-bg transition-all duration-300 font-serif flex items-center gap-2"><iconify-icon icon="ph:arrow-left-bold"></iconify-icon> 返回抽獎畫面</button>
-                <button type="button" id="btn-results-restart" class="px-8 py-3 bg-gradient-to-r from-brand-rosegold to-brand-rosegold_light text-white rounded-full font-bold tracking-widest text-base shadow-[0_10px_30px_rgba(183,110,121,0.28)] hover:shadow-[0_15px_40px_rgba(183,110,121,0.45)] transition-all duration-300 font-serif flex items-center gap-2 border border-white/20"><iconify-icon icon="ph:arrow-counter-clockwise-bold"></iconify-icon> 回到設定重新開始</button>
-            </div>
-        </div>
-    </section>
 
     <div id="view-player-join" class="view-layer items-center justify-center p-5 bg-white">
         <div class="w-full max-w-md flex flex-col items-center pointer-events-auto">
@@ -618,8 +410,8 @@
                 </div>
             </div>
             
-            <div class="text-xl font-bold bg-white/20 py-4 rounded-full shadow-sm border border-white/30 backdrop-blur-sm tracking-widest" id="pr-rank">
-                目前排名：第 3 名
+            <div class="text-xl font-bold bg-white/20 py-4 rounded-full shadow-sm border border-white/30 backdrop-blur-sm tracking-widest text-center" id="pr-rank">
+                目前排名：第 - 名
             </div>
         </div>
     </div>
@@ -634,11 +426,11 @@
                 <div class="absolute inset-0 bg-gradient-to-tr from-white/0 to-white/10 pointer-events-none"></div>
                 <div class="text-sm opacity-90 mb-3 tracking-widest">您的最終名次</div>
                 <div class="flex items-end justify-center gap-2 mb-8">
-                    <span class="text-2xl opacity-80 mb-2">第</span><span id="pp-rank" class="text-7xl font-bold font-sans text-brand-champagne drop-shadow-md">1</span><span class="text-2xl opacity-80 mb-2">名</span>
+                    <span class="text-2xl opacity-80 mb-2">第</span><span id="pp-rank" class="text-7xl font-bold font-sans text-brand-champagne drop-shadow-md">-</span><span class="text-2xl opacity-80 mb-2">名</span>
                 </div>
                 <div class="h-px w-full bg-white/30 mb-6"></div>
                 <div class="text-sm opacity-90 mb-2 tracking-widest">最終總分</div>
-                <div id="pp-total" class="text-4xl font-bold font-sans text-white drop-shadow-sm">1500</div>
+                <div id="pp-total" class="text-4xl font-bold font-sans text-white drop-shadow-sm">0</div>
             </div>
             
             <button onclick="location.reload()" class="mt-10 text-white/70 hover:text-white border border-white/30 px-6 py-2 rounded-full text-sm tracking-widest transition-colors">離開遊戲</button>
@@ -647,7 +439,7 @@
 
     <div id="import-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[99999] hidden items-center justify-center p-4">
         <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-lg pointer-events-auto">
-            <h3 class="text-2xl font-bold text-brand-rosegold mb-2 text-center">導入設定代碼</h3>
+            <h3 class="text-2xl font-bold text-brand-rosegold mb-2 text-center">導入題庫設定代碼</h3>
             <p class="text-brand-text/60 text-sm mb-4 text-center">您可以選擇上傳先前的 .txt 題庫檔案，或直接貼上代碼。</p>
             
             <input type="file" id="import-file-input" accept=".txt" class="mb-4 block w-full text-sm text-brand-text/70 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-rosegold/10 file:text-brand-rosegold hover:file:bg-brand-rosegold/20 cursor-pointer">
@@ -661,36 +453,8 @@
             <textarea id="import-input" class="w-full h-24 border border-gray-300 rounded-xl p-4 mb-6 text-sm font-sans resize-none custom-scrollbar focus:border-brand-rosegold focus:ring-2 focus:ring-brand-rosegold/20" placeholder="STORYWEDKHT:..."></textarea>
             
             <div class="flex gap-4 justify-center">
-                <button onclick="document.getElementById('import-modal').classList.add('hidden')" class="btn-secondary w-1/2">取消</button>
+                <button onclick="document.getElementById('import-modal').classList.add('hidden'); document.getElementById('import-modal').classList.remove('flex');" class="btn-secondary w-1/2">取消</button>
                 <button onclick="window.hostLogic.importConfig()" class="btn-primary w-1/2">確認導入</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="import-draw-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[99999] hidden items-center justify-center p-4">
-        <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-lg pointer-events-auto">
-            <h3 class="text-2xl font-bold text-brand-rosegold mb-2 text-center">導入抽獎設定</h3>
-            <p class="text-brand-text/60 text-sm mb-4 text-center">您可以選擇上傳先前的 .txt 檔案，或直接貼上代碼。</p>
-            <input type="file" id="import-draw-file-input" accept=".txt" class="mb-4 block w-full text-sm text-brand-text/70 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-rosegold/10 file:text-brand-rosegold hover:file:bg-brand-rosegold/20 cursor-pointer">
-            <div class="flex items-center gap-4 mb-4">
-                <div class="h-px bg-gray-200 flex-1"></div>
-                <span class="text-xs text-gray-400 font-bold tracking-widest">或貼上代碼</span>
-                <div class="h-px bg-gray-200 flex-1"></div>
-            </div>
-            <textarea id="import-draw-input" class="w-full h-24 border border-gray-300 rounded-xl p-4 mb-6 text-sm font-sans resize-none custom-scrollbar focus:border-brand-rosegold focus:ring-2 focus:ring-brand-rosegold/20" placeholder="STORYWEDCFG:..."></textarea>
-            <div class="flex gap-4 justify-center">
-                <button onclick="document.getElementById('import-draw-modal').classList.add('hidden')" class="btn-secondary w-1/2">取消</button>
-                <button onclick="window.hostLogic.importDrawConfig()" class="btn-primary w-1/2">確認導入</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="prize-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[99999] hidden items-center justify-center p-4">
-        <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md pointer-events-auto">
-            <h3 id="prize-modal-title" class="text-2xl md:text-3xl font-serif text-brand-rosegold font-semibold mb-4 text-center">選擇指定獎項</h3>
-            <div id="modal-prize-picker" class="prize-picker-scroll" style="max-height: 360px; overflow-y: auto; padding-right: 8px;"></div>
-            <div class="flex justify-center mt-4">
-                <button onclick="document.getElementById('prize-modal').classList.add('hidden')" class="btn-secondary w-full">關閉</button>
             </div>
         </div>
     </div>
@@ -704,7 +468,7 @@
 window.appState = {
     myRole: 'host', 
     showView: (viewId) => {
-        const views = ['login', 'register', 'dashboard', 'editor', 'host-waiting', 'host-question', 'host-reveal', 'host-podium', 'player-join', 'player-waiting', 'player-question', 'player-answered', 'player-result', 'player-podium', 'draw-setup', 'draw-stage', 'draw-results'];
+        const views = ['login', 'register', 'dashboard', 'editor', 'host-waiting', 'host-question', 'host-reveal', 'host-podium', 'player-join', 'player-waiting', 'player-question', 'player-answered', 'player-result', 'player-podium'];
         views.forEach(v => {
             const el = document.getElementById('view-' + v);
             if (el) el.classList.remove('active');
@@ -843,12 +607,13 @@ window.editorLogic = {
         window.appState.showView('editor');
     },
     saveRoom: () => {
-        const title = document.getElementById('editor-room-title').value.trim() || '未命名遊戲房間';
+        const titleInput = document.getElementById('editor-room-title');
+        const title = titleInput ? titleInput.value.trim() : '未命名遊戲房間';
         window.hostLogic.buildConfigFromDOM(); 
         let rooms = window.dbLogic.getRooms();
         let idx = rooms.findIndex(r => r.id === window.editorLogic.currentRoomId);
         if(idx !== -1) {
-            rooms[idx].title = title;
+            rooms[idx].title = title || '未命名遊戲房間';
             rooms[idx].questions = window.hostLogic.quizConfig.questions;
             window.dbLogic.saveRooms(rooms);
             window.appState.showToast('房間設定已儲存！');
@@ -918,10 +683,22 @@ window.hostLogic = {
     },
     handleImagePreview: (inputEl) => {
         if(inputEl.files && inputEl.files[0]) {
-            compressImage(inputEl.files[0], (base64) => {
-                const imgEl = inputEl.parentElement.querySelector('.q-img-preview');
-                imgEl.src = base64; imgEl.classList.remove('hidden');
-            });
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width; let height = img.height;
+                    if (width > 800) { height *= 800 / width; width = 800; }
+                    canvas.width = width; canvas.height = height;
+                    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                    const imgEl = inputEl.parentElement.querySelector('.q-img-preview');
+                    imgEl.src = canvas.toDataURL('image/jpeg', 0.6);
+                    imgEl.classList.remove('hidden');
+                }
+                img.src = e.target.result;
+            }
+            reader.readAsDataURL(inputEl.files[0]);
         }
     },
     buildConfigFromDOM: () => {
@@ -992,7 +769,6 @@ window.hostLogic = {
             document.getElementById('hw-room-title').innerText = window.dbLogic.getRooms().find(r=>r.id===window.editorLogic.currentRoomId)?.title || '快問快答遊戲';
             window.appState.hideLoading();
             window.appState.showView('host-waiting');
-            if(window.location.protocol === 'file:') window.appState.showToast('⚠️ 注意：您正使用本機檔案開啟，手機將無法連線。', 'error');
         });
         window.hostLogic.peer.on('connection', (conn) => {
             conn.on('data', (data) => {
@@ -1038,6 +814,10 @@ window.hostLogic = {
     startQuiz: () => {
         window.hostLogic.gameState.currentQIndex = 0;
         window.hostLogic.gameState.status = 'question';
+        // 絕對防呆：進入遊戲時徹底歸零所有玩家分數
+        for (let name in window.hostLogic.gameState.players) {
+            window.hostLogic.gameState.players[name].score = 0;
+        }
         window.hostLogic.runQuestion();
     },
     runQuestion: () => {
@@ -1134,12 +914,30 @@ window.hostLogic = {
     },
     showPodium: (sortedNames) => {
         window.appState.showView('host-podium');
-        window.hostLogic.broadcast({ type: 'GAME_OVER' });
+        
+        // 確保玩家手機端也能接收到最終成績與排名
+        for (let name in window.hostLogic.playerConns) {
+            if (window.hostLogic.playerConns[name].open) {
+                window.hostLogic.playerConns[name].send({ 
+                    type: 'GAME_OVER',
+                    finalRank: sortedNames.indexOf(name) + 1,
+                    finalScore: window.hostLogic.gameState.players[name] ? window.hostLogic.gameState.players[name].score : 0
+                });
+            }
+        }
+        
         const top3 = sortedNames.slice(0, 3); const runnersUp = sortedNames.slice(3, 10);
+        
+        // 淨空與強制隱藏，以確保不管是否有 GSAP 都能正確呈現
         for(let i=1; i<=3; i++) {
             document.getElementById(`p-name-${i}`).innerText = '---'; document.getElementById(`p-score-${i}`).innerText = '0 分';
-            if (typeof gsap !== 'undefined') gsap.set(`#podium-${i}`, { y: 50, opacity: 0 });
+            const el = document.getElementById(`podium-${i}`);
+            el.classList.remove('opacity-0', 'transform', 'translate-y-10');
+            el.style.opacity = 0; el.style.transform = 'translateY(50px)';
         }
+        document.getElementById('podium-list').classList.remove('opacity-0');
+        document.getElementById('podium-list').style.opacity = 0;
+        
         top3.forEach((name, idx) => {
             let place = idx + 1; 
             document.getElementById(`p-name-${place}`).innerText = name;
@@ -1150,7 +948,16 @@ window.hostLogic = {
             const tl = gsap.timeline();
             if(top3[2]) tl.to("#podium-3", { y: 0, opacity: 1, duration: 0.6, ease: "back.out(1.5)", delay: 0.5 });
             if(top3[1]) tl.to("#podium-2", { y: 0, opacity: 1, duration: 0.6, ease: "back.out(1.5)", delay: 0.2 });
-            if(top3[0]) tl.to("#podium-1", { y: 0, opacity: 1, duration: 0.8, ease: "back.out(1.7)", delay: 0.3 }).call(() => window.shootCelebrationPetals());
+            if(top3[0]) tl.to("#podium-1", { y: 0, opacity: 1, duration: 0.8, ease: "back.out(1.7)", delay: 0.3 }).call(() => {
+                if(typeof confetti !== 'undefined') {
+                    var duration = 4 * 1000; var end = Date.now() + duration;
+                    (function frame() {
+                        confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#B76E79', '#D4AF37', '#ffffff'] });
+                        confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#B76E79', '#D4AF37', '#ffffff'] });
+                        if (Date.now() < end) requestAnimationFrame(frame);
+                    }());
+                }
+            });
             const listContainer = document.getElementById('leaderboard-runners-up');
             listContainer.innerHTML = '';
             if (runnersUp.length > 0) {
@@ -1159,6 +966,12 @@ window.hostLogic = {
                 });
                 tl.to("#podium-list", { opacity: 1, duration: 0.5 });
             }
+        } else {
+            // 降級保護：若無 GSAP 直接顯示
+            for(let i=1; i<=3; i++) {
+                if(top3[i-1]) { document.getElementById(`podium-${i}`).style.opacity = 1; document.getElementById(`podium-${i}`).style.transform = 'translateY(0)'; }
+            }
+            document.getElementById('podium-list').style.opacity = 1;
         }
     }
 };
@@ -1183,7 +996,7 @@ window.playerLogic = {
                 if (data.type === 'JOIN_ACK') { window.appState.showView('player-waiting'); document.getElementById('pw-name').innerText = window.playerLogic.myName; }
                 if (data.type === 'QUESTION_START') window.playerLogic.handleQuestionStart(data);
                 if (data.type === 'QUESTION_RESULT') window.playerLogic.handleQuestionResult(data);
-                if (data.type === 'GAME_OVER') window.playerLogic.handleGameOver();
+                if (data.type === 'GAME_OVER') window.playerLogic.handleGameOver(data);
             });
             window.playerLogic.hostConn.on('error', () => { window.appState.hideLoading(); window.appState.showToast('無法與主辦人連線', 'error'); });
         });
@@ -1217,39 +1030,34 @@ window.playerLogic = {
         const viewBg = document.getElementById('view-player-result');
         const icon = document.getElementById('pr-icon');
         const title = document.getElementById('pr-title');
-        if (data.isCorrect) { viewBg.className = 'view-layer items-center justify-center p-6 text-white bg-green-500 active'; icon.setAttribute('icon', 'ph:check-bold'); title.innerText = '答對了！'; } 
-        else { viewBg.className = 'view-layer items-center justify-center p-6 text-white bg-[#B76E79] active'; icon.setAttribute('icon', 'ph:x-bold'); title.innerText = '答錯了...'; }
+        
+        if (data.isCorrect) { 
+            viewBg.className = 'view-layer items-center justify-center p-6 text-white bg-green-500 active'; 
+            icon.setAttribute('icon', 'ph:check-bold'); 
+            title.innerText = '答對了！'; 
+        } else { 
+            viewBg.className = 'view-layer items-center justify-center p-6 text-white bg-[#B76E79] active'; 
+            icon.setAttribute('icon', 'ph:x-bold'); 
+            title.innerText = '答錯了...'; 
+        }
+        
         document.getElementById('pr-earned').innerText = data.pointsEarned;
         document.getElementById('pr-total').innerText = `${data.totalScore}`;
-        document.getElementById('pr-rank').innerText = `目前排名：第 ${data.rank} 名`;
+        document.getElementById('pr-rank').innerText = `目前排名：第 ${data.rank || '-'} 名`;
+        
         window.appState.showView('player-result');
     },
-    handleGameOver: () => {
-        document.getElementById('pp-rank').innerText = document.getElementById('pr-rank').innerText.replace(/\D/g, '');
-        document.getElementById('pp-total').innerText = document.getElementById('pr-total').innerText;
+    handleGameOver: (data) => {
+        if (data) {
+            document.getElementById('pp-rank').innerText = data.finalRank || '-';
+            document.getElementById('pp-total').innerText = data.finalScore || '0';
+        }
         window.appState.showView('player-podium');
     }
 };
 
-window.shootCelebrationPetals = function() {
-    const celebrationContainer = document.getElementById('celebration-container');
-    celebrationContainer.style.display = 'block';
-    if (typeof anime === 'undefined') return;
-    try {
-        for (let i = 0; i < 65; i++) {
-            const petal = document.createElement('div'); petal.className = 'absolute pointer-events-none z-[9999]';
-            const size = anime.random(15, 25); petal.style.width = `${size}px`; petal.style.height = `${size * anime.random(1, 1.3)}px`;
-            petal.style.background = anime.random(0, 1) ? 'radial-gradient(circle at 30% 30%, #FFFaf8 0%, #E6B3A3 100%)' : 'radial-gradient(circle at 30% 30%, #FFFaf8 0%, #B76E79 100%)';
-            petal.style.borderRadius = '70% 30% 80% 20% / 60% 70% 30% 40%'; petal.style.left = `${anime.random(-10, 110)}vw`; petal.style.top = `${anime.random(-60, -10)}vh`;
-            celebrationContainer.appendChild(petal);
-            anime({ targets: petal, translateY: ['0vh', '150vh'], translateX: () => `+=${anime.random(-250, 250)}`, rotateZ: () => anime.random(-720, 720), rotateX: () => anime.random(-360, 360), opacity: [ { value: 0, duration: 0 }, { value: 1, duration: 400 }, { value: 1, duration: anime.random(1500, 2500) }, { value: 0, duration: 800 } ], duration: () => anime.random(3000, 4500), delay: () => anime.random(0, 800), easing: 'easeInSine', complete: () => petal.remove() });
-        }
-        setTimeout(() => { celebrationContainer.style.display = 'none'; }, 5000);
-    } catch(e) { celebrationContainer.style.display = 'none'; }
-};
-
 /* ==========================================
-   初始化路由 (100% 防白畫面)
+   初始化路由與系統保護機制
 ========================================== */
 window.initApp = function() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -1262,18 +1070,9 @@ window.initApp = function() {
     } else {
         window.appState.showView('login');
     }
-    
-    // 綁定全螢幕
-    document.getElementById('btn-fullscreen').addEventListener('click', () => { 
-        const docElm = document.documentElement; 
-        if (!document.fullscreenElement && !document.webkitFullscreenElement) { 
-            if (docElm.requestFullscreen) docElm.requestFullscreen(); else if (docElm.webkitRequestFullscreen) docElm.webkitRequestFullscreen(); 
-        } else { 
-            if (document.exitFullscreen) document.exitFullscreen(); else if (document.webkitExitFullscreen) document.webkitExitFullscreen(); 
-        } 
-    });
 };
 
+// 保證畫面讀取後絕對會執行初始化，杜絕白畫面
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', window.initApp);
 } else {

@@ -112,7 +112,7 @@
                     <input type="password" id="login-password" placeholder="請輸入密碼">
                 </div>
                 <button onclick="window.authLogic.login()" class="btn-primary w-full mt-4 text-lg">登入系統</button>
-                <div class="text-center text-sm text-brand-text/50 mt-5 font-bold tracking-widest leading-relaxed">
+                <div class="text-center text-sm text-brand-text/40 mt-4 font-bold tracking-widest leading-relaxed">
                     （每月不定期更新密碼，如忘記密碼請聯繫系統管理員）
                 </div>
             </div>
@@ -177,7 +177,7 @@
                 </div>
 
             <div class="flex justify-center mb-12">
-                <button onclick="window.editorLogic.addQuestionBlock()" class="btn-secondary flex items-center gap-2 border-dashed border-2 bg-white/50 hover:bg-white px-8 py-4 w-full max-w-md justify-center text-lg">
+                <button onclick="window.hostLogic.addQuestionBlock()" class="btn-secondary flex items-center gap-2 border-dashed border-2 bg-white/50 hover:bg-white px-8 py-4 w-full max-w-md justify-center text-lg">
                     <iconify-icon icon="ph:plus-circle" class="text-2xl"></iconify-icon> 新增一道題目
                 </button>
             </div>
@@ -686,8 +686,7 @@ window.editorLogic = {
             window.editorLogic.currentRoomId = roomId;
             window.hostLogic.createGameRoom();
         }
-    },
-    addQuestionBlock: (data = null) => { window.hostLogic.addQuestionBlock(data); }
+    }
 };
 
 function compressImage(file, callback) {
@@ -718,11 +717,25 @@ window.hostLogic = {
     serverBootToken: 0, serverBootTimeout: null,
     gameState: { status: 'idle', players: {}, currentQIndex: 0, timerInterval: null, currentAnswers: {}, questionStartTime: 0 },
     
+    // 【新增】自動更新題號函式
+    updateQuestionNumbers: () => {
+        const blocks = document.querySelectorAll('.question-setup-block');
+        const numToZh = (n) => {
+            const zh = ['零','一','二','三','四','五','六','七','八','九','十'];
+            if (n <= 10) return zh[n];
+            if (n < 20) return '十' + (n % 10 === 0 ? '' : zh[n % 10]);
+            return zh[Math.floor(n / 10)] + '十' + (n % 10 === 0 ? '' : zh[n % 10]);
+        };
+        blocks.forEach((block, index) => {
+            const label = block.querySelector('.q-number-label');
+            if (label) label.innerText = `第${numToZh(index + 1)}題`;
+        });
+    },
+
     addQuestionBlock: (data) => {
         const container = document.getElementById('questions-container');
         if (!container) return;
         
-        // 絕對防呆：檢查 data 是否為正確的題目物件，避免滑鼠點擊事件(MouseEvent)引發報錯
         const isObj = data && typeof data === 'object' && Array.isArray(data.options);
         
         const qid = 'q_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
@@ -737,11 +750,10 @@ window.hostLogic = {
         
         div.innerHTML = `
             <div class="absolute top-4 right-4 flex gap-3">
-                <div class="text-brand-text/40 font-bold font-sans text-lg"><iconify-icon icon="ph:question-light"></iconify-icon></div>
-                <button onclick="this.closest('.question-setup-block').remove()" class="text-gray-300 hover:text-red-500 transition-colors bg-white rounded-full w-8 h-8 shadow-sm flex items-center justify-center border border-gray-100" title="刪除此題"><iconify-icon icon="ph:trash-bold"></iconify-icon></button>
+                <button onclick="this.closest('.question-setup-block').remove(); window.hostLogic.updateQuestionNumbers();" class="text-gray-300 hover:text-red-500 transition-colors bg-white rounded-full w-8 h-8 shadow-sm flex items-center justify-center border border-gray-100" title="刪除此題"><iconify-icon icon="ph:trash-bold"></iconify-icon></button>
             </div>
-            <div class="mb-6 pr-16">
-                <label class="block font-bold mb-2 text-brand-dustyrose tracking-widest text-sm">題目內容</label>
+            <div class="mb-6 pr-12">
+                <label class="block font-bold mb-2 text-brand-dustyrose tracking-widest text-sm"><span class="q-number-label text-base text-brand-rosegold mr-1"></span> 題目內容</label>
                 <input type="text" class="q-text w-full font-bold text-xl py-3 border-brand-rosegold/30" placeholder="請輸入題目（例如：新郎最喜歡吃什麼？）" value="${window.appState.escapeHTML(dText)}">
             </div>
             <div class="flex flex-col md:flex-row gap-5 mb-6">
@@ -791,6 +803,9 @@ window.hostLogic = {
                 </div>
             </div>`;
         container.appendChild(div);
+        
+        // 每次新增時自動刷新一次所有題號
+        window.hostLogic.updateQuestionNumbers();
     },
     handleImagePreview: (inputEl) => {
         if(inputEl.files && inputEl.files[0]) {

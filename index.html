@@ -89,6 +89,10 @@
     <div id="loading-text" class="text-xl font-bold tracking-widest text-brand-dustyrose">處理中...</div>
 </div>
 
+<button onclick="window.appState.toggleFullScreen()" class="fixed bottom-6 right-6 z-[100000] w-14 h-14 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-brand-rosegold shadow-lg border border-brand-rosegold/20 hover:scale-110 transition-transform">
+    <iconify-icon icon="ph:corners-out-bold" id="fs-icon" class="text-3xl"></iconify-icon>
+</button>
+
 <div id="app" class="w-full h-full relative bg-gradient-to-br from-brand-bg to-[#F8E8E8]">
     <div id="celebration-container" class="absolute top-0 left-0 w-full h-full pointer-events-none z-[9999] overflow-hidden" style="display: none;"></div>
     
@@ -146,7 +150,7 @@
 
     <div id="view-editor" class="view-layer overflow-y-auto p-4 md:p-8">
         <div class="max-w-5xl mx-auto w-full pointer-events-auto">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                 <div class="w-full md:w-1/2">
                     <label class="block text-sm font-bold text-brand-text/70 mb-2">房間名稱</label>
                     <input type="text" id="editor-room-title" class="text-2xl font-bold text-brand-dustyrose border-none shadow-sm" placeholder="（例如：2026/05/30 晚宴快問快答）">
@@ -158,9 +162,15 @@
                 </div>
             </div>
             
-            <div class="flex justify-end gap-3 mb-6">
-                <button onclick="document.getElementById('import-modal').classList.remove('hidden'); document.getElementById('import-modal').classList.add('flex');" class="btn-secondary text-sm flex items-center gap-2 px-4 py-2"><iconify-icon icon="ph:download-simple"></iconify-icon> 導入題庫</button>
-                <button onclick="window.hostLogic.exportConfig()" class="btn-secondary text-sm flex items-center gap-2 px-4 py-2"><iconify-icon icon="ph:upload-simple"></iconify-icon> 導出題庫</button>
+            <div class="bg-white/60 border border-brand-rosegold/20 rounded-2xl p-5 mb-8 flex flex-col md:flex-row justify-between items-center gap-4 shadow-sm backdrop-blur-sm">
+                <div class="flex items-start gap-3 text-brand-dustyrose text-sm font-bold tracking-widest leading-relaxed">
+                    <iconify-icon icon="ph:info-light" class="text-2xl shrink-0 mt-0.5 text-brand-rosegold"></iconify-icon>
+                    <p>設定完題目後，務必導出題庫下載成記事本。<br>待正式遊玩時，請重新導入即可回復題庫。</p>
+                </div>
+                <div class="flex gap-3 shrink-0 w-full md:w-auto justify-end">
+                    <button onclick="document.getElementById('import-modal').classList.remove('hidden'); document.getElementById('import-modal').classList.add('flex');" class="btn-secondary text-sm flex items-center justify-center gap-2 px-4 py-2 flex-1 md:flex-auto bg-white"><iconify-icon icon="ph:download-simple"></iconify-icon> 導入題庫</button>
+                    <button onclick="window.hostLogic.exportConfig()" class="btn-secondary text-sm flex items-center justify-center gap-2 px-4 py-2 flex-1 md:flex-auto bg-white"><iconify-icon icon="ph:upload-simple"></iconify-icon> 導出題庫</button>
+                </div>
             </div>
 
             <div id="questions-container" class="flex flex-col gap-6 mb-8">
@@ -194,6 +204,7 @@
                     </div>
                     <div class="text-brand-rosegold font-bold text-5xl font-sans"><span id="host-player-count">0</span></div>
                 </div>
+                
                 <div class="flex-1 overflow-y-auto relative p-2 custom-scrollbar border border-transparent">
                     <div class="w-full h-full flex flex-col items-center justify-center text-brand-text/30 font-bold tracking-widest gap-4 absolute inset-0 transition-opacity" id="empty-players-msg">
                         <iconify-icon icon="ph:users-three-light" class="text-6xl"></iconify-icon>
@@ -202,6 +213,7 @@
                     <div id="host-player-list" class="flex flex-wrap gap-3 content-start relative z-10 w-full h-full">
                         </div>
                 </div>
+
                 <div class="mt-6 pt-4 flex justify-end">
                     <button onclick="window.hostLogic.startQuiz()" id="btn-start-quiz" class="btn-primary text-xl px-12 py-4 w-full md:w-auto shadow-lg shadow-brand-rosegold/30" disabled>正式開始！</button>
                 </div>
@@ -773,8 +785,7 @@ window.hostLogic = {
         if(inputEl.files && inputEl.files[0]) {
             compressImage(inputEl.files[0], (base64) => {
                 const imgEl = inputEl.parentElement.querySelector('.q-img-preview');
-                imgEl.src = base64;
-                imgEl.classList.remove('hidden');
+                imgEl.src = base64; imgEl.classList.remove('hidden');
             });
         }
     },

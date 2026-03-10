@@ -112,7 +112,7 @@
                     <input type="password" id="login-password" placeholder="請輸入密碼">
                 </div>
                 <button onclick="window.authLogic.login()" class="btn-primary w-full mt-4 text-lg">登入系統</button>
-                <div class="text-center text-sm text-brand-text/40 mt-4 font-bold tracking-widest leading-relaxed">
+                <div class="text-center text-sm text-brand-text/50 mt-5 font-bold tracking-widest leading-relaxed">
                     （每月不定期更新密碼，如忘記密碼請聯繫系統管理員）
                 </div>
             </div>
@@ -128,9 +128,11 @@
                 </div>
                 <div class="flex flex-wrap items-center gap-3">
                     <span class="font-bold text-brand-text/70 hidden sm:inline">Hi, <span id="dash-username" class="text-brand-rosegold">User</span></span>
+                    
                     <button id="btn-admin-panel" onclick="window.authLogic.showAdminPanel()" class="btn-secondary text-sm px-3 py-1.5 hidden items-center gap-1">
                         <iconify-icon icon="ph:users-three-bold"></iconify-icon> <span class="hidden sm:inline">帳號管理</span>
                     </button>
+                    
                     <button onclick="window.authLogic.logout()" class="btn-secondary text-sm px-3 py-1.5 flex items-center gap-1"><iconify-icon icon="ph:sign-out-bold"></iconify-icon> <span class="hidden sm:inline">登出</span></button>
                 </div>
             </header>
@@ -650,7 +652,6 @@ window.editorLogic = {
         if(!room) return;
         document.getElementById('editor-room-title').value = room.title;
         document.getElementById('questions-container').innerHTML = '';
-        window.hostLogic.qCounter = 0; 
         if (room.questions.length === 0) { window.hostLogic.addQuestionBlock(); } 
         else { room.questions.forEach(q => window.hostLogic.addQuestionBlock(q)); }
         window.appState.showView('editor');
@@ -685,7 +686,8 @@ window.editorLogic = {
             window.editorLogic.currentRoomId = roomId;
             window.hostLogic.createGameRoom();
         }
-    }
+    },
+    addQuestionBlock: (data = null) => { window.hostLogic.addQuestionBlock(data); }
 };
 
 function compressImage(file, callback) {
@@ -712,16 +714,27 @@ function b64_to_utf8(str) { return decodeURIComponent(atob(str).split('').map(c 
    主機端流程邏輯
 ========================================== */
 window.hostLogic = {
-    peer: null, roomId: null, playerConns: {}, quizConfig: { questions: [] }, qCounter: 0,
+    peer: null, roomId: null, playerConns: {}, quizConfig: { questions: [] },
     serverBootToken: 0, serverBootTimeout: null,
     gameState: { status: 'idle', players: {}, currentQIndex: 0, timerInterval: null, currentAnswers: {}, questionStartTime: 0 },
     
-    addQuestionBlock: (data = null) => {
+    addQuestionBlock: (data) => {
         const container = document.getElementById('questions-container');
+        if (!container) return;
+        
+        // 絕對防呆：檢查 data 是否為正確的題目物件，避免滑鼠點擊事件(MouseEvent)引發報錯
+        const isObj = data && typeof data === 'object' && Array.isArray(data.options);
+        
         const qid = 'q_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
         const div = document.createElement('div');
         div.className = 'question-setup-block glass-panel p-5 md:p-8 rounded-[1.5rem] relative border-t-4 border-t-brand-rosegold mb-6';
-        let dText = data ? data.text : ''; let dTime = data ? data.timeLimit : 10; let dImg = data && data.image ? data.image : ''; let dOpts = data ? data.options : ['', '', '', '']; let dCorr = data ? data.correctIndex : 0;
+        
+        let dText = isObj && data.text ? data.text : ''; 
+        let dTime = isObj && data.timeLimit ? data.timeLimit : 10; 
+        let dImg  = isObj && data.image ? data.image : ''; 
+        let dOpts = isObj && data.options ? data.options : ['', '', '', '']; 
+        let dCorr = isObj && data.correctIndex !== undefined ? data.correctIndex : 0;
+        
         div.innerHTML = `
             <div class="absolute top-4 right-4 flex gap-3">
                 <div class="text-brand-text/40 font-bold font-sans text-lg"><iconify-icon icon="ph:question-light"></iconify-icon></div>
@@ -740,7 +753,9 @@ window.hostLogic = {
                 <div class="w-full md:w-48 bg-brand-rosegold/5 p-4 rounded-2xl border border-brand-rosegold/10 flex flex-col justify-center">
                     <label class="block font-bold mb-2 text-sm text-brand-dustyrose tracking-widest text-center"><iconify-icon icon="ph:timer"></iconify-icon> 答題秒數</label>
                     <select class="q-time w-full font-bold text-brand-text text-xl text-center py-3 border-white shadow-sm">
-                        <option value="10" ${dTime===10?'selected':''}>10 秒</option><option value="15" ${dTime===15?'selected':''}>15 秒</option><option value="20" ${dTime===20?'selected':''}>20 秒</option>
+                        <option value="10" ${dTime===10?'selected':''}>10 秒</option>
+                        <option value="15" ${dTime===15?'selected':''}>15 秒</option>
+                        <option value="20" ${dTime===20?'selected':''}>20 秒</option>
                     </select>
                 </div>
             </div>

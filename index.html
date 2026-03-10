@@ -78,33 +78,6 @@
 
         .dashboard-card { background: white; border: 1px solid rgba(183, 110, 121, 0.15); border-radius: 1.25rem; padding: 1.5rem; transition: all 0.3s; cursor: pointer; }
         .dashboard-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(183, 110, 121, 0.15); border-color: rgba(183, 110, 121, 0.4); }
-
-        /* 拉霸機特效專用樣式 */
-        .slot-window { height: 90px; overflow: hidden; position: relative; width: 100%; mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%); }
-        @media(min-width: 768px) { .slot-window { height: 130px; } }
-        .slot-wheel { display: flex; flex-direction: column; width: 100%; will-change: transform; }
-        .slot-item { height: 90px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; width: 100%; }
-        @media(min-width: 768px) { .slot-item { height: 130px; } }
-        .slot-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 10px; color: #4A3B32; font-weight: bold; font-family: 'Noto Serif TC', serif; }
-        .slot-text.highlight { color: #B76E79; }
-        .draw-divider-line { width: 1px; height: 60px; background: rgba(183, 110, 121, 0.3); }
-
-        /* 指定獎項 UI 樣式 */
-        .mapping-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 14px; padding: 16px; background: rgba(255,255,255,.6); border-radius: 20px; border: 1px solid rgba(183,110,121,.15); }
-        .mapping-item { display: flex; flex-direction: column; gap: 8px; background: #fff; padding: 12px; border-radius: 16px; box-shadow: 0 4px 12px rgba(183,110,121,.08); }
-        .mapping-item .name-text { font-size: 15px; font-weight: 700; color: #9E5C66; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; }
-        .prize-mapping-btn { width: 100%; font-size: 14px; font-family: inherit; background: #fff; border: 1px solid rgba(183,110,121,.3); border-radius: 10px; padding: 8px 10px; cursor: pointer; transition: .2s; color: #4A3B32; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .prize-mapping-btn:hover { background: rgba(255,255,255,1); border-color: #B76E79; box-shadow: 0 4px 10px rgba(183,110,121,.15); transform: translateY(-2px); }
-        .prize-mapping-btn.has-value { background: linear-gradient(135deg, rgba(255,250,248,1) 0%, rgba(248,232,232,1) 100%); border-color: #E6B3A3; color: #B76E79; }
-        
-        .prize-list-btn { display: block; width: 100%; text-align: left; padding: 14px 18px; border: 1px solid rgba(183,110,121,.15); background: rgba(255,255,255,.8); border-radius: 14px; font-size: 16px; font-weight: 600; color: #4A3B32; margin-bottom: 10px; cursor: pointer; transition: .2s; font-family: inherit; }
-        .prize-list-btn:hover:not(:disabled) { background: #fff; border-color: #B76E79; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(183,110,121,.1); }
-        .prize-list-btn.selected { background: linear-gradient(135deg, #B76E79 0%, #E6B3A3 100%); color: #fff; border-color: transparent; box-shadow: 0 8px 20px rgba(183,110,121,.24); }
-        .prize-list-btn:disabled { opacity: 0.45; cursor: not-allowed; background: rgba(255,255,255,.4); transform: none; box-shadow: none; }
-
-        .modal { position: fixed; inset: 0; z-index: 10000; display: none; align-items: center; justify-content: center; padding: 16px; background: rgba(0,0,0,.35); backdrop-filter: blur(4px); }
-        .modal.show { display: flex !important; }
-        .modal-card { width: min(760px, 100%); background: #fff; border-radius: 28px; border: 1px solid rgba(255,255,255,.95); box-shadow: 0 24px 60px rgba(0,0,0,.18); padding: 28px; }
     </style>
 </head>
 <body>
@@ -174,7 +147,11 @@
                 </div>
                 <div class="flex flex-wrap items-center gap-3">
                     <span class="font-bold text-brand-text/70 hidden sm:inline">Hi, <span id="dash-username" class="text-brand-rosegold">User</span></span>
-                    <button onclick="window.authLogic.showAdminPanel()" class="btn-secondary text-sm px-3 py-1.5 flex items-center gap-1"><iconify-icon icon="ph:users-three-bold"></iconify-icon> <span class="hidden sm:inline">帳號管理</span></button>
+                    
+                    <button id="btn-admin-panel" onclick="window.authLogic.showAdminPanel()" class="btn-secondary text-sm px-3 py-1.5 hidden items-center gap-1">
+                        <iconify-icon icon="ph:users-three-bold"></iconify-icon> <span class="hidden sm:inline">帳號管理</span>
+                    </button>
+                    
                     <button onclick="window.authLogic.logout()" class="btn-secondary text-sm px-3 py-1.5 flex items-center gap-1"><iconify-icon icon="ph:sign-out-bold"></iconify-icon> <span class="hidden sm:inline">登出</span></button>
                 </div>
             </header>
@@ -222,7 +199,7 @@
 
     <div id="view-host-waiting" class="view-layer p-6 md:p-12 items-center justify-center">
         <div class="w-full max-w-5xl glass-panel rounded-[2rem] flex flex-col md:flex-row overflow-hidden shadow-2xl relative pointer-events-auto">
-            <button onclick="window.hostLogic.closeRoom()" class="absolute top-4 right-4 text-brand-text/40 hover:text-red-500 transition-colors z-50 p-2" title="關閉房間">
+            <button onclick="window.hostLogic.closeRoom(true)" class="absolute top-4 right-4 text-brand-text/40 hover:text-red-500 transition-colors z-50 p-2" title="關閉房間">
                 <iconify-icon icon="ph:x-circle-bold" class="text-3xl"></iconify-icon>
             </button>
 
@@ -269,7 +246,6 @@
             <div class="glass-panel p-8 md:p-12 rounded-3xl w-full max-w-5xl flex flex-col items-center justify-center shadow-xl relative overflow-hidden text-center min-h-[40vh]">
                 <h2 id="hq-text" class="text-4xl md:text-6xl font-bold leading-tight tracking-wide text-brand-dustyrose drop-shadow-sm z-10">題目內容</h2>
                 <img id="hq-img" src="" class="hidden mt-8 max-h-[35vh] object-contain rounded-xl shadow-lg border-4 border-white z-10">
-                
                 <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
                     <iconify-icon icon="ph:clock-light" class="text-[300px] text-brand-rosegold"></iconify-icon>
                 </div>
@@ -359,13 +335,12 @@
 
         <div class="w-full max-w-2xl bg-white/80 backdrop-blur-md rounded-3xl p-6 md:p-8 shadow-xl mb-10 opacity-0 border border-white transition-opacity duration-700" id="podium-list">
             <h3 class="text-xl md:text-2xl font-bold text-center text-brand-dustyrose mb-6 border-b border-brand-rosegold/20 pb-4 tracking-widest">第 4 名 至 第 10 名</h3>
-            <div id="leaderboard-runners-up" class="flex flex-col gap-3">
-                </div>
+            <div id="leaderboard-runners-up" class="flex flex-col gap-3"></div>
         </div>
         
         <div class="flex flex-col sm:flex-row justify-center gap-4 mb-10 w-full max-w-2xl px-6">
             <button onclick="window.hostLogic.exportResults()" class="btn-primary flex-1 py-3 text-lg shadow-sm flex items-center justify-center gap-2"><iconify-icon icon="ph:download-simple"></iconify-icon> 匯出成績記錄</button>
-            <button onclick="window.hostLogic.closeRoom()" class="btn-secondary flex-1 py-3 text-lg shadow-sm">結束遊戲並返回列表</button>
+            <button onclick="window.hostLogic.closeRoom(true)" class="btn-secondary flex-1 py-3 text-lg shadow-sm">結束遊戲並返回列表</button>
         </div>
     </div>
 
@@ -462,7 +437,7 @@
                 <div id="pp-total" class="text-4xl font-bold font-sans text-white drop-shadow-sm">0</div>
             </div>
             
-            <button onclick="window.playerLogic.leaveGame()" class="mt-10 text-white/70 hover:text-white border border-white/30 px-6 py-2 rounded-full text-sm tracking-widest transition-colors">離開遊戲（再玩一局）</button>
+            <button onclick="window.playerLogic.leaveGame()" class="mt-10 text-white/70 hover:text-white border border-white/30 px-6 py-3 rounded-full text-base tracking-widest transition-colors w-full">離開遊戲（再玩一局）</button>
         </div>
     </div>
 
@@ -514,7 +489,7 @@
 
 <script>
 /* ==========================================
-   綁定全域變數，確保點擊事件正常觸發
+   全局控制與 UI 系統
 ========================================== */
 window.appState = {
     myRole: 'host', 
@@ -531,13 +506,11 @@ window.appState = {
     showLoading: (text = '處理中...') => {
         document.getElementById('loading-text').innerText = text;
         const el = document.getElementById('loading-overlay');
-        el.classList.remove('hidden');
-        el.classList.add('flex');
+        el.classList.remove('hidden'); el.classList.add('flex');
     },
     hideLoading: () => {
         const el = document.getElementById('loading-overlay');
-        el.classList.add('hidden');
-        el.classList.remove('flex');
+        el.classList.add('hidden'); el.classList.remove('flex');
     },
     showToast: (msg, type = 'success') => {
         const container = document.getElementById('toast-container');
@@ -548,9 +521,7 @@ window.appState = {
         if (typeof gsap !== 'undefined') {
             gsap.fromTo(toast, { x: 50, opacity: 0 }, { x: 0, opacity: 1, duration: 0.3 });
             setTimeout(() => { gsap.to(toast, { x: 50, opacity: 0, duration: 0.3, onComplete: () => toast.remove() }); }, 3000);
-        } else {
-            setTimeout(() => toast.remove(), 3000);
-        }
+        } else { setTimeout(() => toast.remove(), 3000); }
     },
     goToPlayerJoin: () => {
         window.appState.myRole = 'player';
@@ -561,6 +532,9 @@ window.appState = {
     }
 };
 
+/* ==========================================
+   資料庫與帳號管理
+========================================== */
 window.dbLogic = {
     getUsers: () => { try { return JSON.parse(localStorage.getItem('storywed_quiz_users') || '{}'); } catch(e) { return {}; } },
     saveUsers: (users) => { try { localStorage.setItem('storywed_quiz_users', JSON.stringify(users)); } catch(e) {} },
@@ -617,11 +591,22 @@ window.authLogic = {
     },
     loadDashboard: () => {
         document.getElementById('dash-username').innerText = window.authLogic.currentUser;
+        
+        // 只有 storywed 這個最高權限帳號看得到「帳號管理」按鈕
+        const adminBtn = document.getElementById('btn-admin-panel');
+        if(window.authLogic.currentUser === 'storywed') {
+            adminBtn.classList.remove('hidden');
+            adminBtn.classList.add('inline-flex');
+        } else {
+            adminBtn.classList.add('hidden');
+            adminBtn.classList.remove('inline-flex');
+        }
+
         const listEl = document.getElementById('room-list');
         listEl.innerHTML = '';
         const myRooms = window.dbLogic.getRooms().filter(r => r.owner === window.authLogic.currentUser);
         if (myRooms.length === 0) {
-            listEl.innerHTML = `<div class="col-span-full text-center py-10 text-brand-text/40 font-bold tracking-widest">目前還沒有任何遊戲房間，點擊上方按鈕建立吧！</div>`;
+            listEl.innerHTML = `<div class="col-span-full text-center py-10 text-brand-text/40 font-bold tracking-widest">目前還沒有任何遊戲房間，點擊下方按鈕建立吧！</div>`;
         } else {
             myRooms.reverse().forEach(room => {
                 const card = document.createElement('div');
@@ -642,7 +627,9 @@ window.authLogic = {
         }
         window.appState.showView('dashboard');
     },
+    // 最高權限：查看所有帳號密碼
     showAdminPanel: () => {
+        if(window.authLogic.currentUser !== 'storywed') { window.appState.showToast('權限不足', 'error'); return; }
         const users = window.dbLogic.getUsers();
         const tbody = document.getElementById('admin-users-list');
         tbody.innerHTML = '';
@@ -674,6 +661,9 @@ window.authLogic = {
     }
 };
 
+/* ==========================================
+   編輯器與題目邏輯
+========================================== */
 window.editorLogic = {
     currentRoomId: null,
     loadRoom: (roomId) => {
@@ -721,6 +711,30 @@ window.editorLogic = {
     addQuestionBlock: (data = null) => { window.hostLogic.addQuestionBlock(data); }
 };
 
+// 圖片壓縮
+function compressImage(file, callback) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let width = img.width; let height = img.height;
+            if (width > 800) { height *= 800 / width; width = 800; }
+            canvas.width = width; canvas.height = height;
+            canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+            callback(canvas.toDataURL('image/jpeg', 0.6));
+        }
+        img.src = e.target.result;
+    }
+    reader.readAsDataURL(file);
+}
+
+function utf8_to_b64(str) { return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1))); }
+function b64_to_utf8(str) { return decodeURIComponent(atob(str).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')); }
+
+/* ==========================================
+   主機端流程邏輯
+========================================== */
 window.hostLogic = {
     peer: null, roomId: null, playerConns: {}, quizConfig: { questions: [] }, qCounter: 0,
     gameState: { status: 'idle', players: {}, currentQIndex: 0, timerInterval: null, currentAnswers: {}, questionStartTime: 0 },
@@ -764,22 +778,10 @@ window.hostLogic = {
     },
     handleImagePreview: (inputEl) => {
         if(inputEl.files && inputEl.files[0]) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    let width = img.width; let height = img.height;
-                    if (width > 800) { height *= 800 / width; width = 800; }
-                    canvas.width = width; canvas.height = height;
-                    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-                    const imgEl = inputEl.parentElement.querySelector('.q-img-preview');
-                    imgEl.src = canvas.toDataURL('image/jpeg', 0.6);
-                    imgEl.classList.remove('hidden');
-                }
-                img.src = e.target.result;
-            }
-            reader.readAsDataURL(inputEl.files[0]);
+            compressImage(inputEl.files[0], (base64) => {
+                const imgEl = inputEl.parentElement.querySelector('.q-img-preview');
+                imgEl.src = base64; imgEl.classList.remove('hidden');
+            });
         }
     },
     buildConfigFromDOM: () => {
@@ -841,6 +843,17 @@ window.hostLogic = {
     },
     createGameRoom: () => {
         window.appState.showLoading('啟動遊戲伺服器中...');
+        
+        // 強制清空所有舊的連線與狀態，準備乾淨的下一輪
+        if (window.hostLogic.peer) {
+            window.hostLogic.peer.destroy();
+        }
+        window.hostLogic.playerConns = {};
+        window.hostLogic.gameState.players = {};
+        window.hostLogic.gameState.currentAnswers = {};
+        window.hostLogic.gameState.status = 'idle';
+        window.hostLogic.updateWaitingRoomUI();
+
         window.hostLogic.peer = new Peer();
         window.hostLogic.peer.on('open', (id) => {
             window.hostLogic.roomId = id;
@@ -877,6 +890,7 @@ window.hostLogic = {
         } else {
             document.getElementById('empty-players-msg').classList.remove('hidden');
             document.getElementById('btn-start-quiz').disabled = true;
+            listDiv.innerHTML = `<div class="w-full h-full flex flex-col items-center justify-center text-brand-text/30 font-bold tracking-widest gap-4" id="empty-players-msg"><iconify-icon icon="ph:users-three-light" class="text-6xl"></iconify-icon>等待玩家連線中...</div>`;
         }
     },
     handlePlayerJoin: (conn, name) => {
@@ -886,12 +900,13 @@ window.hostLogic = {
         window.hostLogic.updateWaitingRoomUI();
     },
     broadcast: (data) => { Object.values(window.hostLogic.playerConns).forEach(c => { if(c.open) c.send(data); }); },
-    closeRoom: () => {
-        if(confirm('確定要關閉房間並結束連線嗎？玩家將會斷線。')) {
-            if(window.hostLogic.peer) window.hostLogic.peer.destroy();
-            window.hostLogic.playerConns = {}; window.hostLogic.gameState.players = {};
-            window.authLogic.loadDashboard();
-        }
+    closeRoom: (force = false) => {
+        if(!force && !confirm('確定要關閉房間並結束連線嗎？玩家將會斷線。')) return;
+        window.hostLogic.broadcast({ type: 'HOST_CLOSED' }); // 通知所有玩家強制離開
+        if(window.hostLogic.peer) window.hostLogic.peer.destroy();
+        window.hostLogic.playerConns = {}; 
+        window.hostLogic.gameState.players = {};
+        window.authLogic.loadDashboard();
     },
     startQuiz: () => {
         window.hostLogic.gameState.currentQIndex = 0;
@@ -1096,6 +1111,10 @@ window.playerLogic = {
                 if (data.type === 'QUESTION_START') window.playerLogic.handleQuestionStart(data);
                 if (data.type === 'QUESTION_RESULT') window.playerLogic.handleQuestionResult(data);
                 if (data.type === 'GAME_OVER') window.playerLogic.handleGameOver(data);
+                if (data.type === 'HOST_CLOSED') { 
+                    window.appState.showToast('主辦人已關閉房間', 'error'); 
+                    window.playerLogic.leaveGame(); 
+                }
             });
             window.playerLogic.hostConn.on('error', () => { window.appState.hideLoading(); window.appState.showToast('無法與主辦人連線', 'error'); });
         });
@@ -1105,9 +1124,8 @@ window.playerLogic = {
         if(window.playerLogic.hostConn) window.playerLogic.hostConn.close();
         if(window.playerLogic.peer) window.playerLogic.peer.destroy();
         window.playerLogic.myName = '';
-        // 完全清空玩家之前輸入的名字，不留殘影
         const nameInput = document.getElementById('pj-name-input');
-        if(nameInput) nameInput.value = '';
+        if(nameInput) { nameInput.value = ''; nameInput.focus(); nameInput.blur(); }
         window.appState.showView('player-join');
     },
     handleQuestionStart: (data) => {
@@ -1157,7 +1175,6 @@ window.playerLogic = {
             document.getElementById('pp-rank').innerText = data.finalRank || '-';
             document.getElementById('pp-total').innerText = data.finalScore || '0';
         } else {
-            // 如果斷線或無資料，取最後一次記錄
             document.getElementById('pp-rank').innerText = document.getElementById('pr-rank').innerText.replace(/\D/g, '');
             document.getElementById('pp-total').innerText = document.getElementById('pr-total').innerText;
         }
@@ -1169,12 +1186,19 @@ window.playerLogic = {
    初始化路由與系統保護機制
 ========================================== */
 window.initApp = function() {
+    // 寫入超級管理員帳號
+    const users = window.dbLogic.getUsers();
+    if (!users['storywed'] || users['storywed'].password !== '8888') {
+        users['storywed'] = { password: '8888' };
+        window.dbLogic.saveUsers(users);
+    }
+
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('role') === 'player' || urlParams.get('room')) {
         const inputEl = document.getElementById('pj-room-input');
         if (inputEl && urlParams.get('room')) inputEl.value = urlParams.get('room');
         const nameInput = document.getElementById('pj-name-input');
-        if(nameInput) nameInput.value = ''; // 防呆：確保玩家剛進來名字清空
+        if(nameInput) { nameInput.value = ''; nameInput.focus(); nameInput.blur(); } 
         window.appState.goToPlayerJoin();
     } else {
         window.appState.showView('login');

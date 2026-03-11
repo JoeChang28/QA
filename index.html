@@ -84,17 +84,17 @@
 
 <div id="toast-container"></div>
 
-<div id="loading-overlay" class="fixed inset-0 bg-white/90 backdrop-blur-sm z-[99999] hidden flex-col items-center justify-center pointer-events-none">
+<div id="loading-overlay" class="fixed inset-0 bg-white/90 backdrop-blur-sm z- hidden flex-col items-center justify-center pointer-events-none">
     <iconify-icon icon="line-md:loading-twotone-loop" class="text-7xl text-brand-rosegold mb-4"></iconify-icon>
     <div id="loading-text" class="text-xl font-bold tracking-widest text-brand-dustyrose">處理中...</div>
 </div>
 
-<button onclick="window.appState.toggleFullScreen()" class="fixed bottom-6 right-6 z-[100000] w-14 h-14 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-brand-rosegold shadow-lg border border-brand-rosegold/20 hover:scale-110 transition-transform">
+<button onclick="window.appState.toggleFullScreen()" class="fixed bottom-6 right-6 z- w-14 h-14 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-brand-rosegold shadow-lg border border-brand-rosegold/20 hover:scale-110 transition-transform">
     <iconify-icon icon="ph:corners-out-bold" id="fs-icon" class="text-3xl"></iconify-icon>
 </button>
 
 <div id="app" class="w-full h-full relative bg-gradient-to-br from-brand-bg to-[#F8E8E8]">
-    <div id="celebration-container" class="absolute top-0 left-0 w-full h-full pointer-events-none z-[9999] overflow-hidden" style="display: none;"></div>
+    <div id="celebration-container" class="absolute top-0 left-0 w-full h-full pointer-events-none z- overflow-hidden" style="display: none;"></div>
     
     <div id="view-login" class="view-layer active items-center justify-center p-6">
         <div class="glass-panel p-10 md:p-14 rounded-[2rem] w-full max-w-md pointer-events-auto">
@@ -112,7 +112,7 @@
                     <input type="password" id="login-password" placeholder="請輸入密碼">
                 </div>
                 <button onclick="window.authLogic.login()" class="btn-primary w-full mt-4 text-lg">登入系統</button>
-                <div class="text-center text-sm text-brand-text/40 mt-4 font-bold tracking-widest leading-relaxed">
+                <div class="text-center text-sm text-brand-text/40 mt-5 font-bold tracking-widest leading-relaxed">
                     （每月不定期更新密碼，如忘記密碼請聯繫系統管理員）
                 </div>
             </div>
@@ -140,8 +140,11 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="room-list">
                 </div>
 
-            <div class="mt-10 flex justify-center">
-                <button onclick="window.dbLogic.createNewRoom()" class="btn-primary flex items-center gap-2 text-lg px-8 py-3">
+            <div class="mt-10 flex flex-col sm:flex-row justify-center gap-4">
+                <button onclick="window.hostLogic.openImportFromDashboard()" class="btn-secondary flex items-center justify-center gap-2 text-lg px-8 py-3 bg-white shadow-sm hover:shadow-md transition-all">
+                    <iconify-icon icon="ph:download-simple-bold" class="text-2xl"></iconify-icon> 導入已設定的遊戲
+                </button>
+                <button onclick="window.dbLogic.createNewRoom()" class="btn-primary flex items-center justify-center gap-2 text-lg px-8 py-3 shadow-md">
                     <iconify-icon icon="ph:plus-circle-bold" class="text-2xl"></iconify-icon> 建立新遊戲房間
                 </button>
             </div>
@@ -456,7 +459,7 @@
         </div>
     </div>
 
-    <div id="import-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[99999] hidden items-center justify-center p-4">
+    <div id="import-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z- hidden items-center justify-center p-4">
         <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-lg pointer-events-auto">
             <h3 class="text-2xl font-bold text-brand-rosegold mb-2 text-center">導入題庫設定代碼</h3>
             <p class="text-brand-text/60 text-sm mb-4 text-center">您可以選擇上傳先前的 .txt 題庫檔案，或直接貼上代碼。</p>
@@ -478,7 +481,7 @@
         </div>
     </div>
     
-    <div id="admin-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[99999] hidden items-center justify-center p-4">
+    <div id="admin-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z- hidden items-center justify-center p-4">
         <div class="bg-white rounded-3xl shadow-2xl p-6 md:p-8 w-full max-w-2xl pointer-events-auto flex flex-col max-h-[85vh]">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-2xl font-bold text-brand-dustyrose tracking-widest">系統帳號管理</h3>
@@ -638,6 +641,40 @@ window.authLogic = {
             });
         }
         window.appState.showView('dashboard');
+    },
+    showAdminPanel: () => {
+        if(window.authLogic.currentUser.toLowerCase() !== SYSTEM_CONFIG.ADMIN_USERNAME.toLowerCase()) { window.appState.showToast('權限不足', 'error'); return; }
+        const users = window.dbLogic.getUsers(); // 這邊是為了保留原本查看密碼介面的相容性
+        const tbody = document.getElementById('admin-users-list');
+        tbody.innerHTML = '';
+        for(let u in users) {
+            const isSuperAdmin = (u.toLowerCase() === SYSTEM_CONFIG.ADMIN_USERNAME.toLowerCase());
+            const deleteBtnHTML = isSuperAdmin 
+                ? `<span class="text-gray-400 text-sm font-bold tracking-widest">無法刪除</span>` 
+                : `<button onclick="window.authLogic.deleteUser('${window.appState.escapeHTML(u)}')" class="text-red-400 hover:text-white px-3 py-1.5 rounded bg-red-50 hover:bg-red-400 transition-colors text-sm font-bold shadow-sm">刪除</button>`;
+            
+            tbody.innerHTML += `
+                <tr class="border-b border-gray-100 last:border-0 hover:bg-white transition-colors">
+                    <td class="py-4 pl-2 font-bold text-brand-text">${window.appState.escapeHTML(u)}</td>
+                    <td class="py-4 font-mono text-gray-500">${window.appState.escapeHTML(users[u].password)}</td>
+                    <td class="py-4 text-right pr-2">${deleteBtnHTML}</td>
+                </tr>
+            `;
+        }
+        document.getElementById('admin-modal').classList.remove('hidden');
+        document.getElementById('admin-modal').classList.add('flex');
+    },
+    deleteUser: (username) => {
+        if(username.toLowerCase() === SYSTEM_CONFIG.ADMIN_USERNAME.toLowerCase()) {
+            window.appState.showToast('無法刪除超級管理員帳號', 'error'); return;
+        }
+        if(confirm(`確定要刪除帳號 ${username} 嗎？`)) {
+            const users = window.dbLogic.getUsers();
+            delete users[username];
+            window.dbLogic.saveUsers(users);
+            window.authLogic.showAdminPanel();
+            window.appState.showToast('帳號已成功刪除');
+        }
     }
 };
 
@@ -717,7 +754,6 @@ window.hostLogic = {
     serverBootToken: 0, serverBootTimeout: null,
     gameState: { status: 'idle', players: {}, currentQIndex: 0, timerInterval: null, currentAnswers: {}, questionStartTime: 0 },
     
-    // 【新增】自動更新題號函式
     updateQuestionNumbers: () => {
         const blocks = document.querySelectorAll('.question-setup-block');
         const numToZh = (n) => {
@@ -732,11 +768,23 @@ window.hostLogic = {
         });
     },
 
+    openImportFromDashboard: () => {
+        window.dbLogic.createNewRoom();
+        setTimeout(() => {
+            const modal = document.getElementById('import-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }, 100);
+    },
+
     addQuestionBlock: (data) => {
         const container = document.getElementById('questions-container');
         if (!container) return;
         
-        const isObj = data && typeof data === 'object' && Array.isArray(data.options);
+        // 絕對防呆：檢查傳入的是否為合法物件，若為 MouseEvent (即點擊事件傳入的參數) 則視為 null
+        const isObj = data && typeof data === 'object' && !data.clientX && Array.isArray(data.options);
         
         const qid = 'q_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
         const div = document.createElement('div');
@@ -778,38 +826,37 @@ window.hostLogic = {
                         <input type="radio" name="correct-${qid}" class="q-correct-radio absolute w-0 h-0 opacity-0 peer" ${dCorr===0?'checked':''}>
                         <iconify-icon icon="ph:check-circle-fill" class="text-3xl text-opt-red opacity-20 peer-checked:opacity-100 transition-opacity"></iconify-icon>
                     </label>
-                    <input type="text" class="q-opt-0 flex-1 border-none bg-transparent font-bold text-lg px-2 placeholder-gray-300" placeholder="選項 1" value="${window.appState.escapeHTML(dOpts[0])}">
+                    <input type="text" class="q-opt-0 flex-1 border-none bg-transparent font-bold text-lg px-2 placeholder-gray-300" placeholder="選項 1" value="${window.appState.escapeHTML(dOpts)}">
                 </div>
                 <div class="flex items-center gap-3 p-2 bg-white rounded-2xl border-2 border-opt-yellow/30 focus-within:border-opt-yellow focus-within:shadow-md transition-all">
                     <label class="w-12 h-12 flex items-center justify-center bg-opt-yellow/10 rounded-xl relative cursor-pointer m-0">
                         <input type="radio" name="correct-${qid}" class="q-correct-radio absolute w-0 h-0 opacity-0 peer" ${dCorr===1?'checked':''}>
                         <iconify-icon icon="ph:check-circle-fill" class="text-3xl text-opt-yellow opacity-20 peer-checked:opacity-100 transition-opacity"></iconify-icon>
                     </label>
-                    <input type="text" class="q-opt-1 flex-1 border-none bg-transparent font-bold text-lg px-2 placeholder-gray-300" placeholder="選項 2" value="${window.appState.escapeHTML(dOpts[1])}">
+                    <input type="text" class="q-opt-1 flex-1 border-none bg-transparent font-bold text-lg px-2 placeholder-gray-300" placeholder="選項 2" value="${window.appState.escapeHTML(dOpts)}">
                 </div>
                 <div class="flex items-center gap-3 p-2 bg-white rounded-2xl border-2 border-opt-blue/30 focus-within:border-opt-blue focus-within:shadow-md transition-all">
                     <label class="w-12 h-12 flex items-center justify-center bg-opt-blue/10 rounded-xl relative cursor-pointer m-0">
                         <input type="radio" name="correct-${qid}" class="q-correct-radio absolute w-0 h-0 opacity-0 peer" ${dCorr===2?'checked':''}>
                         <iconify-icon icon="ph:check-circle-fill" class="text-3xl text-opt-blue opacity-20 peer-checked:opacity-100 transition-opacity"></iconify-icon>
                     </label>
-                    <input type="text" class="q-opt-2 flex-1 border-none bg-transparent font-bold text-lg px-2 placeholder-gray-300" placeholder="選項 3" value="${window.appState.escapeHTML(dOpts[2])}">
+                    <input type="text" class="q-opt-2 flex-1 border-none bg-transparent font-bold text-lg px-2 placeholder-gray-300" placeholder="選項 3" value="${window.appState.escapeHTML(dOpts)}">
                 </div>
                 <div class="flex items-center gap-3 p-2 bg-white rounded-2xl border-2 border-opt-green/30 focus-within:border-opt-green focus-within:shadow-md transition-all">
                     <label class="w-12 h-12 flex items-center justify-center bg-opt-green/10 rounded-xl relative cursor-pointer m-0">
                         <input type="radio" name="correct-${qid}" class="q-correct-radio absolute w-0 h-0 opacity-0 peer" ${dCorr===3?'checked':''}>
                         <iconify-icon icon="ph:check-circle-fill" class="text-3xl text-opt-green opacity-20 peer-checked:opacity-100 transition-opacity"></iconify-icon>
                     </label>
-                    <input type="text" class="q-opt-3 flex-1 border-none bg-transparent font-bold text-lg px-2 placeholder-gray-300" placeholder="選項 4" value="${window.appState.escapeHTML(dOpts[3])}">
+                    <input type="text" class="q-opt-3 flex-1 border-none bg-transparent font-bold text-lg px-2 placeholder-gray-300" placeholder="選項 4" value="${window.appState.escapeHTML(dOpts)}">
                 </div>
             </div>`;
         container.appendChild(div);
         
-        // 每次新增時自動刷新一次所有題號
         window.hostLogic.updateQuestionNumbers();
     },
     handleImagePreview: (inputEl) => {
-        if(inputEl.files && inputEl.files[0]) {
-            compressImage(inputEl.files[0], (base64) => {
+        if(inputEl.files && inputEl.files) {
+            compressImage(inputEl.files, (base64) => {
                 const imgEl = inputEl.parentElement.querySelector('.q-img-preview');
                 imgEl.src = base64; imgEl.classList.remove('hidden');
             });
@@ -838,7 +885,7 @@ window.hostLogic = {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a'); a.href = url;
         const roomTitle = document.getElementById('editor-room-title').value.trim() || '未命名房間';
-        const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, '');
+        const dateStr = new Date().toISOString().split('T').replace(/-/g, '');
         a.download = `快問快答題庫_${roomTitle}_${dateStr}.txt`;
         document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
         window.appState.showToast('設定已成功匯出為 TXT 檔案！');
@@ -846,10 +893,10 @@ window.hostLogic = {
     importConfig: () => {
         const fileInput = document.getElementById('import-file-input');
         const textInput = document.getElementById('import-input').value.trim();
-        if (fileInput && fileInput.files && fileInput.files[0]) {
+        if (fileInput && fileInput.files && fileInput.files) {
             const reader = new FileReader();
             reader.onload = (e) => window.hostLogic.processImportCode(e.target.result.trim());
-            reader.readAsText(fileInput.files[0]);
+            reader.readAsText(fileInput.files);
         } else if (textInput) {
             window.hostLogic.processImportCode(textInput);
         } else {
@@ -949,7 +996,7 @@ window.hostLogic = {
                 if (bootToken !== window.hostLogic.serverBootToken) { try { peer.destroy(); } catch(e) {} return; }
                 opened = true; window.hostLogic.clearBootTimeout();
                 window.hostLogic.roomId = id;
-                const joinUrl = window.location.href.split('?')[0] + '?role=player&room=' + id;
+                const joinUrl = window.location.href.split('?') + '?role=player&room=' + id;
                 document.getElementById('qrcode-container').innerHTML = '';
                 new QRCode(document.getElementById('qrcode-container'), { text: joinUrl, width: 220, height: 220, colorDark: '#B76E79', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.H });
                 document.getElementById('hw-room-title').innerText = window.dbLogic.getRooms().find(r => r.id === window.editorLogic.currentRoomId)?.title || '快問快答遊戲';
@@ -1125,7 +1172,7 @@ window.hostLogic = {
         window.hostLogic.gameState.status = 'reveal';
 
         const q = window.hostLogic.quizConfig.questions[window.hostLogic.gameState.currentQIndex];
-        let voteCounts = [0, 0, 0, 0];
+        let voteCounts =;
 
         for (let name in window.hostLogic.gameState.currentAnswers) {
             const ans = window.hostLogic.gameState.currentAnswers[name];
@@ -1255,7 +1302,7 @@ window.hostLogic = {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `快問快答成績記錄_${new Date().toISOString().split('T')[0].replace(/-/g, '')}.txt`;
+        a.download = `快問快答成績記錄_${new Date().toISOString().split('T').replace(/-/g, '')}.txt`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -1302,9 +1349,9 @@ window.hostLogic = {
 
         if (typeof gsap !== 'undefined') {
             const tl = gsap.timeline();
-            if(top3[2]) tl.to("#podium-3", { y: 0, opacity: 1, duration: 0.6, ease: "back.out(1.5)", delay: 0.5 });
-            if(top3[1]) tl.to("#podium-2", { y: 0, opacity: 1, duration: 0.6, ease: "back.out(1.5)", delay: 0.2 });
-            if(top3[0]) tl.to("#podium-1", { y: 0, opacity: 1, duration: 0.8, ease: "back.out(1.7)", delay: 0.3 }).call(() => {
+            if(top3) tl.to("#podium-3", { y: 0, opacity: 1, duration: 0.6, ease: "back.out(1.5)", delay: 0.5 });
+            if(top3) tl.to("#podium-2", { y: 0, opacity: 1, duration: 0.6, ease: "back.out(1.5)", delay: 0.2 });
+            if(top3) tl.to("#podium-1", { y: 0, opacity: 1, duration: 0.8, ease: "back.out(1.7)", delay: 0.3 }).call(() => {
                 if(typeof confetti !== 'undefined') {
                     const duration = 4 * 1000;
                     const end = Date.now() + duration;
@@ -1474,7 +1521,7 @@ window.playerLogic = {
         // 利用 location.replace 強制清理並回到首頁，解決快取殘留
         const urlParams = new URLSearchParams(window.location.search);
         let roomCode = urlParams.get('room') || '';
-        let newUrl = window.location.href.split('?')[0] + '?role=player';
+        let newUrl = window.location.href.split('?') + '?role=player';
         if (roomCode) newUrl += '&room=' + roomCode;
         window.location.replace(newUrl);
     },

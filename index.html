@@ -84,17 +84,17 @@
 
 <div id="toast-container"></div>
 
-<div id="loading-overlay" class="fixed inset-0 bg-white/90 backdrop-blur-sm z- hidden flex-col items-center justify-center pointer-events-none">
+<div id="loading-overlay" class="fixed inset-0 bg-white/90 backdrop-blur-sm z-[99999] hidden flex-col items-center justify-center pointer-events-none">
     <iconify-icon icon="line-md:loading-twotone-loop" class="text-7xl text-brand-rosegold mb-4"></iconify-icon>
     <div id="loading-text" class="text-xl font-bold tracking-widest text-brand-dustyrose">處理中...</div>
 </div>
 
-<button onclick="window.appState.toggleFullScreen()" class="fixed bottom-6 right-6 z- w-14 h-14 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-brand-rosegold shadow-lg border border-brand-rosegold/20 hover:scale-110 transition-transform">
+<button onclick="window.appState.toggleFullScreen()" class="fixed bottom-6 right-6 z-[99990] w-14 h-14 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-brand-rosegold shadow-lg border border-brand-rosegold/20 hover:scale-110 transition-transform">
     <iconify-icon icon="ph:corners-out-bold" id="fs-icon" class="text-3xl"></iconify-icon>
 </button>
 
 <div id="app" class="w-full h-full relative bg-gradient-to-br from-brand-bg to-[#F8E8E8]">
-    <div id="celebration-container" class="absolute top-0 left-0 w-full h-full pointer-events-none z- overflow-hidden" style="display: none;"></div>
+    <div id="celebration-container" class="absolute top-0 left-0 w-full h-full pointer-events-none z-[9999] overflow-hidden" style="display: none;"></div>
     
     <div id="view-login" class="view-layer active items-center justify-center p-6">
         <div class="glass-panel p-10 md:p-14 rounded-[2rem] w-full max-w-md pointer-events-auto">
@@ -128,11 +128,6 @@
                 </div>
                 <div class="flex flex-wrap items-center gap-3">
                     <span class="font-bold text-brand-text/70 hidden sm:inline">Hi, <span id="dash-username" class="text-brand-rosegold">User</span></span>
-                    
-                    <button id="btn-admin-panel" onclick="window.authLogic.showAdminPanel()" class="btn-secondary text-sm px-3 py-1.5 hidden items-center gap-1">
-                        <iconify-icon icon="ph:users-three-bold"></iconify-icon> <span class="hidden sm:inline">帳號管理</span>
-                    </button>
-                    
                     <button onclick="window.authLogic.logout()" class="btn-secondary text-sm px-3 py-1.5 flex items-center gap-1"><iconify-icon icon="ph:sign-out-bold"></iconify-icon> <span class="hidden sm:inline">登出</span></button>
                 </div>
             </header>
@@ -323,14 +318,14 @@
         </div>
         
         <div class="flex items-end justify-center gap-2 md:gap-6 h-[300px] md:h-[400px] mb-12 w-full max-w-4xl relative">
-            <div id="podium-2" class="w-1/3 flex flex-col items-center opacity-0 transform translate-y-10">
+            <div id="podium-2" class="w-1/3 flex flex-col items-center opacity-0 transform translate-y-10 z-10">
                 <div class="text-xl md:text-3xl font-bold text-gray-600 mb-1 md:mb-2 truncate w-full text-center px-1" id="p-name-2">---</div>
                 <div class="text-sm md:text-xl font-bold text-brand-rosegold mb-3 bg-white/80 px-4 py-1 rounded-full shadow-sm" id="p-score-2">0 分</div>
                 <div class="w-full bg-gradient-to-t from-gray-300 to-gray-100 rounded-t-2xl flex items-start justify-center pt-4 md:pt-6 shadow-[0_-10px_20px_rgba(0,0,0,0.1)] border-t-4 border-gray-400 relative overflow-hidden" style="height: 65%;">
                     <span class="text-4xl md:text-6xl font-sans font-bold text-gray-500 drop-shadow-md">2</span>
                 </div>
             </div>
-            <div id="podium-1" class="w-1/3 flex flex-col items-center opacity-0 transform translate-y-10 z-10">
+            <div id="podium-1" class="w-1/3 flex flex-col items-center opacity-0 transform translate-y-10 z-20">
                 <iconify-icon icon="ph:crown-fill" class="text-5xl md:text-7xl text-yellow-500 mb-2 drop-shadow-[0_5px_15px_rgba(234,179,8,0.5)] animate-bounce"></iconify-icon>
                 <div class="text-2xl md:text-4xl font-bold text-yellow-600 mb-1 md:mb-2 truncate w-full text-center px-1" id="p-name-1">---</div>
                 <div class="text-base md:text-2xl font-bold text-brand-rosegold mb-3 bg-white/90 px-5 py-1.5 rounded-full shadow-md" id="p-score-1">0 分</div>
@@ -338,7 +333,7 @@
                     <span class="text-5xl md:text-8xl font-sans font-bold text-yellow-600 drop-shadow-lg">1</span>
                 </div>
             </div>
-            <div id="podium-3" class="w-1/3 flex flex-col items-center opacity-0 transform translate-y-10">
+            <div id="podium-3" class="w-1/3 flex flex-col items-center opacity-0 transform translate-y-10 z-10">
                 <div class="text-xl md:text-3xl font-bold text-amber-700 mb-1 md:mb-2 truncate w-full text-center px-1" id="p-name-3">---</div>
                 <div class="text-sm md:text-xl font-bold text-brand-rosegold mb-3 bg-white/80 px-4 py-1 rounded-full shadow-sm" id="p-score-3">0 分</div>
                 <div class="w-full bg-gradient-to-t from-amber-400 to-amber-200 rounded-t-2xl flex items-start justify-center pt-4 md:pt-6 shadow-[0_-10px_20px_rgba(0,0,0,0.1)] border-t-4 border-amber-600 relative overflow-hidden" style="height: 50%;">
@@ -347,7 +342,7 @@
             </div>
         </div>
 
-        <div class="w-full max-w-2xl flex flex-col items-center mb-10" id="podium-list-container">
+        <div class="w-full max-w-2xl flex flex-col items-center mb-10 hidden" id="podium-list-container">
             <button id="btn-reveal-runners-up" onclick="window.hostLogic.revealRunnersUp()" class="btn-secondary w-full py-4 text-xl shadow-sm mb-2 font-bold tracking-widest hidden">點擊顯示第 4 名至第 10 名 <iconify-icon icon="ph:caret-down-bold"></iconify-icon></button>
             <div class="w-full bg-white/80 backdrop-blur-md rounded-3xl p-6 md:p-8 shadow-xl border border-white hidden flex-col opacity-0 transition-opacity duration-700" id="podium-list">
                 <h3 class="text-xl md:text-2xl font-bold text-center text-brand-dustyrose mb-6 border-b border-brand-rosegold/20 pb-4 tracking-widest">第 4 名 至 第 10 名</h3>
@@ -459,7 +454,7 @@
         </div>
     </div>
 
-    <div id="import-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z- hidden items-center justify-center p-4">
+    <div id="import-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[99999] hidden items-center justify-center p-4">
         <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-lg pointer-events-auto">
             <h3 class="text-2xl font-bold text-brand-rosegold mb-2 text-center">導入題庫設定代碼</h3>
             <p class="text-brand-text/60 text-sm mb-4 text-center">您可以選擇上傳先前的 .txt 題庫檔案，或直接貼上代碼。</p>
@@ -481,24 +476,16 @@
         </div>
     </div>
     
-    <div id="admin-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z- hidden items-center justify-center p-4">
-        <div class="bg-white rounded-3xl shadow-2xl p-6 md:p-8 w-full max-w-2xl pointer-events-auto flex flex-col max-h-[85vh]">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-bold text-brand-dustyrose tracking-widest">系統帳號管理</h3>
-                <button onclick="document.getElementById('admin-modal').classList.add('hidden'); document.getElementById('admin-modal').classList.remove('flex');" class="text-gray-400 hover:text-brand-rosegold transition-colors"><iconify-icon icon="ph:x-circle-bold" class="text-3xl"></iconify-icon></button>
+    <div id="delete-confirm-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[99999] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-sm pointer-events-auto text-center">
+            <div class="w-20 h-20 bg-red-50 text-red-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                <iconify-icon icon="ph:warning-circle-fill" class="text-5xl"></iconify-icon>
             </div>
-            <div class="overflow-y-auto custom-scrollbar flex-1 border border-brand-rosegold/20 rounded-xl p-4 bg-brand-rosegold/5">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="border-b border-brand-rosegold/20 text-brand-dustyrose">
-                            <th class="pb-3 pl-2">使用者帳號</th>
-                            <th class="pb-3">登入密碼</th>
-                            <th class="pb-3 text-right pr-2">操作</th>
-                        </tr>
-                    </thead>
-                    <tbody id="admin-users-list">
-                        </tbody>
-                </table>
+            <h3 class="text-2xl font-bold text-brand-dustyrose mb-2">確定刪除房間？</h3>
+            <p class="text-brand-text/60 text-sm mb-6">刪除後將無法復原此房間的題庫與設定。</p>
+            <div class="flex gap-4 justify-center">
+                <button onclick="window.dbLogic.closeDeleteModal()" class="btn-secondary w-1/2">取消</button>
+                <button onclick="window.dbLogic.executeDeleteRoom()" class="bg-red-400 hover:bg-red-500 text-white font-bold py-3 px-6 rounded-full w-1/2 transition-colors shadow-lg shadow-red-500/30">確定刪除</button>
             </div>
         </div>
     </div>
@@ -512,6 +499,36 @@
 const SYSTEM_CONFIG = {
     ADMIN_USERNAME: "StoryWed",
     ADMIN_PASSWORD: "8888"
+};
+
+/* ==========================================
+   統一核心函式 (全域防呆)
+========================================== */
+window.appUtils = {
+    compressImage: (file, callback) => {
+        try {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width; let height = img.height;
+                    if (width > 800) { height *= 800 / width; width = 800; }
+                    canvas.width = width; canvas.height = height;
+                    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                    callback(canvas.toDataURL('image/jpeg', 0.6));
+                };
+                img.onerror = () => window.appState.showToast('圖片解析失敗', 'error');
+                img.src = e.target.result;
+            };
+            reader.onerror = () => window.appState.showToast('讀取檔案失敗', 'error');
+            reader.readAsDataURL(file);
+        } catch(err) {
+            window.appState.showToast('圖片處理發生錯誤', 'error');
+        }
+    },
+    utf8_to_b64: (str) => { return window.btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1))); },
+    b64_to_utf8: (str) => { return decodeURIComponent(window.atob(str).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')); }
 };
 
 /* ==========================================
@@ -557,24 +574,28 @@ window.appState = {
         const docElm = document.documentElement;
         const fsIcon = document.getElementById('fs-icon');
         if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-            if (docElm.requestFullscreen) docElm.requestFullscreen();
-            else if (docElm.webkitRequestFullscreen) docElm.webkitRequestFullscreen();
+            const req = docElm.requestFullscreen || docElm.webkitRequestFullscreen;
+            if (req) req.call(docElm).catch(() => {});
             if (fsIcon) fsIcon.setAttribute('icon', 'ph:corners-in-bold');
         } else {
-            if (document.exitFullscreen) document.exitFullscreen();
-            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            const exit = document.exitFullscreen || document.webkitExitFullscreen;
+            if (exit) exit.call(document);
             if (fsIcon) fsIcon.setAttribute('icon', 'ph:corners-out-bold');
         }
     },
     escapeHTML: (str) => {
+        if (str === null || str === undefined) return '';
         return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 };
 
 /* ==========================================
-   房間資料管理
+   房間資料管理 (包含自訂 Modal 刪除功能)
 ========================================== */
 window.dbLogic = {
+    roomToDelete: null,
+    getUsers: () => { try { return JSON.parse(localStorage.getItem('storywed_quiz_users') || '{}'); } catch(e) { return {}; } },
+    saveUsers: (users) => { try { localStorage.setItem('storywed_quiz_users', JSON.stringify(users)); } catch(e) {} },
     getRooms: () => { try { return JSON.parse(localStorage.getItem('storywed_quiz_rooms') || '[]'); } catch(e) { return []; } },
     saveRooms: (rooms) => { try { localStorage.setItem('storywed_quiz_rooms', JSON.stringify(rooms)); } catch(e) {} },
     
@@ -585,12 +606,27 @@ window.dbLogic = {
         window.dbLogic.saveRooms(rooms);
         window.editorLogic.loadRoom(newRoom.id);
     },
-    deleteRoom: (id) => {
-        if(!confirm('確定要刪除這個遊戲房間嗎？')) return;
-        let rooms = window.dbLogic.getRooms();
-        rooms = rooms.filter(r => r.id !== id);
-        window.dbLogic.saveRooms(rooms);
-        window.authLogic.loadDashboard();
+    
+    confirmDeleteRoom: (id) => {
+        window.dbLogic.roomToDelete = id;
+        document.getElementById('delete-confirm-modal').classList.remove('hidden');
+        document.getElementById('delete-confirm-modal').classList.add('flex');
+    },
+    executeDeleteRoom: () => {
+        const id = window.dbLogic.roomToDelete;
+        if(id) {
+            let rooms = window.dbLogic.getRooms();
+            rooms = rooms.filter(r => r.id !== id);
+            window.dbLogic.saveRooms(rooms);
+            window.authLogic.loadDashboard();
+            window.appState.showToast('已成功刪除房間');
+        }
+        window.dbLogic.closeDeleteModal();
+    },
+    closeDeleteModal: () => {
+        window.dbLogic.roomToDelete = null;
+        document.getElementById('delete-confirm-modal').classList.add('hidden');
+        document.getElementById('delete-confirm-modal').classList.remove('flex');
     }
 };
 
@@ -616,7 +652,6 @@ window.authLogic = {
     },
     loadDashboard: () => {
         document.getElementById('dash-username').innerText = window.authLogic.currentUser;
-
         const listEl = document.getElementById('room-list');
         listEl.innerHTML = '';
         const myRooms = window.dbLogic.getRooms();
@@ -626,55 +661,22 @@ window.authLogic = {
             myRooms.reverse().forEach(room => {
                 const card = document.createElement('div');
                 card.className = 'dashboard-card flex flex-col justify-between h-full';
+                const qCount = (room.questions || []).length;
                 card.innerHTML = `
                     <div>
                         <h3 class="text-xl font-bold text-brand-dustyrose mb-2 tracking-wide">${window.appState.escapeHTML(room.title)}</h3>
-                        <p class="text-sm text-brand-text/60 mb-6">包含 ${room.questions.length} 道題目</p>
+                        <p class="text-sm text-brand-text/60 mb-6">包含 ${qCount} 道題目</p>
                     </div>
                     <div class="flex gap-2">
                         <button onclick="window.editorLogic.loadRoom('${room.id}')" class="btn-secondary flex-1 text-sm py-2">編輯題目</button>
                         <button onclick="window.editorLogic.startGameDirectly('${room.id}')" class="btn-primary flex-1 text-sm py-2 px-0 bg-gradient-to-r from-green-500 to-emerald-400 shadow-green-200">開始遊戲</button>
-                        <button onclick="window.dbLogic.deleteRoom('${room.id}')" class="bg-gray-100 hover:bg-red-100 text-gray-500 hover:text-red-500 transition-colors rounded-full w-10 h-10 flex items-center justify-center shrink-0"><iconify-icon icon="ph:trash-bold"></iconify-icon></button>
+                        <button onclick="window.dbLogic.confirmDeleteRoom('${room.id}')" class="bg-gray-100 hover:bg-red-100 text-gray-500 hover:text-red-500 transition-colors rounded-full w-10 h-10 flex items-center justify-center shrink-0"><iconify-icon icon="ph:trash-bold"></iconify-icon></button>
                     </div>
                 `;
                 listEl.appendChild(card);
             });
         }
         window.appState.showView('dashboard');
-    },
-    showAdminPanel: () => {
-        if(window.authLogic.currentUser.toLowerCase() !== SYSTEM_CONFIG.ADMIN_USERNAME.toLowerCase()) { window.appState.showToast('權限不足', 'error'); return; }
-        const users = window.dbLogic.getUsers(); // 這邊是為了保留原本查看密碼介面的相容性
-        const tbody = document.getElementById('admin-users-list');
-        tbody.innerHTML = '';
-        for(let u in users) {
-            const isSuperAdmin = (u.toLowerCase() === SYSTEM_CONFIG.ADMIN_USERNAME.toLowerCase());
-            const deleteBtnHTML = isSuperAdmin 
-                ? `<span class="text-gray-400 text-sm font-bold tracking-widest">無法刪除</span>` 
-                : `<button onclick="window.authLogic.deleteUser('${window.appState.escapeHTML(u)}')" class="text-red-400 hover:text-white px-3 py-1.5 rounded bg-red-50 hover:bg-red-400 transition-colors text-sm font-bold shadow-sm">刪除</button>`;
-            
-            tbody.innerHTML += `
-                <tr class="border-b border-gray-100 last:border-0 hover:bg-white transition-colors">
-                    <td class="py-4 pl-2 font-bold text-brand-text">${window.appState.escapeHTML(u)}</td>
-                    <td class="py-4 font-mono text-gray-500">${window.appState.escapeHTML(users[u].password)}</td>
-                    <td class="py-4 text-right pr-2">${deleteBtnHTML}</td>
-                </tr>
-            `;
-        }
-        document.getElementById('admin-modal').classList.remove('hidden');
-        document.getElementById('admin-modal').classList.add('flex');
-    },
-    deleteUser: (username) => {
-        if(username.toLowerCase() === SYSTEM_CONFIG.ADMIN_USERNAME.toLowerCase()) {
-            window.appState.showToast('無法刪除超級管理員帳號', 'error'); return;
-        }
-        if(confirm(`確定要刪除帳號 ${username} 嗎？`)) {
-            const users = window.dbLogic.getUsers();
-            delete users[username];
-            window.dbLogic.saveUsers(users);
-            window.authLogic.showAdminPanel();
-            window.appState.showToast('帳號已成功刪除');
-        }
     }
 };
 
@@ -689,18 +691,22 @@ window.editorLogic = {
         if(!room) return;
         document.getElementById('editor-room-title').value = room.title;
         document.getElementById('questions-container').innerHTML = '';
-        if (room.questions.length === 0) { window.hostLogic.addQuestionBlock(); } 
-        else { room.questions.forEach(q => window.hostLogic.addQuestionBlock(q)); }
+        window.hostLogic.qCounter = 0; 
+        if (!room.questions || room.questions.length === 0) { 
+            window.hostLogic.addQuestionBlock(null); 
+        } else { 
+            room.questions.forEach(q => window.hostLogic.addQuestionBlock(q)); 
+        }
         window.appState.showView('editor');
     },
     saveRoom: () => {
         const titleInput = document.getElementById('editor-room-title');
-        const title = titleInput ? titleInput.value.trim() : '未命名遊戲房間';
+        const title = (titleInput && titleInput.value.trim()) ? titleInput.value.trim() : '未命名遊戲房間';
         window.hostLogic.buildConfigFromDOM(); 
         let rooms = window.dbLogic.getRooms();
         let idx = rooms.findIndex(r => r.id === window.editorLogic.currentRoomId);
         if(idx !== -1) {
-            rooms[idx].title = title || '未命名遊戲房間';
+            rooms[idx].title = title;
             rooms[idx].questions = window.hostLogic.quizConfig.questions;
             window.dbLogic.saveRooms(rooms);
             window.appState.showToast('房間設定已儲存！');
@@ -708,7 +714,7 @@ window.editorLogic = {
     },
     startGame: () => {
         window.editorLogic.saveRoom();
-        if(window.hostLogic.quizConfig.questions.length === 0 || window.hostLogic.quizConfig.questions.some(q => q.options.some(o=>o===''))) {
+        if(!window.hostLogic.quizConfig.questions || window.hostLogic.quizConfig.questions.length === 0 || window.hostLogic.quizConfig.questions.some(q => q.options.some(o=>o===''))) {
             window.appState.showToast('請確認至少有一道題目且四個選項都有填寫內容', 'error'); return;
         }
         window.hostLogic.createGameRoom();
@@ -726,31 +732,11 @@ window.editorLogic = {
     }
 };
 
-function compressImage(file, callback) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-            const canvas = document.createElement('canvas');
-            let width = img.width; let height = img.height;
-            if (width > 800) { height *= 800 / width; width = 800; }
-            canvas.width = width; canvas.height = height;
-            canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-            callback(canvas.toDataURL('image/jpeg', 0.6));
-        }
-        img.src = e.target.result;
-    }
-    reader.readAsDataURL(file);
-}
-
-function utf8_to_b64(str) { return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1))); }
-function b64_to_utf8(str) { return decodeURIComponent(atob(str).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')); }
-
 /* ==========================================
    主機端流程邏輯
 ========================================== */
 window.hostLogic = {
-    peer: null, roomId: null, playerConns: {}, quizConfig: { questions: [] },
+    peer: null, roomId: null, playerConns: {}, quizConfig: { questions: [] }, qCounter: 0,
     serverBootToken: 0, serverBootTimeout: null,
     gameState: { status: 'idle', players: {}, currentQIndex: 0, timerInterval: null, currentAnswers: {}, questionStartTime: 0 },
     
@@ -783,15 +769,13 @@ window.hostLogic = {
         const container = document.getElementById('questions-container');
         if (!container) return;
         
-        // 絕對防呆：檢查傳入的是否為合法物件，若為 MouseEvent (即點擊事件傳入的參數) 則視為 null
         const isObj = data && typeof data === 'object' && !data.clientX && Array.isArray(data.options);
-        
         const qid = 'q_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
         const div = document.createElement('div');
         div.className = 'question-setup-block glass-panel p-5 md:p-8 rounded-[1.5rem] relative border-t-4 border-t-brand-rosegold mb-6';
         
         let dText = isObj && data.text ? data.text : ''; 
-        let dTime = isObj && data.timeLimit ? data.timeLimit : 10; 
+        let dTime = isObj && data.timeLimit ? parseInt(data.timeLimit, 10) || 10 : 10; 
         let dImg  = isObj && data.image ? data.image : ''; 
         let dOpts = isObj && data.options ? data.options : ['', '', '', '']; 
         let dCorr = isObj && data.correctIndex !== undefined ? data.correctIndex : 0;
@@ -826,28 +810,28 @@ window.hostLogic = {
                         <input type="radio" name="correct-${qid}" class="q-correct-radio absolute w-0 h-0 opacity-0 peer" ${dCorr===0?'checked':''}>
                         <iconify-icon icon="ph:check-circle-fill" class="text-3xl text-opt-red opacity-20 peer-checked:opacity-100 transition-opacity"></iconify-icon>
                     </label>
-                    <input type="text" class="q-opt-0 flex-1 border-none bg-transparent font-bold text-lg px-2 placeholder-gray-300" placeholder="選項 1" value="${window.appState.escapeHTML(dOpts)}">
+                    <input type="text" class="q-opt-0 flex-1 border-none bg-transparent font-bold text-lg px-2 placeholder-gray-300" placeholder="選項 1" value="${window.appState.escapeHTML(dOpts[0])}">
                 </div>
                 <div class="flex items-center gap-3 p-2 bg-white rounded-2xl border-2 border-opt-yellow/30 focus-within:border-opt-yellow focus-within:shadow-md transition-all">
                     <label class="w-12 h-12 flex items-center justify-center bg-opt-yellow/10 rounded-xl relative cursor-pointer m-0">
                         <input type="radio" name="correct-${qid}" class="q-correct-radio absolute w-0 h-0 opacity-0 peer" ${dCorr===1?'checked':''}>
                         <iconify-icon icon="ph:check-circle-fill" class="text-3xl text-opt-yellow opacity-20 peer-checked:opacity-100 transition-opacity"></iconify-icon>
                     </label>
-                    <input type="text" class="q-opt-1 flex-1 border-none bg-transparent font-bold text-lg px-2 placeholder-gray-300" placeholder="選項 2" value="${window.appState.escapeHTML(dOpts)}">
+                    <input type="text" class="q-opt-1 flex-1 border-none bg-transparent font-bold text-lg px-2 placeholder-gray-300" placeholder="選項 2" value="${window.appState.escapeHTML(dOpts[1])}">
                 </div>
                 <div class="flex items-center gap-3 p-2 bg-white rounded-2xl border-2 border-opt-blue/30 focus-within:border-opt-blue focus-within:shadow-md transition-all">
                     <label class="w-12 h-12 flex items-center justify-center bg-opt-blue/10 rounded-xl relative cursor-pointer m-0">
                         <input type="radio" name="correct-${qid}" class="q-correct-radio absolute w-0 h-0 opacity-0 peer" ${dCorr===2?'checked':''}>
                         <iconify-icon icon="ph:check-circle-fill" class="text-3xl text-opt-blue opacity-20 peer-checked:opacity-100 transition-opacity"></iconify-icon>
                     </label>
-                    <input type="text" class="q-opt-2 flex-1 border-none bg-transparent font-bold text-lg px-2 placeholder-gray-300" placeholder="選項 3" value="${window.appState.escapeHTML(dOpts)}">
+                    <input type="text" class="q-opt-2 flex-1 border-none bg-transparent font-bold text-lg px-2 placeholder-gray-300" placeholder="選項 3" value="${window.appState.escapeHTML(dOpts[2])}">
                 </div>
                 <div class="flex items-center gap-3 p-2 bg-white rounded-2xl border-2 border-opt-green/30 focus-within:border-opt-green focus-within:shadow-md transition-all">
                     <label class="w-12 h-12 flex items-center justify-center bg-opt-green/10 rounded-xl relative cursor-pointer m-0">
                         <input type="radio" name="correct-${qid}" class="q-correct-radio absolute w-0 h-0 opacity-0 peer" ${dCorr===3?'checked':''}>
                         <iconify-icon icon="ph:check-circle-fill" class="text-3xl text-opt-green opacity-20 peer-checked:opacity-100 transition-opacity"></iconify-icon>
                     </label>
-                    <input type="text" class="q-opt-3 flex-1 border-none bg-transparent font-bold text-lg px-2 placeholder-gray-300" placeholder="選項 4" value="${window.appState.escapeHTML(dOpts)}">
+                    <input type="text" class="q-opt-3 flex-1 border-none bg-transparent font-bold text-lg px-2 placeholder-gray-300" placeholder="選項 4" value="${window.appState.escapeHTML(dOpts[3])}">
                 </div>
             </div>`;
         container.appendChild(div);
@@ -855,50 +839,83 @@ window.hostLogic = {
         window.hostLogic.updateQuestionNumbers();
     },
     handleImagePreview: (inputEl) => {
-        if(inputEl.files && inputEl.files) {
-            compressImage(inputEl.files, (base64) => {
-                const imgEl = inputEl.parentElement.querySelector('.q-img-preview');
-                imgEl.src = base64; imgEl.classList.remove('hidden');
-            });
+        try {
+            if(inputEl.files && inputEl.files.length > 0) {
+                window.appUtils.compressImage(inputEl.files[0], (base64) => {
+                    const imgEl = inputEl.parentElement.querySelector('.q-img-preview');
+                    if (imgEl) {
+                        imgEl.src = base64;
+                        imgEl.classList.remove('hidden');
+                    }
+                });
+            }
+        } catch(e) {
+            window.appState.showToast('圖片載入失敗', 'error');
         }
     },
     buildConfigFromDOM: () => {
         window.hostLogic.quizConfig.questions = [];
         document.querySelectorAll('.question-setup-block').forEach(block => {
-            const text = block.querySelector('.q-text').value.trim();
+            const textEl = block.querySelector('.q-text');
+            const text = textEl ? textEl.value.trim() : '';
             if(!text) return; 
-            const timeLimit = parseInt(block.querySelector('.q-time').value, 10);
-            const imgSrc = block.querySelector('.q-img-preview').src;
-            const image = imgSrc.startsWith('data:') ? imgSrc : null;
-            const options = [block.querySelector('.q-opt-0').value.trim(), block.querySelector('.q-opt-1').value.trim(), block.querySelector('.q-opt-2').value.trim(), block.querySelector('.q-opt-3').value.trim()];
+            
+            const timeEl = block.querySelector('.q-time');
+            const timeLimit = timeEl ? (parseInt(timeEl.value, 10) || 10) : 10;
+            
+            const imgEl = block.querySelector('.q-img-preview');
+            const imgSrc = imgEl ? imgEl.getAttribute('src') : '';
+            const image = (imgSrc && imgSrc.startsWith('data:')) ? imgSrc : null;
+            
+            const options = [
+                block.querySelector('.q-opt-0') ? block.querySelector('.q-opt-0').value.trim() : '', 
+                block.querySelector('.q-opt-1') ? block.querySelector('.q-opt-1').value.trim() : '', 
+                block.querySelector('.q-opt-2') ? block.querySelector('.q-opt-2').value.trim() : '', 
+                block.querySelector('.q-opt-3') ? block.querySelector('.q-opt-3').value.trim() : ''
+            ];
             let correctIndex = 0;
             block.querySelectorAll('.q-correct-radio').forEach((r, idx) => { if(r.checked) correctIndex = idx; });
             window.hostLogic.quizConfig.questions.push({ text, timeLimit, image, options, correctIndex });
         });
     },
     exportConfig: () => {
-        window.hostLogic.buildConfigFromDOM();
-        if(window.hostLogic.quizConfig.questions.length === 0) { window.appState.showToast('請至少完成一題設定再導出', 'error'); return; }
-        const json = JSON.stringify(window.hostLogic.quizConfig);
-        const code = 'STORYWEDKHT:' + utf8_to_b64(json);
-        const blob = new Blob([code], { type: 'text/plain;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url;
-        const roomTitle = document.getElementById('editor-room-title').value.trim() || '未命名房間';
-        const dateStr = new Date().toISOString().split('T').replace(/-/g, '');
-        a.download = `快問快答題庫_${roomTitle}_${dateStr}.txt`;
-        document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-        window.appState.showToast('設定已成功匯出為 TXT 檔案！');
+        try {
+            window.hostLogic.buildConfigFromDOM();
+            if(!window.hostLogic.quizConfig.questions || window.hostLogic.quizConfig.questions.length === 0) { 
+                window.appState.showToast('請至少完整輸入一題設定再導出', 'error'); 
+                return; 
+            }
+            const json = JSON.stringify(window.hostLogic.quizConfig);
+            const code = 'STORYWEDKHT:' + window.appUtils.utf8_to_b64(json);
+            const blob = new Blob([code], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); 
+            a.href = url;
+            const roomTitleInput = document.getElementById('editor-room-title');
+            const roomTitle = (roomTitleInput && roomTitleInput.value.trim()) ? roomTitleInput.value.trim() : '未命名房間';
+            const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, '');
+            a.download = `快問快答題庫_${roomTitle}_${dateStr}.txt`;
+            document.body.appendChild(a); 
+            a.click(); 
+            document.body.removeChild(a); 
+            URL.revokeObjectURL(url);
+            window.appState.showToast('設定已成功匯出為 TXT 檔案！');
+        } catch(e) {
+            window.appState.showToast('導出失敗，請檢查資料內容', 'error');
+        }
     },
     importConfig: () => {
         const fileInput = document.getElementById('import-file-input');
-        const textInput = document.getElementById('import-input').value.trim();
-        if (fileInput && fileInput.files && fileInput.files) {
+        const textInput = document.getElementById('import-input');
+        const textValue = textInput ? textInput.value.trim() : '';
+        
+        if (fileInput && fileInput.files && fileInput.files.length > 0) {
             const reader = new FileReader();
             reader.onload = (e) => window.hostLogic.processImportCode(e.target.result.trim());
-            reader.readAsText(fileInput.files);
-        } else if (textInput) {
-            window.hostLogic.processImportCode(textInput);
+            reader.onerror = () => window.appState.showToast('檔案讀取失敗', 'error');
+            reader.readAsText(fileInput.files[0]);
+        } else if (textValue) {
+            window.hostLogic.processImportCode(textValue);
         } else {
             window.appState.showToast('請選擇檔案或貼上代碼', 'error');
         }
@@ -906,7 +923,7 @@ window.hostLogic = {
     processImportCode: (val) => {
         if(!val.startsWith('STORYWEDKHT:')) { window.appState.showToast('檔案內容格式錯誤', 'error'); return; }
         try {
-            const data = JSON.parse(b64_to_utf8(val.replace('STORYWEDKHT:', '')));
+            const data = JSON.parse(window.appUtils.b64_to_utf8(val.replace('STORYWEDKHT:', '')));
             if(data && data.questions) {
                 window.hostLogic.quizConfig = data;
                 document.getElementById('questions-container').innerHTML = '';
@@ -914,7 +931,7 @@ window.hostLogic = {
                 document.getElementById('import-modal').classList.add('hidden');
                 document.getElementById('import-modal').classList.remove('flex');
                 if(document.getElementById('import-file-input')) document.getElementById('import-file-input').value = '';
-                document.getElementById('import-input').value = '';
+                if(document.getElementById('import-input')) document.getElementById('import-input').value = '';
                 window.appState.showToast('題庫導入成功！');
             }
         } catch(e) { window.appState.showToast('代碼解析失敗，檔案可能已損毀', 'error'); }
@@ -996,7 +1013,7 @@ window.hostLogic = {
                 if (bootToken !== window.hostLogic.serverBootToken) { try { peer.destroy(); } catch(e) {} return; }
                 opened = true; window.hostLogic.clearBootTimeout();
                 window.hostLogic.roomId = id;
-                const joinUrl = window.location.href.split('?') + '?role=player&room=' + id;
+                const joinUrl = window.location.href.split('?')[0] + '?role=player&room=' + id;
                 document.getElementById('qrcode-container').innerHTML = '';
                 new QRCode(document.getElementById('qrcode-container'), { text: joinUrl, width: 220, height: 220, colorDark: '#B76E79', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.H });
                 document.getElementById('hw-room-title').innerText = window.dbLogic.getRooms().find(r => r.id === window.editorLogic.currentRoomId)?.title || '快問快答遊戲';
@@ -1123,8 +1140,11 @@ window.hostLogic = {
         timerEl.style.color = '#B76E79';
         timerEl.style.fontSize = '3.5rem';
 
-        document.getElementById('hq-reveal-overlay').classList.add('hidden');
-        document.getElementById('hq-reveal-overlay').classList.remove('flex', 'opacity-100');
+        const overlay = document.getElementById('hq-reveal-overlay');
+        if (overlay) {
+            overlay.classList.add('hidden');
+            overlay.classList.remove('flex', 'opacity-100');
+        }
 
         window.hostLogic.gameState.questionStartTime = Date.now();
         window.hostLogic.gameState.timerInterval = setInterval(() => {
@@ -1157,22 +1177,26 @@ window.hostLogic = {
         document.getElementById('hq-timer').style.fontSize = '1.5rem';
 
         const overlay = document.getElementById('hq-reveal-overlay');
-        overlay.classList.remove('hidden');
-        overlay.classList.add('flex');
-        setTimeout(() => {
-            overlay.classList.remove('opacity-0');
-            overlay.classList.add('opacity-100');
-        }, 50);
+        if (overlay) {
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+            setTimeout(() => {
+                overlay.classList.remove('opacity-0');
+                overlay.classList.add('opacity-100');
+            }, 50);
+        }
     },
     revealAnswer: () => {
         const overlay = document.getElementById('hq-reveal-overlay');
-        overlay.classList.add('hidden', 'opacity-0');
-        overlay.classList.remove('flex', 'opacity-100');
+        if (overlay) {
+            overlay.classList.add('hidden', 'opacity-0');
+            overlay.classList.remove('flex', 'opacity-100');
+        }
 
         window.hostLogic.gameState.status = 'reveal';
 
         const q = window.hostLogic.quizConfig.questions[window.hostLogic.gameState.currentQIndex];
-        let voteCounts =;
+        let voteCounts = [0, 0, 0, 0];
 
         for (let name in window.hostLogic.gameState.currentAnswers) {
             const ans = window.hostLogic.gameState.currentAnswers[name];
@@ -1302,7 +1326,7 @@ window.hostLogic = {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `快問快答成績記錄_${new Date().toISOString().split('T').replace(/-/g, '')}.txt`;
+        a.download = `快問快答成績記錄_${new Date().toISOString().split('T')[0].replace(/-/g, '')}.txt`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -1349,9 +1373,9 @@ window.hostLogic = {
 
         if (typeof gsap !== 'undefined') {
             const tl = gsap.timeline();
-            if(top3) tl.to("#podium-3", { y: 0, opacity: 1, duration: 0.6, ease: "back.out(1.5)", delay: 0.5 });
-            if(top3) tl.to("#podium-2", { y: 0, opacity: 1, duration: 0.6, ease: "back.out(1.5)", delay: 0.2 });
-            if(top3) tl.to("#podium-1", { y: 0, opacity: 1, duration: 0.8, ease: "back.out(1.7)", delay: 0.3 }).call(() => {
+            if(top3[2]) tl.to("#podium-3", { y: 0, opacity: 1, duration: 0.6, ease: "back.out(1.5)", delay: 0.5 });
+            if(top3[1]) tl.to("#podium-2", { y: 0, opacity: 1, duration: 0.6, ease: "back.out(1.5)", delay: 0.2 });
+            if(top3[0]) tl.to("#podium-1", { y: 0, opacity: 1, duration: 0.8, ease: "back.out(1.7)", delay: 0.3 }).call(() => {
                 if(typeof confetti !== 'undefined') {
                     const duration = 4 * 1000;
                     const end = Date.now() + duration;
@@ -1368,7 +1392,7 @@ window.hostLogic = {
             
             if (runnersUp.length > 0) {
                 runnersUp.forEach((name, idx) => {
-                    listContainer.innerHTML += `<div class="flex justify-between items-center bg-brand-rosegold/5 p-4 rounded-xl border border-brand-rosegold/10 shadow-sm"><div class="flex items-center gap-4"><span class="text-brand-dustyrose font-bold w-6 text-right text-xl font-sans">${idx + 4}.</span><span class="font-bold text-lg text-brand-text tracking-wide">${name}</span></div><span class="font-bold text-brand-rosegold font-sans text-xl">${window.hostLogic.gameState.players[name].score} 分</span></div>`;
+                    listContainer.innerHTML += `<div class="flex justify-between items-center bg-brand-rosegold/5 p-4 rounded-xl border border-brand-rosegold/10 shadow-sm"><div class="flex items-center gap-4"><span class="text-brand-dustyrose font-bold w-6 text-right text-xl font-sans">${idx + 4}.</span><span class="font-bold text-lg text-brand-text tracking-wide">${window.appState.escapeHTML(name)}</span></div><span class="font-bold text-brand-rosegold font-sans text-xl">${window.hostLogic.gameState.players[name].score} 分</span></div>`;
                 });
                 if(podiumContainer) {
                     podiumContainer.classList.remove('hidden');
@@ -1518,10 +1542,9 @@ window.playerLogic = {
 
         window.appState.hideLoading();
         
-        // 利用 location.replace 強制清理並回到首頁，解決快取殘留
         const urlParams = new URLSearchParams(window.location.search);
         let roomCode = urlParams.get('room') || '';
-        let newUrl = window.location.href.split('?') + '?role=player';
+        let newUrl = window.location.href.split('?')[0] + '?role=player';
         if (roomCode) newUrl += '&room=' + roomCode;
         window.location.replace(newUrl);
     },
@@ -1633,9 +1656,7 @@ window.initApp = function() {
         }
         window.appState.goToPlayerJoin();
     } else {
-        // 如果是主機端，檢查是否需要觸發系統登入檢驗
         if (SYSTEM_CONFIG.ADMIN_USERNAME && SYSTEM_CONFIG.ADMIN_PASSWORD) {
-            // 直接將正確的使用者資料寫入 (不給註冊，只能用帳密登入)
             const users = window.dbLogic.getUsers();
             users[SYSTEM_CONFIG.ADMIN_USERNAME] = { password: SYSTEM_CONFIG.ADMIN_PASSWORD };
             window.dbLogic.saveUsers(users);
